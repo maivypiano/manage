@@ -664,7 +664,6 @@
             saveData();
             initApp();
             
-            // Cập nhật biểu đồ nếu đang mở tab thống kê
             if (!document.getElementById('tab-sheet4').classList.contains('hidden') && typeof renderCharts === 'function') {
                 renderCharts();
             }
@@ -685,7 +684,6 @@
             populateDropdowns(); renderMasterTable(); renderWeeklySchedule(); renderTeacherStats();
         }
 
-        // Cập nhật hàm switchTab
         function switchTab(tabId, title) {
             document.querySelectorAll('.tab-content').forEach(el => {
                 el.classList.add('hidden');
@@ -711,7 +709,7 @@
 
             if(tabId === 'sheet4') {
                 renderTeacherStats();
-                if (typeof renderCharts === 'function') renderCharts(); // Vẽ biểu đồ khi mở tab
+                if (typeof renderCharts === 'function') renderCharts(); 
             }
         }
 
@@ -820,10 +818,17 @@
             initApp();
         };
 
+        // === CẬP NHẬT: HÀM HIỂN THỊ GIÁO VIÊN (TỰ ĐỘNG SẮP XẾP MÃ GV) ===
         function renderTeachers() {
             const tbody = document.getElementById('teachers-table-body');
             document.getElementById('teacher-count').textContent = `${teachers.length} GV`;
-            tbody.innerHTML = teachers.map((t, index) => `
+            
+            // Sắp xếp tự nhiên theo Mã GV (Vd: T2 đứng trước T10)
+            const sortedTeachers = [...teachers].sort((a, b) => {
+                return a.id.localeCompare(b.id, undefined, {numeric: true, sensitivity: 'base'});
+            });
+
+            tbody.innerHTML = sortedTeachers.map((t, index) => `
                 <tr class="hover:bg-indigo-50/50 transition-colors animate-slide-up" style="animation-delay: ${index * 0.05}s; opacity: 0; animation-fill-mode: forwards;">
                     <td class="py-3 px-4 font-bold text-slate-600 cursor-pointer" ondblclick="editTeacherId('${t.id}', this)">${t.id}</td>
                     <td class="py-3 px-4 font-bold text-slate-800 cursor-pointer" ondblclick="editField('teachers', '${t.id}', 'name', this)">${t.name}</td>
@@ -834,10 +839,30 @@
                 </tr>`).join('');
         }
 
+        // === CẬP NHẬT: HÀM HIỂN THỊ HỌC VIÊN (TỰ ĐỘNG SẮP XẾP SỐ BUỔI / ĐẨY XUỐNG DƯỚI NẾU ĐÃ XONG) ===
         function renderStudents() {
             const tbody = document.getElementById('students-table-body');
             document.getElementById('student-count').textContent = `${students.length} HV`;
-            tbody.innerHTML = students.map((s, index) => {
+            
+            // Sắp xếp:
+            // 1. Nếu hoàn thành -> xuống dưới
+            // 2. Nếu cùng trạng thái -> Xếp số buổi tăng dần
+            // 3. Nếu số buổi bằng nhau -> ABC
+            const sortedStudents = [...students].sort((a, b) => {
+                const aCompleted = a.completedLessons > 0 && a.completedLessons >= a.lessons;
+                const bCompleted = b.completedLessons > 0 && b.completedLessons >= b.lessons;
+                
+                if (aCompleted && !bCompleted) return 1; 
+                if (!aCompleted && bCompleted) return -1;
+                
+                if (a.lessons !== b.lessons) {
+                    return a.lessons - b.lessons;
+                }
+                
+                return a.name.localeCompare(b.name, 'vi');
+            });
+
+            tbody.innerHTML = sortedStudents.map((s, index) => {
                 let statusText = "";
                 let statusClass = "";
                 
@@ -1089,7 +1114,6 @@
             return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
         }
 
-        // Cập nhật hàm điểm danh để vẽ lại biểu đồ ngay lập tức
         function markAttendance(scheduleId, dateString, status, studentId) {
             saveStateToHistory(); 
             const key = `${scheduleId}_${dateString}`;
@@ -1113,7 +1137,6 @@
             renderStudents(); 
             renderTeacherStats(); 
             
-            // Render lại biểu đồ nếu đang xem tab thống kê
             if (!document.getElementById('tab-sheet4').classList.contains('hidden') && typeof renderCharts === 'function') {
                 renderCharts();
             }
@@ -1273,7 +1296,6 @@
                 }
             }
 
-            // Sắp xếp GV theo số ca từ cao đến thấp
             const sortedTeachers = [...teachers].sort((a, b) => stats[b.id] - stats[a.id]);
 
             sortedTeachers.forEach((t, index) => {
@@ -1286,10 +1308,6 @@
                 `;
             });
         }
-
-        // ==========================================
-        // KHU VỰC LOGIC VẼ BIỂU ĐỒ (MỚI THÊM)
-        // ==========================================
 
         function toggleCharts() {
             const filter = document.getElementById('chart-filter').value;
@@ -1353,7 +1371,6 @@
 
             Chart.defaults.font.family = "'Inter', sans-serif";
 
-            // 1. Biểu đồ Tròn (Tỷ lệ điểm danh)
             const ctxPie = document.getElementById('pieChart').getContext('2d');
             myPieChart = new Chart(ctxPie, {
                 type: 'doughnut',
@@ -1375,7 +1392,6 @@
                 }
             });
 
-            // 2. Biểu đồ Đường (Xu hướng theo tuần)
             const ctxLine = document.getElementById('lineChart').getContext('2d');
             myLineChart = new Chart(ctxLine, {
                 type: 'line',
@@ -1406,7 +1422,6 @@
                 }
             });
 
-            // 3. Biểu đồ Cột (Phân bổ Cơ sở)
             const ctxBar = document.getElementById('barChart').getContext('2d');
             const branchNames = Object.keys(branchSchedules);
             const branchCounts = Object.values(branchSchedules);
@@ -1439,11 +1454,9 @@
                 }
             });
         }
-        // ==========================================
 
         function exportToCSV() { showToast("Đang mô phỏng chức năng xuất file Excel/CSV!", "info"); }
 
-        // === HỆ THỐNG TIPS (MẸO) TỰ ĐỘNG CHUYỂN ĐỔI ===
         const APP_TIPS = [
             '✨ <span class="font-bold">Mẹo:</span> Nháy đúp vào bất kỳ ô dữ liệu nào trong bảng để sửa nhanh. Hệ thống tự động lưu.',
             '✨ <span class="font-bold">Mẹo:</span> Nhấn tổ hợp phím Ctrl+Z để Hoàn tác hoặc Ctrl+Y để Làm lại thao tác cuối.',
