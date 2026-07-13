@@ -91,14 +91,28 @@
             height: 1.25rem !important;
         }
 
-        /* Responsive font sizing để tránh chữ đè lên nhau */
+        /* Responsive font sizing để gói gọn trong 1 khung hình */
         @media (max-width: 640px) {
-            body { font-size: 14px; }
-            h1 { font-size: 1.25rem; }
-            h2 { font-size: 1.125rem; }
-            h3 { font-size: 1rem; }
-            .text-sm { font-size: 0.8125rem; }
-            .text-xs { font-size: 0.6875rem; }
+            body { font-size: 12px; }
+            h1 { font-size: 1rem; }
+            h2 { font-size: 0.95rem; }
+            h3 { font-size: 0.875rem; }
+            .text-sm { font-size: 0.7rem; }
+            .text-xs { font-size: 0.6rem; }
+            .text-base { font-size: 0.75rem; }
+            .text-lg { font-size: 0.875rem; }
+            .text-xl { font-size: 1rem; }
+            .text-2xl { font-size: 1.125rem; }
+            .text-3xl { font-size: 1.25rem; }
+            .p-5 { padding: 0.625rem; }
+            .p-8 { padding: 0.75rem; }
+            .p-6 { padding: 0.5rem; }
+            .p-4 { padding: 0.5rem; }
+            .gap-4 { gap: 0.5rem; }
+            .gap-6 { gap: 0.75rem; }
+            .px-6 { padding-left: 0.75rem; padding-right: 0.75rem; }
+            .py-4 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+            .space-y-6 > * + * { margin-top: 0.75rem; }
         }
     </style>
 </head>
