@@ -15,7 +15,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        body { font-family: 'Inter', sans-serif; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
+        button, a { -webkit-tap-highlight-color: transparent; outline: none !important; }
+        button:focus, a:focus, button:active, a:active { outline: none !important; border: none !important; }
+        *:focus { outline: none !important; -webkit-tap-highlight-color: transparent; }
         .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
@@ -62,20 +65,13 @@
         .toast-exit { animation: toastOut 0.3s forwards; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 h-screen flex overflow-hidden">
+<body class="bg-slate-50 text-slate-800 h-screen flex overflow-hidden relative">
 
-    <aside class="w-64 bg-white border-r border-slate-200 flex flex-col flex-shrink-0 z-20 shadow-[2px_0_10px_rgba(0,0,0,0.02)]">
-        <div class="h-20 flex items-center gap-3 px-6 border-b border-slate-100 cursor-pointer hover:bg-indigo-50 transition-colors group" onclick="window.location.reload();" title="Tải lại trang">
-            <div class="bg-indigo-600 text-white w-10 h-10 flex items-center justify-center rounded-xl shadow-lg shadow-indigo-200 font-bold text-lg group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
-                MV
-            </div>
-            <div class="flex flex-col">
-                <h1 class="text-base font-bold text-slate-900 leading-tight group-hover:text-indigo-700 transition-colors">Mai Vy Piano</h1>
-                <span class="text-[11px] font-semibold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded w-max mt-0.5 border border-emerald-100">Version 3.5</span>
-            </div>
-        </div>
+    <!-- Overlay for sidebar -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-slate-900/50 z-20 hidden opacity-0 transition-opacity duration-300" onclick="toggleSidebar()"></div>
 
-        <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto custom-scrollbar">
+    <aside id="sidebar" class="w-64 bg-white border-r border-slate-200 flex flex-col flex-shrink-0 z-30 shadow-[2px_0_20px_rgba(0,0,0,0.1)] fixed inset-y-0 left-0 transform transition-transform duration-300">
+        <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto custom-scrollbar mt-4">
             <button id="nav-sheet1" onclick="switchTab('sheet1', 'Danh Sách Tổng Hợp')" class="nav-btn interactive-btn w-full flex items-center gap-3 px-4 py-3 text-sm rounded-xl transition-all duration-300 bg-indigo-50 text-indigo-700 font-bold hover:-translate-y-0.5 hover:shadow-md active:scale-95">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                 Quản Lý Danh Sách
@@ -103,12 +99,34 @@
         </div>
     </aside>
 
-    <div class="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+    <div id="main-content" class="flex-1 flex flex-col min-w-0 overflow-hidden relative ml-64 transition-all duration-300">
         
-        <header class="h-20 bg-white/90 backdrop-blur-md border-b border-slate-200 px-8 flex items-center justify-between flex-shrink-0 z-10 sticky top-0">
-            <div class="animate-slide-up">
-                <h2 id="header-title" class="text-2xl font-bold text-slate-800 tracking-tight">Danh Sách Tổng Hợp</h2>
-                <p class="text-xs text-slate-500 font-medium mt-1">Dữ liệu tự động đồng bộ & lưu trữ</p>
+        <header class="h-20 bg-white/90 backdrop-blur-md border-b border-slate-200 px-8 flex items-center justify-between flex-shrink-0 z-50 sticky top-0">
+            <div class="flex items-center gap-4 animate-slide-up">
+                <!-- Hamburger Menu Button -->
+                <button onclick="toggleSidebar()" class="p-2 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 active:scale-95 transition-all shadow-sm" title="Toggle Menu">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+
+                <!-- Logo -->
+                <div class="flex items-center gap-3 cursor-pointer" onclick="window.location.reload();" title="Tải lại trang">
+                    <div class="bg-indigo-600 text-white w-10 h-10 flex items-center justify-center rounded-xl shadow-lg shadow-indigo-200 font-bold text-lg">
+                        MV
+                    </div>
+                    <div>
+                        <h1 class="text-base font-bold text-slate-900 leading-tight">Mai Vy Piano</h1>
+                        <span class="text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded w-max border border-emerald-100">Version 3.5</span>
+                    </div>
+                </div>
+
+                <!-- Divider -->
+                <div class="w-px h-10 bg-slate-200 mx-2"></div>
+
+                <!-- Page Title -->
+                <div>
+                    <h2 id="header-title" class="text-xl font-bold text-slate-800 tracking-tight">Danh Sách Tổng Hợp</h2>
+                    <p class="text-xs text-slate-500 font-medium mt-0.5">Dữ liệu tự động đồng bộ & lưu trữ</p>
+                </div>
             </div>
             
             <div class="flex items-center gap-4 animate-slide-up" style="animation-delay: 0.1s;">
@@ -447,6 +465,29 @@
     <div id="toast-container" class="fixed bottom-6 right-6 z-[9999] flex flex-col gap-3"></div>
 
     <script>
+        // === TOGGLE SIDEBAR MENU ===
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            const mainContent = document.getElementById('main-content');
+
+            if (sidebar.classList.contains('-translate-x-full')) {
+                // Mở sidebar
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+                // Thêm margin để nội dung không bị sidebar che
+                mainContent.classList.add('ml-64');
+            } else {
+                // Đóng sidebar
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('opacity-0');
+                setTimeout(() => overlay.classList.add('hidden'), 300);
+                // Xóa margin để nội dung kéo giãn ra full width
+                mainContent.classList.remove('ml-64');
+            }
+        }
+
         // === TOAST & ANIMATIONS MỚI ===
         function showToast(message, type = 'success') {
             const container = document.getElementById('toast-container');
@@ -803,7 +844,14 @@
 
             if(tabId === 'sheet4') {
                 renderTeacherStats();
-                if (typeof renderCharts === 'function') renderCharts(); 
+                if (typeof renderCharts === 'function') renderCharts();
+            }
+
+            // Tự động đóng sidebar sau khi chọn menu (nếu đang mở với overlay)
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            if (sidebar && overlay && !overlay.classList.contains('hidden')) {
+                toggleSidebar();
             }
         }
 
