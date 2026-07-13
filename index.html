@@ -219,8 +219,10 @@
             </div>
 
             <div id="tab-sheet2" class="tab-content hidden animate-slide-up space-y-6">
-                <div class="bg-white rounded-2xl border border-slate-200 shadow-lg shadow-indigo-100/50 p-6 relative overflow-hidden group">
-                    <div class="absolute -top-10 -right-10 w-40 h-40 bg-indigo-50 rounded-full -z-0 opacity-50 group-hover:scale-125 transition-transform duration-700"></div>
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-lg shadow-indigo-100/50 p-6 relative group z-50">
+                    <div class="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none z-0">
+                        <div class="absolute -top-10 -right-10 w-40 h-40 bg-indigo-50 rounded-full opacity-50 group-hover:scale-125 transition-transform duration-700"></div>
+                    </div>
                     <h3 class="font-bold text-slate-800 text-lg mb-5 flex items-center gap-2 relative z-10">
                         <span class="bg-indigo-100 text-indigo-600 p-2 rounded-xl"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg></span>
                         Phân Bổ Lịch Học Mới
@@ -256,10 +258,30 @@
                             </select>
                         </div>
 
-                        <div class="xl:col-span-7 bg-white border border-slate-200 p-2.5 rounded-xl shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] transition-all hover:border-indigo-300">
-                            <label class="block text-[10px] font-bold text-indigo-500 uppercase tracking-wider mb-2 pl-1">Chọn Ngày (Tháng Này)</label>
-                            <div id="form-dates-grid" class="grid grid-cols-7 gap-1.5">
-                                <!-- Days will be generated here -->
+                        <div class="xl:col-span-7 bg-white border border-slate-200 p-2.5 rounded-xl shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] transition-all hover:border-indigo-300 relative">
+                            <label class="block text-[10px] font-bold text-indigo-500 uppercase tracking-wider mb-2 pl-1">Chọn Ngày Học</label>
+                            <button type="button" onclick="document.getElementById('date-picker-popover').classList.toggle('hidden')" id="btn-date-picker" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-700 hover:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all flex justify-between items-center">
+                                <span id="date-picker-text">Chọn các ngày trong tháng...</span>
+                                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </button>
+                            <div id="date-picker-popover" class="hidden absolute top-full left-0 mt-2 w-full sm:w-80 bg-white border border-slate-200 rounded-2xl shadow-xl z-50 p-4">
+                                <div class="text-center font-bold text-indigo-700 mb-3 border-b border-slate-100 pb-2 current-month-display-picker"></div>
+                                <div class="grid grid-cols-7 gap-1 mb-2">
+                                    <div class="text-center text-[10px] font-bold text-slate-400">T2</div>
+                                    <div class="text-center text-[10px] font-bold text-slate-400">T3</div>
+                                    <div class="text-center text-[10px] font-bold text-slate-400">T4</div>
+                                    <div class="text-center text-[10px] font-bold text-slate-400">T5</div>
+                                    <div class="text-center text-[10px] font-bold text-slate-400">T6</div>
+                                    <div class="text-center text-[10px] font-bold text-slate-400">T7</div>
+                                    <div class="text-center text-[10px] font-bold text-rose-400">CN</div>
+                                </div>
+                                <div id="form-dates-grid" class="grid grid-cols-7 gap-1">
+                                    <!-- Calendar days will be generated here -->
+                                </div>
+                                <div class="mt-4 flex justify-between items-center">
+                                    <button type="button" onclick="document.querySelectorAll('input[name=`form-exact-dates`]:checked').forEach(cb => cb.checked = false); updateDatePickerText();" class="text-[11px] text-slate-400 hover:text-slate-600 font-medium px-2">Bỏ chọn hết</button>
+                                    <button type="button" onclick="document.getElementById('date-picker-popover').classList.add('hidden')" class="px-4 py-1.5 bg-indigo-50 text-indigo-700 font-bold text-xs rounded-lg hover:bg-indigo-100 transition-colors">Xong</button>
+                                </div>
                             </div>
                         </div>
                         <div class="xl:col-span-3 flex justify-end h-full">
@@ -298,7 +320,7 @@
                                         <th class="py-3 px-4">Giáo Viên</th>
                                         <th class="py-3 px-4">Thời Gian</th>
                                         <th class="py-3 px-4">Cơ Sở</th>
-                                        <th class="py-3 px-4">Tuần Áp dụng</th>
+                                        <th class="py-3 px-4">Ngày Áp Dụng</th>
                                         <th class="py-3 px-4">Loại</th>
                                         <th class="py-3 px-4 text-right">Thao tác</th>
                                     </tr>
@@ -322,11 +344,13 @@
                         </div>
                         <select id="view-filter-week" onchange="renderWeeklySchedule()" class="bg-white font-bold border-transparent rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm text-indigo-700 transition-all cursor-pointer">
                             <option value="all" selected>Cả Tháng</option>
-                            <option value="summary">Chế độ Siêu gọn</option>
+                            <option value="summary">Xem Tổng Quát</option>
                             <option value="1">Tuần 1</option>
                             <option value="2">Tuần 2</option>
                             <option value="3">Tuần 3</option>
                             <option value="4">Tuần 4</option>
+                            <option value="5">Tuần 5</option>
+                            <option value="6">Tuần 6</option>
                         </select>
                         <select id="view-filter-teacher" onchange="renderWeeklySchedule()" class="bg-white border-transparent rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm transition-all cursor-pointer"></select>
                         <select id="view-filter-branch" onchange="renderWeeklySchedule()" class="bg-white border-transparent rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm transition-all cursor-pointer"></select>
@@ -630,11 +654,55 @@
             schedule = monthlyData[currentMonth].schedule;
             attendanceData = monthlyData[currentMonth].attendanceData;
             
+            let migrated = false;
+            schedule.forEach(entry => {
+                if (entry.exactDates) return; 
+
+                if (entry.exactDate) {
+                    entry.exactDates = [entry.exactDate];
+                    delete entry.exactDate;
+                    migrated = true;
+                } else if (entry.day && entry.weeks) {
+                    const parts = currentMonth.split('-'); 
+                    const year = parseInt(parts[0]); 
+                    const month = parseInt(parts[1]);
+                    const daysInMonth = new Date(year, month, 0).getDate();
+                    const daysName = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
+                    const firstDateOfMonth = new Date(year, month - 1, 1);
+                    const firstDayOfWeek = firstDateOfMonth.getDay() === 0 ? 6 : firstDateOfMonth.getDay() - 1;
+                    
+                    let newExactDates = [];
+                    for(let i=1; i<=daysInMonth; i++) {
+                        const dateObj = new Date(year, month - 1, i);
+                        const dayName = daysName[dateObj.getDay()];
+                        if (dayName === entry.day) {
+                            const dateDay = i;
+                            const w = Math.ceil((firstDayOfWeek + dateDay) / 7);
+                            if (entry.weeks.includes(w)) {
+                                const dateStr = `${year}-${String(month).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
+                                newExactDates.push(dateStr);
+                            }
+                        }
+                    }
+                    entry.exactDates = newExactDates;
+                    delete entry.day;
+                    delete entry.weeks;
+                    migrated = true;
+                }
+            });
+            if(migrated && typeof saveData === 'function') { saveData(); }
+            
             document.querySelectorAll('.current-month-display').forEach(el => {
                 const parts = currentMonth.split('-');
                 el.textContent = `${parts[1]}/${parts[0]}`;
             });
             renderDateSelector();
+        }
+
+        function updateDatePickerText() {
+            const count = document.querySelectorAll('input[name="form-exact-dates"]:checked').length;
+            const textEl = document.getElementById('date-picker-text');
+            if(textEl) textEl.textContent = count > 0 ? `Đã chọn ${count} ngày` : 'Chọn các ngày trong tháng...';
         }
 
         function renderDateSelector() {
@@ -645,19 +713,32 @@
             const month = parseInt(parts[1]);
             const daysInMonth = new Date(year, month, 0).getDate();
             
+            const firstDateOfMonth = new Date(year, month - 1, 1);
+            let firstDayOfWeek = firstDateOfMonth.getDay(); 
+            firstDayOfWeek = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
+            
+            document.querySelectorAll('.current-month-display-picker').forEach(el => el.textContent = `Tháng ${month}/${year}`);
+
             let html = '';
+            for(let i=0; i<firstDayOfWeek; i++) {
+                html += `<div></div>`;
+            }
+
             for(let i=1; i<=daysInMonth; i++) {
                 const dateStr = `${year}-${String(month).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
+                const isSun = new Date(year, month - 1, i).getDay() === 0;
+                
                 html += `
-                    <label class="cursor-pointer relative flex-1 text-center">
-                        <input type="checkbox" name="form-exact-dates" value="${dateStr}" class="peer sr-only day-checkbox">
-                        <div class="rounded-lg border border-slate-200 bg-slate-50 py-1.5 text-[11px] font-bold text-slate-500 peer-hover:bg-slate-100 transition-all duration-200">
+                    <label class="cursor-pointer relative flex items-center justify-center aspect-square">
+                        <input type="checkbox" name="form-exact-dates" value="${dateStr}" class="peer sr-only day-checkbox" onchange="updateDatePickerText()">
+                        <div class="w-full h-full rounded-md border border-slate-100 bg-slate-50 flex items-center justify-center text-[12px] font-bold ${isSun ? 'text-rose-500' : 'text-slate-600'} transition-all duration-200 peer-hover:bg-slate-200">
                             ${i}
                         </div>
                     </label>
                 `;
             }
             container.innerHTML = html;
+            updateDatePickerText();
         }
 
         function handleMonthChange() {
@@ -999,24 +1080,55 @@
             initApp();
         };
 
-        window.editMasterWeeks = function(index, td) {
+        window.editMasterDate = function(index, td) {
             if (td.getAttribute('data-editing')) return;
             const entry = schedule[index];
             td.setAttribute('data-editing', 'true');
-            td.innerHTML = `
-                <div class="flex flex-col gap-2 bg-white border-2 border-indigo-400 p-2.5 rounded-xl shadow-[0_10px_25px_rgba(79,70,229,0.15)] z-10 relative w-max animate-slide-up" style="animation-duration:0.2s">
-                    <div class="flex gap-2">
-                        ${[1,2,3,4].map(w => `<label class="text-xs font-bold flex items-center gap-1"><input type="checkbox" value="${w}" class="edit-week-cb w-3 h-3 text-indigo-600" ${entry.weeks.includes(w) ? 'checked' : ''}>T${w}</label>`).join('')}
-                    </div>
-                    <button onclick="saveMasterWeeks(${index}, this)" class="interactive-btn bg-indigo-600 text-white px-2 py-1.5 rounded-lg text-xs font-bold w-full active:scale-95">Xác nhận</button>
-                </div>
-            `;
+            
+            const parts = currentMonth.split('-'); 
+            const year = parseInt(parts[0]); 
+            const month = parseInt(parts[1]);
+            const daysInMonth = new Date(year, month, 0).getDate();
+            
+            let html = `<div class="flex flex-col gap-2 bg-white border-2 border-indigo-400 p-2.5 rounded-xl shadow-[0_10px_25px_rgba(79,70,229,0.15)] z-10 relative w-[240px] animate-slide-up" style="animation-duration:0.2s">`;
+            html += `<div class="text-[10px] font-bold text-indigo-600 mb-1 text-center border-b border-indigo-100 pb-1">Chọn ngày áp dụng</div>`;
+            html += `<div class="grid grid-cols-7 gap-1">`;
+            for(let i=1; i<=daysInMonth; i++) {
+                const dateStr = `${year}-${String(month).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
+                const isSelected = entry.exactDates && entry.exactDates.includes(dateStr);
+                const isSun = new Date(year, month - 1, i).getDay() === 0;
+                
+                html += `
+                    <label class="cursor-pointer relative flex items-center justify-center aspect-square">
+                        <input type="checkbox" value="${dateStr}" class="edit-date-cb peer sr-only" ${isSelected ? 'checked' : ''}>
+                        <div class="w-full h-full rounded border border-slate-100 bg-slate-50 flex items-center justify-center text-[11px] font-bold ${isSun ? 'text-rose-500' : 'text-slate-600'} transition-all duration-200 peer-hover:bg-slate-200 peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600">
+                            ${i}
+                        </div>
+                    </label>
+                `;
+            }
+            html += `</div>`;
+            html += `<button onclick="saveMasterDate(${index}, this)" class="interactive-btn bg-indigo-600 text-white px-2 py-1.5 rounded-lg text-xs font-bold w-full active:scale-95 mt-1">Lưu</button>`;
+            html += `</div>`;
+            
+            td.innerHTML = html;
         };
-        window.saveMasterWeeks = function(index, btn) {
+
+        window.saveMasterDate = function(index, btn) {
             const container = btn.parentElement;
-            const checked = Array.from(container.querySelectorAll('.edit-week-cb:checked')).map(cb => parseInt(cb.value));
-            if(checked.length === 0) { showToast('Phải chọn ít nhất 1 tuần', 'error'); return; }
-            if (schedule[index]) { saveStateToHistory(); schedule[index].weeks = checked; saveData(); initApp(); showToast("Đã lưu Tuần học");}
+            const checked = Array.from(container.querySelectorAll('.edit-date-cb:checked')).map(cb => cb.value);
+            if(checked.length === 0) { showToast('Phải chọn ít nhất 1 ngày', 'error'); return; }
+            if (schedule[index]) { 
+                saveStateToHistory(); 
+                checked.sort();
+                schedule[index].exactDates = checked;
+                
+                delete schedule[index].exactDate;
+                delete schedule[index].day;
+                delete schedule[index].weeks;
+
+                saveData(); initApp(); showToast("Đã lưu Ngày học");
+            }
         };
 
         window.editMasterType = function(index, td) {
@@ -1056,41 +1168,26 @@
 
             saveStateToHistory(); 
 
-            const daysName = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
+            selectedDates.sort();
             
-            selectedDates.forEach(dateStr => {
-                const dateObj = new Date(dateStr);
-                const dayName = daysName[dateObj.getDay()];
-                
-                const year = dateObj.getFullYear();
-                const month = dateObj.getMonth();
-                const firstDateOfMonth = new Date(year, month, 1);
-                const firstDayOfWeek = firstDateOfMonth.getDay();
-                const offset = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1; 
-                const dateDay = dateObj.getDate();
-                const totalDaysSpanned = offset + dateDay;
-                const w = Math.ceil(totalDaysSpanned / 7);
-                const displayWeekNum = Math.min(4, w);
-                
-                schedule.push({ 
-                    id: 'C' + Date.now() + Math.floor(Math.random() * 1000), 
-                    studentId, 
-                    teacherId, 
-                    day: dayName, 
-                    start, 
-                    end, 
-                    branch, 
-                    weeks: [displayWeekNum], 
-                    type,
-                    exactDate: dateStr
-                });
+            schedule.push({ 
+                id: 'C' + Date.now() + Math.floor(Math.random() * 1000), 
+                studentId, 
+                teacherId, 
+                start, 
+                end, 
+                branch, 
+                type,
+                exactDates: selectedDates
             });
+            
             saveData(); initApp();
             
-            showToast(`Đã thêm ${selectedDates.length} ca học vào lịch!`);
+            showToast(`Đã thêm lịch với ${selectedDates.length} ngày!`);
             
             document.getElementById('form-start').value = ''; document.getElementById('form-end').value = '';
-            document.querySelectorAll('input[name="form-days"]').forEach(cb => cb.checked = false);
+            document.querySelectorAll('input[name="form-exact-dates"]').forEach(cb => cb.checked = false);
+            updateDatePickerText();
         }
 
         function deleteScheduleEntry(index) {
@@ -1106,10 +1203,17 @@
             const teacherFilter = document.getElementById('filter-teacher-master').value;
             const dayFilter = document.getElementById('filter-day-master').value;
 
-            const dayWeight = { "Thứ Hai": 1, "Thứ Ba": 2, "Thứ Tư": 3, "Thứ Năm": 4, "Thứ Sáu": 5, "Thứ Bảy": 6, "Chủ Nhật": 7 };
             let displaySchedule = [...schedule];
             displaySchedule.sort((a, b) => {
-                if (dayWeight[a.day] !== dayWeight[b.day]) return dayWeight[a.day] - dayWeight[b.day];
+                const getFirstDayWeight = (entry) => {
+                    if (!entry.exactDates || entry.exactDates.length === 0) return 8;
+                    const d = new Date(entry.exactDates[0]).getDay();
+                    return d === 0 ? 7 : d;
+                };
+                const weightA = getFirstDayWeight(a);
+                const weightB = getFirstDayWeight(b);
+                if (weightA !== weightB) return weightA - weightB;
+                
                 return a.start.localeCompare(b.start);
             });
 
@@ -1122,21 +1226,34 @@
                 if (!student || !teacher) return;
                 if (searchValue && !student.name.toLowerCase().includes(searchValue)) return;
                 if (teacherFilter && entry.teacherId !== teacherFilter) return;
-                if (dayFilter && entry.day !== dayFilter) return;
+                
+                const daysNameList = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
+                if (dayFilter) {
+                    const matchesDay = entry.exactDates && entry.exactDates.some(d => daysNameList[new Date(d).getDay()] === dayFilter);
+                    if (!matchesDay) return;
+                }
 
-                const weekBadges = entry.exactDate 
-                    ? `<span class="bg-indigo-50 text-indigo-700 text-[10px] px-1.5 py-0.5 rounded font-bold border border-indigo-100">${entry.exactDate.split('-').reverse().join('/')}</span>`
-                    : entry.weeks.map(w => `<span class="bg-indigo-50 text-indigo-700 text-[10px] px-1.5 py-0.5 rounded font-bold border border-indigo-100">T${w}</span>`).join(' ');
+                const fullDays = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
+                let uniqueDays = [];
+                if (entry.exactDates) {
+                    const daysSet = new Set(entry.exactDates.map(d => new Date(d).getDay()));
+                    let daysArr = Array.from(daysSet);
+                    daysArr.sort((a, b) => (a === 0 ? 7 : a) - (b === 0 ? 7 : b));
+                    uniqueDays = daysArr.map(d => fullDays[d]);
+                }
+                const dayDisplay = uniqueDays.length > 0 ? uniqueDays.join(', ') : '';
+
+                const dateBadge = (entry.exactDates || []).map(d => `<span class="bg-indigo-50 text-indigo-700 text-[11px] px-2 py-1 rounded-md font-bold border border-indigo-100">${d.split('-').reverse().join('/')}</span>`).join(' ');
                 const typeBadge = entry.type === 'makeup' ? `<span class="bg-amber-100 text-amber-800 text-[10px] px-2 py-1 rounded font-bold">Bù/Tạm</span>` : `<span class="bg-emerald-50 text-emerald-600 text-[10px] px-2 py-1 rounded font-semibold border border-emerald-100">Cố định</span>`;
 
                 tbody.innerHTML += `
-                    <tr class="hover:bg-slate-50 transition-colors animate-slide-up" style="animation-delay: ${Math.min(idx * 0.02, 0.5)}s; opacity: 0; animation-fill-mode: forwards;">
+                    <tr class="hover:bg-slate-50 transition-colors animate-slide-up" style="animation-delay: ${idx * 0.03}s; opacity: 0; animation-fill-mode: forwards;">
                         <td class="py-3 px-4 text-slate-400 text-xs font-medium">${index+1}</td>
                         <td class="py-3 px-4 font-bold text-slate-800 cursor-pointer" ondblclick="editMasterStudent(${index}, this)">${student.name}</td>
                         <td class="py-3 px-4 cursor-pointer" ondblclick="editMasterTeacher(${index}, this)"><span class="px-2.5 py-1 rounded-md text-xs font-semibold border shadow-sm ${teacher.colorClass}">${teacher.display}</span></td>
-                        <td class="py-3 px-4 cursor-pointer" ondblclick="editMasterTime(${index}, this)"><span class="font-bold text-slate-700">${entry.day}</span> <span class="text-[11px] font-medium text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded-md ml-1 border border-slate-200 shadow-sm">${entry.start} - ${entry.end}</span></td>
+                        <td class="py-3 px-4 cursor-pointer" ondblclick="editMasterTime(${index}, this)"><span class="font-bold text-slate-700">${dayDisplay}</span> <span class="text-[11px] font-medium text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded-md ml-1 border border-slate-200 shadow-sm">${entry.start} - ${entry.end}</span></td>
                         <td class="py-3 px-4 cursor-pointer" ondblclick="editMasterBranch(${index}, this)"><span class="text-xs px-2.5 py-1 rounded-md border shadow-sm ${branchObj.colorClass} font-medium">${entry.branch}</span></td>
-                        <td class="py-3 px-4 flex gap-1 items-center cursor-pointer min-h-[50px]" ondblclick="editMasterWeeks(${index}, this)">${weekBadges}</td>
+                        <td class="py-3 px-4 flex gap-1 items-center flex-wrap cursor-pointer min-h-[50px]" ondblclick="editMasterDate(${index}, this)">${dateBadge}</td>
                         <td class="py-3 px-4 cursor-pointer" ondblclick="editMasterType(${index}, this)">${typeBadge}</td>
                         <td class="py-3 px-4 text-right"><button onclick="deleteScheduleEntry(${index})" class="interactive-btn text-xs text-rose-500 hover:text-white hover:bg-rose-500 px-3 py-1.5 rounded-lg font-semibold transition-colors active:scale-95">Xóa</button></td>
                     </tr>
@@ -1212,7 +1329,7 @@
                 let hasAnyDate = false;
 
                 for (let w = 1; w <= totalWeeks; w++) {
-                    const displayWeekNum = Math.min(4, w); 
+                    const displayWeekNum = w; 
                     if (selectedWeek !== 'all' && !isSummary && parseInt(selectedWeek) !== displayWeekNum) continue;
 
                     hasAnyDate = true;
@@ -1258,10 +1375,12 @@
 
                     let dayEvents = schedule.filter(entry => {
                         let matchDate = false;
-                        if (entry.exactDate) {
+                        if (entry.exactDates && entry.exactDates.length > 0) {
+                            matchDate = entry.exactDates.includes(dateKey);
+                        } else if (entry.exactDate) {
                             matchDate = (entry.exactDate === dateKey);
                         } else {
-                            matchDate = (entry.day === dayName && entry.weeks.includes(displayWeekNum));
+                            matchDate = (entry.day === dayName && entry.weeks && entry.weeks.includes(displayWeekNum));
                         }
                         return matchDate &&
                                (filterTeacher ? entry.teacherId === filterTeacher : true) &&
@@ -1280,17 +1399,24 @@
                             const branchObj = branches.find(b => b.name === entry.branch) || { name: entry.branch, colorClass: "bg-slate-100 text-slate-800" };
                             if (!student || !teacher) return;
 
+                            const attendanceKey = `${entry.id}_${dateKey}`;
+                            const attStatus = attendanceData[attendanceKey];
+
                             if (isSummary) {
+                                const btnP = attStatus === 'present' ? 'bg-emerald-500 text-white' : 'bg-slate-200 text-slate-500 hover:bg-emerald-100 hover:text-emerald-700';
+                                const btnO = attStatus === 'off' ? 'bg-rose-500 text-white' : 'bg-slate-200 text-slate-500 hover:bg-rose-100 hover:text-rose-700';
                                 html += `
                                     <div class="flex items-center justify-between text-[10px] py-1.5 border-b border-slate-50 last:border-0 gap-1 hover:bg-slate-50 rounded px-1 transition-colors">
                                         <span class="font-bold text-slate-700 w-8">${entry.start}</span>
                                         <span class="font-bold text-slate-800 truncate flex-1">${student.name}</span>
-                                        <span class="text-[8px] px-1.5 py-0.5 rounded border ${teacher.colorClass} flex-shrink-0 shadow-sm font-semibold">${teacher.display}</span>
+                                        <div class="flex gap-1 items-center flex-shrink-0">
+                                            <span class="text-[8px] px-1.5 py-0.5 rounded border ${teacher.colorClass} shadow-sm font-semibold mr-1">${teacher.display}</span>
+                                            <button onclick="markAttendance('${entry.id}', '${dateKey}', 'present', '${student.id}')" class="${btnP} w-4 h-4 rounded flex items-center justify-center font-bold transition-colors">✓</button>
+                                            <button onclick="markAttendance('${entry.id}', '${dateKey}', 'off', '${student.id}')" class="${btnO} w-4 h-4 rounded flex items-center justify-center font-bold transition-colors">✗</button>
+                                        </div>
                                     </div>
                                 `;
                             } else {
-                                const attendanceKey = `${entry.id}_${dateKey}`;
-                                const attStatus = attendanceData[attendanceKey];
                                 const btnPresentClass = attStatus === 'present' ? 'bg-emerald-500 text-white shadow-md shadow-emerald-200 transform scale-105 z-10' : 'bg-slate-100 text-slate-600 hover:bg-slate-200';
                                 const btnOffClass = attStatus === 'off' ? 'bg-rose-500 text-white shadow-md shadow-rose-200 transform scale-105 z-10' : 'bg-slate-100 text-slate-600 hover:bg-slate-200';
                                 const makeupTag = entry.type === 'makeup' ? `<span class="absolute -top-2 -right-2 bg-gradient-to-br from-amber-400 to-orange-500 text-white text-[9px] px-2 py-0.5 rounded-full font-bold shadow-md border border-white z-10 animate-pulse">BÙ</span>` : '';
@@ -1392,9 +1518,19 @@
 
             let totalSchedules = 0;
             schedule.forEach(entry => {
-                entry.weeks.forEach(w => {
+                const dates = entry.exactDates || [];
+                dates.forEach(d => {
                     totalSchedules++;
+                    
+                    const year = parseInt(d.split('-')[0]);
+                    const month = parseInt(d.split('-')[1]);
+                    const dateDay = parseInt(d.split('-')[2]);
+                    const firstDateOfMonth = new Date(year, month - 1, 1);
+                    const firstDayOfWeek = firstDateOfMonth.getDay() === 0 ? 6 : firstDateOfMonth.getDay() - 1;
+                    const w = Math.ceil((firstDayOfWeek + dateDay) / 7);
+
                     if (weeklySchedules[w] !== undefined) weeklySchedules[w]++;
+                    else weeklySchedules[w] = 1;
                     
                     if (branchSchedules[entry.branch] !== undefined) {
                         branchSchedules[entry.branch]++;
