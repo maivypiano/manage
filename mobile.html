@@ -1,0 +1,1720 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mai Vy Piano - Quản Lý Lịch Học & Giảng Dạy v3.5 (Animated)</title>
+    <script>
+        if (!/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) && window.innerWidth > 768) {
+            window.location.href = "index.html" + window.location.search;
+        }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        html { font-size: 8.5px !important; } /* Global Micro-Desktop Scaling */
+        body { font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .table-cell-nowrap th, .table-cell-nowrap td { white-space: nowrap; }
+        .week-checkbox:checked + div, .day-checkbox:checked + div { background-color: #4f46e5; color: white; border-color: #4f46e5; box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3), 0 2px 4px -1px rgba(79, 70, 229, 0.2); transform: scale(1.05); }
+        
+        /* Hiệu ứng chuyển động mượt mà cho sidebar và tab */
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-slide-up { animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+        /* Hiệu ứng lấp lánh (Shimmer) cho nút chính */
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .btn-sparkle {
+            position: relative; overflow: hidden;
+        }
+        .btn-sparkle::after {
+            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.4), transparent);
+            transform: skewX(-20deg); animation: shimmer 3s infinite;
+        }
+
+        /* Hiệu ứng Nốt nhạc bay */
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(0.8) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-60px) scale(1.5) rotate(20deg); opacity: 0; }
+        }
+        .music-note {
+            position: fixed; pointer-events: none; z-index: 9999;
+            animation: floatUp 0.8s ease-out forwards;
+            font-size: 1.25rem; font-weight: bold; text-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        /* Toast Animation */
+        @keyframes toastIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes toastOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
+        .toast-enter { animation: toastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .toast-exit { animation: toastOut 0.3s forwards; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 h-screen flex overflow-hidden relative">
+
+    <!-- Overlay for mobile sidebar -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-slate-900/50 z-20 hidden opacity-0 transition-opacity duration-300" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="w-64 bg-white border-r border-slate-200 flex flex-col flex-shrink-0 z-30 shadow-[2px_0_20px_rgba(0,0,0,0.1)] absolute inset-y-0 left-0 transform -translate-x-full transition-transform duration-300 md:relative md:translate-x-0">
+        <div class="h-20 flex items-center gap-3 px-6 border-b border-slate-100 cursor-pointer hover:bg-indigo-50 transition-colors group" onclick="window.location.reload();" title="Tải lại trang">
+            <div class="bg-indigo-600 text-white w-10 h-10 flex items-center justify-center rounded-xl shadow-lg shadow-indigo-200 font-bold text-lg group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+                MV
+            </div>
+            <div class="flex flex-col">
+                <h1 class="text-base font-bold text-slate-900 leading-tight group-hover:text-indigo-700 transition-colors">Mai Vy Piano</h1>
+                <span class="text-[11px] font-semibold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded w-max mt-0.5 border border-emerald-100">Version 3.5</span>
+            </div>
+        </div>
+
+        <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto custom-scrollbar">
+            <button id="nav-sheet1" onclick="switchTab('sheet1', 'Danh Sách Tổng Hợp')" class="nav-btn interactive-btn w-full flex items-center gap-3 px-4 py-3 text-sm rounded-xl transition-all duration-300 bg-indigo-50 text-indigo-700 font-bold hover:-translate-y-0.5 hover:shadow-md active:scale-95">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                Quản Lý Danh Sách
+            </button>
+            <button id="nav-sheet2" onclick="switchTab('sheet2', 'Dữ Liệu Lịch Trực (Master Data)')" class="nav-btn interactive-btn w-full flex items-center gap-3 px-4 py-3 text-sm rounded-xl transition-all duration-300 text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium hover:-translate-y-0.5 active:scale-95">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
+                Master Data
+            </button>
+            <button id="nav-sheet3" onclick="switchTab('sheet3', 'Lịch Trực Quan & Điểm Danh')" class="nav-btn interactive-btn w-full flex items-center gap-3 px-4 py-3 text-sm rounded-xl transition-all duration-300 text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium hover:-translate-y-0.5 active:scale-95">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                Lịch Học & Điểm Danh
+            </button>
+            <button id="nav-sheet4" onclick="switchTab('sheet4', 'Thống Kê Hoạt Động')" class="nav-btn interactive-btn w-full flex items-center gap-3 px-4 py-3 text-sm rounded-xl transition-all duration-300 text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium hover:-translate-y-0.5 active:scale-95">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                Thống Kê Hoạt Động
+            </button>
+        </nav>
+        
+        <div class="p-4 border-t border-slate-100 bg-gradient-to-t from-slate-50 to-white">
+            <div class="bg-indigo-50/80 rounded-xl p-3 border border-indigo-100/50 shadow-inner min-h-[60px] flex items-center">
+                <p id="app-tip" class="text-[10px] text-indigo-800 font-medium leading-relaxed transition-opacity duration-500">
+                    ✨ <span class="font-bold">Mẹo:</span> Nháy đúp vào bất kỳ ô dữ liệu nào trong bảng để sửa nhanh. Hệ thống tự động lưu.
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+        
+        <header class="h-20 bg-white/90 backdrop-blur-md border-b border-slate-200 px-8 flex items-center justify-between flex-shrink-0 z-10 sticky top-0">
+            <div class="animate-slide-up">
+                <h2 id="header-title" class="text-2xl font-bold text-slate-800 tracking-tight">Danh Sách Tổng Hợp</h2>
+                <p class="text-xs text-slate-500 font-medium mt-1">Dữ liệu tự động đồng bộ & lưu trữ</p>
+            </div>
+            
+            <div class="flex items-center gap-4 animate-slide-up" style="animation-delay: 0.1s;">
+                <div class="flex items-center gap-1 bg-slate-50 border border-slate-200 rounded-xl p-1 shadow-inner">
+                    <button id="btn-undo" onclick="undo()" disabled class="interactive-btn text-slate-400 px-3 py-2 rounded-lg text-sm font-semibold cursor-not-allowed transition-all active:scale-95" title="Hoàn tác (Ctrl+Z)">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" /></svg>
+                    </button>
+                    <div class="w-px h-5 bg-slate-200 mx-1"></div>
+                    <button id="btn-redo" onclick="redo()" disabled class="interactive-btn text-slate-400 px-3 py-2 rounded-lg text-sm font-semibold cursor-not-allowed transition-all active:scale-95" title="Làm lại (Ctrl+Shift+Z / Ctrl+Y)">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 10h-10a8 8 0 00-8 8v2M21 10l-6 6m6-6l-6-6" /></svg>
+                    </button>
+                </div>
+
+                <div class="flex items-center gap-3 bg-white border border-indigo-200 px-4 py-2.5 rounded-xl shadow-sm focus-within:ring-2 focus-within:ring-indigo-500 hover:shadow-md transition-all duration-300 group cursor-pointer">
+                    <svg class="w-4 h-4 text-indigo-500 group-hover:animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    <div class="flex flex-col">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider leading-none mb-1">Tháng Lịch</span>
+                        <input type="month" id="month-input" onchange="handleMonthChange()" class="bg-transparent text-sm font-bold text-indigo-800 focus:outline-none cursor-pointer p-0 border-0 leading-none">
+                    </div>
+                </div>
+
+                <button onclick="exportToCSV()" class="interactive-btn flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-900 text-white font-semibold px-5 py-2.5 rounded-xl transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 active:scale-95 text-sm btn-sparkle">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    Xuất File
+                </button>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto w-full custom-scrollbar bg-gradient-to-br from-slate-50 to-slate-100/50 relative">
+        
+        <!-- Top Bar with Hamburger -->
+        <div class="sticky top-0 z-20 bg-white/90 backdrop-blur-md border-b border-slate-200 px-6 py-4 flex items-center shadow-sm">
+            <button onclick="toggleSidebar()" class="p-2 mr-4 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 active:scale-95 transition-all shadow-sm">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </button>
+            <h1 class="font-bold text-slate-800 text-lg uppercase tracking-wider">Quản Lý Mai Vy Piano</h1>
+        </div>
+
+        <div class="p-8 space-y-6">
+            
+            <div id="tab-sheet1" class="tab-content animate-slide-up space-y-6">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_30px_-4px_rgba(0,0,0,0.08)] transition-shadow duration-500 overflow-hidden flex flex-col h-[550px]">
+                        <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-white">
+                            <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">Giáo Viên</h3>
+                            <span class="bg-indigo-50 text-indigo-700 text-xs font-bold px-3 py-1 rounded-full" id="teacher-count"></span>
+                        </div>
+                        <div class="p-4 border-b border-slate-100 bg-slate-50/80">
+                            <form onsubmit="addTeacher(event)" class="flex flex-wrap gap-2">
+                                <input type="text" id="new-teacher-name" placeholder="Tên GV..." required class="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm flex-1 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all">
+                                <input type="text" id="new-teacher-phone" placeholder="SĐT..." class="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm w-28 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
+                                <input type="text" id="new-teacher-bank" placeholder="Số TK..." class="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm w-32 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
+                                <select id="new-teacher-color" class="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 w-32 transition-all"></select>
+                                <button type="submit" class="interactive-btn bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2 rounded-lg text-sm transition-all shadow-md hover:shadow-lg active:scale-95">+</button>
+                            </form>
+                        </div>
+                        <div class="flex-1 overflow-y-auto custom-scrollbar p-0">
+                            <table class="w-full text-left border-collapse table-cell-nowrap">
+                                <thead class="bg-slate-50/90 backdrop-blur-md sticky top-0 z-10 shadow-sm">
+                                    <tr class="text-[11px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-200">
+                                        <th class="py-3 px-4">Mã</th><th class="py-3 px-4">Họ Tên</th><th class="py-3 px-4">SĐT</th><th class="py-3 px-4">STK</th>
+                                        <th class="py-3 px-4">Hiển Thị</th><th class="py-3 px-4 text-right">Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="teachers-table-body" class="divide-y divide-slate-100 text-sm"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_30px_-4px_rgba(0,0,0,0.08)] transition-shadow duration-500 overflow-hidden flex flex-col h-[550px]">
+                        <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-white">
+                            <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">Học Viên</h3>
+                            <span class="bg-sky-50 text-sky-700 text-xs font-bold px-3 py-1 rounded-full" id="student-count"></span>
+                        </div>
+                        <div class="p-4 border-b border-slate-100 bg-slate-50/80">
+                            <form onsubmit="addStudent(event)" class="flex flex-wrap gap-2">
+                                <input type="text" id="new-student-name" placeholder="Tên học viên..." required class="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm flex-1 focus:outline-none focus:ring-2 focus:ring-sky-500 transition-all">
+                                <input type="text" id="new-student-phone" placeholder="SĐT..." class="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm w-32 focus:outline-none focus:ring-2 focus:ring-sky-500 transition-all">
+                                <input type="number" id="new-student-lessons" placeholder="Số buổi..." class="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm w-24 focus:outline-none focus:ring-2 focus:ring-sky-500 transition-all">
+                                <button type="submit" class="interactive-btn bg-sky-600 hover:bg-sky-700 text-white font-bold px-4 py-2 rounded-lg text-sm transition-all shadow-md hover:shadow-lg active:scale-95">+</button>
+                            </form>
+                        </div>
+                        <div class="flex-1 overflow-y-auto custom-scrollbar p-0">
+                            <table class="w-full text-left border-collapse table-cell-nowrap">
+                                <thead class="bg-slate-50/90 backdrop-blur-md sticky top-0 z-10 shadow-sm">
+                                    <tr class="text-[11px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-200">
+                                        <th class="py-3 px-4">Học Viên</th>
+                                        <th class="py-3 px-4">SĐT</th>
+                                        <th class="py-3 px-4">Số Buổi ĐK</th>
+                                        <th class="py-3 px-4">Tiến Độ</th>
+                                        <th class="py-3 px-4">Trạng Thái</th>
+                                        <th class="py-3 px-4 text-right">Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="students-table-body" class="divide-y divide-slate-100 text-sm"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] overflow-hidden flex flex-col w-full lg:w-1/2 mx-auto">
+                    <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-white">
+                        <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">Cơ Sở Đào Tạo</h3>
+                    </div>
+                    <div class="p-4 border-b border-slate-100 bg-slate-50/80">
+                        <form onsubmit="addBranch(event)" class="flex flex-wrap gap-2">
+                            <input type="text" id="new-branch-name" placeholder="Tên cơ sở mới..." required class="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm flex-1 focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all">
+                            <select id="new-branch-color" class="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm w-48 focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all"></select>
+                            <button type="submit" class="interactive-btn bg-amber-600 hover:bg-amber-700 text-white font-bold px-4 py-2 rounded-lg text-sm transition-all shadow-md active:scale-95">+</button>
+                        </form>
+                    </div>
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="w-full text-left border-collapse table-cell-nowrap">
+                            <thead class="bg-slate-50/90 backdrop-blur-md">
+                                <tr class="text-[11px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-200">
+                                    <th class="py-3 px-4">Tên Cơ Sở</th><th class="py-3 px-4">Màu Hiển Thị</th><th class="py-3 px-4 text-right">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="branches-table-body" class="divide-y divide-slate-100 text-sm"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-sheet2" class="tab-content hidden animate-slide-up space-y-6">
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-lg shadow-indigo-100/50 p-6 relative group z-50">
+                    <div class="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none z-0">
+                        <div class="absolute -top-10 -right-10 w-40 h-40 bg-indigo-50 rounded-full opacity-50 group-hover:scale-125 transition-transform duration-700"></div>
+                    </div>
+                    <h3 class="font-bold text-slate-800 text-lg mb-5 flex items-center gap-2 relative z-10">
+                        <span class="bg-indigo-100 text-indigo-600 p-2 rounded-xl"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg></span>
+                        Phân Bổ Lịch Học Mới
+                    </h3>
+                    <form onsubmit="addScheduleEntry(event)" class="grid grid-cols-1 md:grid-cols-4 xl:grid-cols-10 gap-4 items-end relative z-10">
+                        <div class="xl:col-span-2">
+                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Học Viên</label>
+                            <select id="form-student" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"></select>
+                        </div>
+                        <div class="xl:col-span-2">
+                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Giáo Viên</label>
+                            <select id="form-teacher" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"></select>
+                        </div>
+                        <div class="xl:col-span-2">
+                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Cơ Sở</label>
+                            <select id="form-branch" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"></select>
+                        </div>
+                        <div class="xl:col-span-2 flex gap-2">
+                            <div class="w-1/2">
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Bắt đầu</label>
+                                <input type="time" id="form-start" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-2.5 text-sm font-bold focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
+                            </div>
+                            <div class="w-1/2">
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Kết thúc</label>
+                                <input type="time" id="form-end" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-2.5 text-sm font-bold focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
+                            </div>
+                        </div>
+                        <div class="xl:col-span-2">
+                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Loại Lịch</label>
+                            <select id="form-type" class="w-full bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all">
+                                <option value="main">Cố định</option>
+                                <option value="makeup">Bù / Tạm</option>
+                            </select>
+                        </div>
+
+                        <div class="xl:col-span-7 bg-white border border-slate-200 p-2.5 rounded-xl shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] transition-all hover:border-indigo-300 relative">
+                            <label class="block text-[10px] font-bold text-indigo-500 uppercase tracking-wider mb-2 pl-1">Chọn Ngày Học</label>
+                            <button type="button" onclick="document.getElementById('date-picker-popover').classList.toggle('hidden')" id="btn-date-picker" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-700 hover:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all flex justify-between items-center">
+                                <span id="date-picker-text">Chọn các ngày trong tháng...</span>
+                                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </button>
+                            <div id="date-picker-popover" class="hidden absolute top-full left-0 mt-2 w-full sm:w-80 bg-white border border-slate-200 rounded-2xl shadow-xl z-50 p-4">
+                                <div class="text-center font-bold text-indigo-700 mb-3 border-b border-slate-100 pb-2 current-month-display-picker"></div>
+                                <div class="grid grid-cols-7 gap-1 mb-2">
+                                    <div class="text-center text-[10px] font-bold text-slate-400">T2</div>
+                                    <div class="text-center text-[10px] font-bold text-slate-400">T3</div>
+                                    <div class="text-center text-[10px] font-bold text-slate-400">T4</div>
+                                    <div class="text-center text-[10px] font-bold text-slate-400">T5</div>
+                                    <div class="text-center text-[10px] font-bold text-slate-400">T6</div>
+                                    <div class="text-center text-[10px] font-bold text-slate-400">T7</div>
+                                    <div class="text-center text-[10px] font-bold text-rose-400">CN</div>
+                                </div>
+                                <div id="form-dates-grid" class="grid grid-cols-7 gap-1">
+                                    <!-- Calendar days will be generated here -->
+                                </div>
+                                <div class="mt-4 flex justify-between items-center">
+                                    <button type="button" onclick="document.querySelectorAll('input[name=`form-exact-dates`]:checked').forEach(cb => cb.checked = false); updateDatePickerText();" class="text-[11px] text-slate-400 hover:text-slate-600 font-medium px-2">Bỏ chọn hết</button>
+                                    <button type="button" onclick="document.getElementById('date-picker-popover').classList.add('hidden')" class="px-4 py-1.5 bg-indigo-50 text-indigo-700 font-bold text-xs rounded-lg hover:bg-indigo-100 transition-colors">Xong</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="xl:col-span-3 flex justify-end h-full">
+                            <button type="submit" class="interactive-btn btn-sparkle w-full h-full min-h-[48px] bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-xl text-sm transition-all shadow-lg shadow-indigo-300 hover:shadow-indigo-400 hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+                                Đưa Vào Lịch
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+                    <div class="p-5 border-b border-slate-100 bg-white flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div class="flex items-center gap-2">
+                            <h3 class="font-bold text-slate-800 text-lg">Cơ Sở Dữ Liệu Lịch</h3>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                            <div class="relative flex-1 md:flex-initial group">
+                                <svg class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 group-focus-within:text-indigo-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                                <input type="text" id="search-master" oninput="filterMasterTable()" placeholder="Tìm học viên..." class="w-full md:w-56 pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
+                            </div>
+                            <select id="filter-teacher-master" onchange="filterMasterTable()" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all cursor-pointer"><option value="">Tất cả GV</option></select>
+                            <select id="filter-day-master" onchange="filterMasterTable()" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all cursor-pointer">
+                                <option value="">Tất cả Thứ</option><option value="Thứ Hai">Thứ Hai</option><option value="Thứ Ba">Thứ Ba</option><option value="Thứ Tư">Thứ Tư</option><option value="Thứ Năm">Thứ Năm</option><option value="Thứ Sáu">Thứ Sáu</option><option value="Thứ Bảy">Thứ Bảy</option><option value="Chủ Nhật">Chủ Nhật</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="flex-1">
+                        <div class="overflow-x-auto max-h-[600px] custom-scrollbar">
+                            <table class="w-full text-left border-collapse table-cell-nowrap">
+                                <thead class="bg-slate-50/90 backdrop-blur-md sticky top-0 z-10">
+                                    <tr class="text-[11px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-200">
+                                        <th class="py-3 px-4">#</th>
+                                        <th class="py-3 px-4">Học Viên</th>
+                                        <th class="py-3 px-4">Giáo Viên</th>
+                                        <th class="py-3 px-4">Thời Gian</th>
+                                        <th class="py-3 px-4">Cơ Sở</th>
+                                        <th class="py-3 px-4">Ngày Áp Dụng</th>
+                                        <th class="py-3 px-4">Loại</th>
+                                        <th class="py-3 px-4 text-right">Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="master-table-body" class="divide-y divide-slate-100 text-sm"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-sheet3" class="tab-content hidden animate-slide-up space-y-6">
+                <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">Bảng Lịch & Điểm Danh</h3>
+                        <p class="text-sm text-slate-500 mt-1">Tháng làm việc hiện tại: <span class="font-bold text-indigo-600 current-month-display"></span></p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto bg-slate-50 p-1.5 rounded-2xl border border-slate-200">
+                        <div class="flex items-center gap-2 px-2">
+                            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
+                        </div>
+                        <select id="view-filter-week" onchange="renderWeeklySchedule()" class="bg-white font-bold border-transparent rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm text-indigo-700 transition-all cursor-pointer">
+                            <option value="all" selected>Cả Tháng</option>
+                            <option value="summary">Xem Tổng Quát</option>
+                            <option value="1">Tuần 1</option>
+                            <option value="2">Tuần 2</option>
+                            <option value="3">Tuần 3</option>
+                            <option value="4">Tuần 4</option>
+                            <option value="5">Tuần 5</option>
+                        </select>
+                        <select id="view-filter-teacher" onchange="renderWeeklySchedule()" class="bg-white border-transparent rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm transition-all cursor-pointer"></select>
+                        <select id="view-filter-branch" onchange="renderWeeklySchedule()" class="bg-white border-transparent rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm transition-all cursor-pointer"></select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 xl:grid-cols-7 gap-4 items-stretch">
+                    <div id="day-col-Thứ Hai" class="bg-slate-100/50 rounded-2xl p-2 flex flex-col min-h-[800px] border border-slate-200/60 shadow-sm"></div>
+                    <div id="day-col-Thứ Ba" class="bg-slate-100/50 rounded-2xl p-2 flex flex-col min-h-[800px] border border-slate-200/60 shadow-sm"></div>
+                    <div id="day-col-Thứ Tư" class="bg-slate-100/50 rounded-2xl p-2 flex flex-col min-h-[800px] border border-slate-200/60 shadow-sm"></div>
+                    <div id="day-col-Thứ Năm" class="bg-slate-100/50 rounded-2xl p-2 flex flex-col min-h-[800px] border border-slate-200/60 shadow-sm"></div>
+                    <div id="day-col-Thứ Sáu" class="bg-slate-100/50 rounded-2xl p-2 flex flex-col min-h-[800px] border border-slate-200/60 shadow-sm"></div>
+                    <div id="day-col-Thứ Bảy" class="bg-slate-100/50 rounded-2xl p-2 flex flex-col min-h-[800px] border border-slate-200/60 shadow-sm"></div>
+                    <div id="day-col-Chủ Nhật" class="bg-rose-50/30 rounded-2xl p-2 flex flex-col min-h-[800px] border border-rose-100 shadow-sm"></div>
+                </div>
+            </div>
+
+            <div id="tab-sheet4" class="tab-content hidden animate-slide-up space-y-6">
+                <div class="bg-gradient-to-r from-indigo-600 to-violet-600 text-white p-8 rounded-3xl shadow-[0_10px_40px_-10px_rgba(79,70,229,0.5)] relative overflow-hidden flex items-center justify-between group">
+                    <div class="relative z-10">
+                        <h2 class="text-3xl font-bold mb-2 flex items-center gap-3">
+                            Thống Kê Hoạt Động Tháng <span class="bg-white/20 px-3 py-1 rounded-lg backdrop-blur-sm current-month-display"></span>
+                        </h2>
+                        <p class="text-indigo-100 text-sm font-medium">Hệ thống tự động tính toán và trực quan hóa dữ liệu từ lịch dạy và điểm danh.</p>
+                    </div>
+                    <svg class="w-32 h-32 text-white/10 absolute -right-4 -bottom-4 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-700" fill="currentColor" viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+                </div>
+                
+                <div class="flex justify-end mt-4">
+                    <div class="flex items-center gap-3 bg-white px-4 py-2 rounded-xl border border-slate-200 shadow-sm">
+                        <span class="text-xs font-bold text-slate-500 uppercase">Góc nhìn:</span>
+                        <select id="chart-filter" onchange="toggleCharts()" class="bg-slate-50 text-indigo-700 font-bold border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all cursor-pointer">
+                            <option value="all">Tất cả Biểu đồ</option>
+                            <option value="pie">Tỷ lệ Điểm danh (Tròn)</option>
+                            <option value="line">Xu hướng Ca dạy (Đường)</option>
+                            <option value="bar">Phân bổ Cơ sở (Cột)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="chart-container" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div id="wrap-chart-pie" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow flex flex-col items-center">
+                        <h3 class="font-bold text-slate-800 mb-1">Tỷ lệ Trạng thái Lớp học</h3>
+                        <p class="text-[10px] text-slate-500 mb-4 text-center">Thể hiện % Lên lớp, Nghỉ và Chưa điểm danh dựa trên tổng số ca trong tháng.</p>
+                        <div class="w-full max-w-[250px] aspect-square relative flex-1">
+                            <canvas id="pieChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div id="wrap-chart-line" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow flex flex-col items-center lg:col-span-2">
+                        <h3 class="font-bold text-slate-800 mb-1">Xu hướng Ca dạy theo Tuần</h3>
+                        <p class="text-[10px] text-slate-500 mb-4 text-center">Theo dõi sự biến động số lượng ca dạy được phân bổ qua các tuần trong tháng.</p>
+                        <div class="w-full h-full min-h-[250px] relative">
+                            <canvas id="lineChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div id="wrap-chart-bar" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow flex flex-col items-center lg:col-span-3">
+                        <h3 class="font-bold text-slate-800 mb-1">Mật độ Ca dạy tại các Cơ sở</h3>
+                        <p class="text-[10px] text-slate-500 mb-4 text-center">So sánh khối lượng công việc (tổng số ca dạy) giữa các chi nhánh của trung tâm trong tháng.</p>
+                        <div class="w-full h-full min-h-[300px] relative">
+                            <canvas id="barChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden w-full lg:w-2/3 mx-auto mt-8 hover:shadow-lg transition-shadow duration-500">
+                    <div class="p-5 border-b border-slate-100 bg-white flex justify-between items-center">
+                        <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">Chi Tiết Số Ca Đã Dạy Của Giáo Viên</h3>
+                        <span class="text-xs bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-md border border-emerald-100 font-bold">Chỉ tính ca "Lên lớp"</span>
+                    </div>
+                    <div class="p-0">
+                        <table class="w-full text-left border-collapse table-cell-nowrap">
+                            <thead class="bg-slate-50">
+                                <tr class="text-xs font-bold text-slate-500 uppercase tracking-wider border-b border-slate-200">
+                                    <th class="py-4 px-6 w-1/4">Mã GV</th>
+                                    <th class="py-4 px-6 w-1/2">Giáo Viên</th>
+                                    <th class="py-4 px-6 text-right w-1/4">Số Ca Đã Dạy</th>
+                                </tr>
+                            </thead>
+                            <tbody id="teacher-stats-body" class="divide-y divide-slate-100 text-sm"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            </div>
+    </main>
+    </div>
+
+    <div id="toast-container" class="fixed bottom-6 right-6 z-[9999] flex flex-col gap-3"></div>
+
+    <script>
+        // === TOGGLE SIDEBAR ===
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            
+            if (sidebar.classList.contains('-translate-x-full')) {
+                // Mở sidebar
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+            } else {
+                // Đóng sidebar
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('opacity-0');
+                setTimeout(() => overlay.classList.add('hidden'), 300);
+            }
+        }
+
+        // Close sidebar when clicking a tab menu item
+        function switchTab(tabId, element) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('tab-sheet' + tabId).classList.remove('hidden');
+            
+            document.querySelectorAll('.menu-item').forEach(el => {
+                el.classList.remove('bg-indigo-50', 'text-indigo-700', 'font-bold', 'border-r-4', 'border-indigo-600');
+                el.classList.add('text-slate-600', 'hover:bg-slate-50');
+            });
+            element.classList.remove('text-slate-600', 'hover:bg-slate-50');
+            element.classList.add('bg-indigo-50', 'text-indigo-700', 'font-bold', 'border-r-4', 'border-indigo-600');
+            
+            if(tabId === 3 || tabId === 4) { renderWeeklySchedule(); }
+            if(tabId === 4) { toggleCharts(); }
+            
+            // Tự động đóng sidebar sau khi chọn menu trên mobile
+            if (!document.getElementById('sidebar').classList.contains('-translate-x-full')) {
+                toggleSidebar();
+            }
+        }
+
+        // === TOAST & ANIMATIONS MỚI ===
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const icon = type === 'success' ? '✅' : (type === 'error' ? '❌' : 'ℹ️');
+            const bgColor = type === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 
+                           (type === 'error' ? 'bg-rose-50 text-rose-800 border-rose-200' : 'bg-indigo-50 text-indigo-800 border-indigo-200');
+            
+            toast.className = `flex items-center gap-3 px-4 py-3 rounded-xl border shadow-lg ${bgColor} toast-enter font-semibold text-sm min-w-[200px]`;
+            toast.innerHTML = `<span class="text-lg">${icon}</span> <span>${message}</span>`;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.remove('toast-enter');
+                toast.classList.add('toast-exit');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function spawnNote(e) {
+            const note = document.createElement('div');
+            note.className = 'music-note';
+            const notes = ['🎵', '🎶', '🎼', '🎹', '✨'];
+            note.textContent = notes[Math.floor(Math.random() * notes.length)];
+            note.style.left = (e.clientX - 10) + 'px';
+            note.style.top = (e.clientY - 10) + 'px';
+            note.style.color = `hsl(${Math.random() * 360}, 70%, 55%)`;
+            document.body.appendChild(note);
+            setTimeout(() => note.remove(), 800);
+        }
+
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.interactive-btn') || e.target.closest('button')) {
+                spawnNote(e);
+            }
+        });
+
+        // === HỆ THỐNG MÀU ===
+        const TAILWIND_COLORS = [
+            { label: "Mặc định (Slate)", class: "bg-slate-100 text-slate-800 border-slate-300" },
+            { label: "Đỏ (Red)", class: "bg-red-100 text-red-800 border-red-300" },
+            { label: "Cam (Orange)", class: "bg-orange-100 text-orange-800 border-orange-300" },
+            { label: "Hổ phách (Amber)", class: "bg-amber-100 text-amber-800 border-amber-300" },
+            { label: "Vàng (Yellow)", class: "bg-yellow-100 text-yellow-800 border-yellow-300" },
+            { label: "Chanh (Lime)", class: "bg-lime-100 text-lime-800 border-lime-300" },
+            { label: "Xanh lục (Green)", class: "bg-green-100 text-green-800 border-green-300" },
+            { label: "Lục bảo (Emerald)", class: "bg-emerald-100 text-emerald-800 border-emerald-300" },
+            { label: "Mòng kết (Teal)", class: "bg-teal-100 text-teal-800 border-teal-300" },
+            { label: "Xanh lơ (Cyan)", class: "bg-cyan-100 text-cyan-800 border-cyan-300" },
+            { label: "Da trời (Sky)", class: "bg-sky-100 text-sky-800 border-sky-300" },
+            { label: "Xanh dương (Blue)", class: "bg-blue-100 text-blue-800 border-blue-300" },
+            { label: "Chàm (Indigo)", class: "bg-indigo-100 text-indigo-800 border-indigo-300" },
+            { label: "Tím (Violet)", class: "bg-violet-100 text-violet-800 border-violet-300" },
+            { label: "Cánh sen (Fuchsia)", class: "bg-fuchsia-100 text-fuchsia-800 border-fuchsia-300" },
+            { label: "Hồng (Rose)", class: "bg-rose-100 text-rose-800 border-rose-300" }
+        ];
+
+        // === KHỞI TẠO DỮ LIỆU ===
+        const DEFAULT_TEACHERS = [
+            { id: "T1", name: "Minh Phạm", display: "Minh", phone: "0339901506", email: "", bank: "", colorClass: "bg-yellow-100 text-yellow-800 border-yellow-300" }
+        ];
+        const DEFAULT_STUDENTS = [
+            { id: "S1", name: "Chị Hằng", phone: "", lessons: 24, completedLessons: 0 },
+            { id: "S2", name: "Phúc An", phone: "", lessons: 24, completedLessons: 10 }
+        ];
+        const DEFAULT_BRANCHES = [
+            { id: "B1", name: "Cơ sở 1", colorClass: "bg-slate-100 text-slate-800 border-slate-300" }
+        ];
+        
+        const API_URL = "https://script.google.com/macros/s/AKfycbxBFAdraeIdy2LostAxGXMR9RIICdeFH52ETbPJjTIiagre63SPRhPV9amcJluAI1EcmQ/exec";
+
+        let teachers = DEFAULT_TEACHERS;
+        let students = DEFAULT_STUDENTS;
+        let branches = DEFAULT_BRANCHES;
+        let monthlyData = {}; 
+        let currentMonth = ""; 
+        let schedule = []; 
+        let attendanceData = {}; 
+
+        let undoStack = [];
+        let redoStack = [];
+        const MAX_HISTORY = 25;
+
+        // === BIẾN TOÀN CỤC CHO BIỂU ĐỒ ===
+        let myPieChart = null;
+        let myLineChart = null;
+        let myBarChart = null;
+
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                if (e.key === 'z' || e.key === 'Z') {
+                    if (e.shiftKey) { e.preventDefault(); redo(); } 
+                    else { e.preventDefault(); undo(); }
+                } else if (e.key === 'y' || e.key === 'Y') {
+                    e.preventDefault(); redo();
+                }
+            }
+        });
+
+        window.onload = async function() {
+            if (typeof populateColors === 'function') populateColors();
+            
+            const now = new Date();
+            const realCurrentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+            currentMonth = realCurrentMonth; 
+
+            try {
+                const response = await fetch(API_URL + "?t=" + new Date().getTime());
+                const data = await response.json();
+                
+                if (data && typeof data === 'object') {
+                    if (data.teachers?.length > 0) teachers = data.teachers;
+                    if (data.students?.length > 0) students = data.students;
+                    if (data.branches?.length > 0) branches = data.branches;
+                    if (data.monthlyData && Object.keys(data.monthlyData).length > 0) {
+                        monthlyData = data.monthlyData;
+                    }
+                }
+            } catch (error) { console.log("Lỗi mạng, sử dụng dữ liệu cục bộ."); }
+            
+            if (!monthlyData[currentMonth]) {
+                monthlyData[currentMonth] = { schedule: [], attendanceData: {} };
+            }
+            
+            document.getElementById('month-input').value = currentMonth;
+            syncCurrentMonthPointers();
+            initApp();
+            updateUndoRedoUI();
+            
+            switchTab('sheet1', 'Danh Sách Tổng Hợp');
+        };
+
+        function captureState() {
+            return {
+                teachers: JSON.parse(JSON.stringify(teachers)),
+                students: JSON.parse(JSON.stringify(students)),
+                branches: JSON.parse(JSON.stringify(branches)),
+                monthlyData: JSON.parse(JSON.stringify(monthlyData)),
+                currentMonth: currentMonth
+            };
+        }
+
+        function saveStateToHistory() {
+            undoStack.push(captureState());
+            if (undoStack.length > MAX_HISTORY) undoStack.shift();
+            redoStack = []; 
+            updateUndoRedoUI();
+        }
+
+        window.undo = function() {
+            if (undoStack.length === 0) { showToast("Không có gì để Undo", "info"); return; }
+            redoStack.push(captureState());
+            applyState(undoStack.pop());
+            saveData();
+            initApp();
+            updateUndoRedoUI();
+            if (!document.getElementById('tab-sheet4').classList.contains('hidden') && typeof renderCharts === 'function') renderCharts();
+            showToast("Đã hoàn tác (Undo)");
+        }
+
+        window.redo = function() {
+            if (redoStack.length === 0) { showToast("Không có gì để Redo", "info"); return; }
+            undoStack.push(captureState());
+            applyState(redoStack.pop());
+            saveData();
+            initApp();
+            updateUndoRedoUI();
+            if (!document.getElementById('tab-sheet4').classList.contains('hidden') && typeof renderCharts === 'function') renderCharts();
+            showToast("Đã làm lại (Redo)");
+        }
+
+        function applyState(state) {
+            teachers = state.teachers;
+            students = state.students;
+            branches = state.branches;
+            monthlyData = state.monthlyData;
+            currentMonth = state.currentMonth;
+            document.getElementById('month-input').value = currentMonth;
+            syncCurrentMonthPointers();
+        }
+
+        function updateUndoRedoUI() {
+            const undoBtn = document.getElementById('btn-undo');
+            const redoBtn = document.getElementById('btn-redo');
+            if (undoBtn) {
+                undoBtn.disabled = undoStack.length === 0;
+                undoBtn.className = undoStack.length === 0 ? 
+                    "interactive-btn text-slate-300 px-3 py-2 rounded-lg text-sm font-semibold cursor-not-allowed transition-all active:scale-95" : 
+                    "interactive-btn text-slate-700 hover:text-indigo-600 hover:bg-white hover:shadow px-3 py-2 rounded-lg text-sm font-semibold cursor-pointer transition-all active:scale-95";
+            }
+            if (redoBtn) {
+                redoBtn.disabled = redoStack.length === 0;
+                redoBtn.className = redoStack.length === 0 ? 
+                    "interactive-btn text-slate-300 px-3 py-2 rounded-lg text-sm font-semibold cursor-not-allowed transition-all active:scale-95" : 
+                    "interactive-btn text-slate-700 hover:text-indigo-600 hover:bg-white hover:shadow px-3 py-2 rounded-lg text-sm font-semibold cursor-pointer transition-all active:scale-95";
+            }
+        }
+
+        function populateColors() {
+            const sels = ['new-teacher-color', 'new-branch-color'];
+            sels.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.innerHTML = TAILWIND_COLORS.map(c => `<option value="${c.class}">${c.label}</option>`).join('');
+            });
+        }
+
+        function syncCurrentMonthPointers() {
+            schedule = monthlyData[currentMonth].schedule;
+            attendanceData = monthlyData[currentMonth].attendanceData;
+            
+            let migrated = false;
+            schedule.forEach(entry => {
+                if (entry.exactDates) return; 
+
+                if (entry.exactDate) {
+                    entry.exactDates = [entry.exactDate];
+                    delete entry.exactDate;
+                    migrated = true;
+                } else if (entry.day && entry.weeks) {
+                    const parts = currentMonth.split('-'); 
+                    const year = parseInt(parts[0]); 
+                    const month = parseInt(parts[1]);
+                    const daysInMonth = new Date(year, month, 0).getDate();
+                    const daysName = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
+                    const firstDateOfMonth = new Date(year, month - 1, 1);
+                    const firstDayOfWeek = firstDateOfMonth.getDay() === 0 ? 6 : firstDateOfMonth.getDay() - 1;
+                    
+                    let newExactDates = [];
+                    for(let i=1; i<=daysInMonth; i++) {
+                        const dateObj = new Date(year, month - 1, i);
+                        const dayName = daysName[dateObj.getDay()];
+                        if (dayName === entry.day) {
+                            const dateDay = i;
+                            const w = Math.ceil((firstDayOfWeek + dateDay) / 7);
+                            if (entry.weeks.includes(w)) {
+                                const dateStr = `${year}-${String(month).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
+                                newExactDates.push(dateStr);
+                            }
+                        }
+                    }
+                    entry.exactDates = newExactDates;
+                    delete entry.day;
+                    delete entry.weeks;
+                    migrated = true;
+                }
+            });
+            if(migrated && typeof saveData === 'function') { saveData(); }
+            
+            document.querySelectorAll('.current-month-display').forEach(el => {
+                const parts = currentMonth.split('-');
+                el.textContent = `${parts[1]}/${parts[0]}`;
+            });
+            renderDateSelector();
+        }
+
+        function updateDatePickerText() {
+            const count = document.querySelectorAll('input[name="form-exact-dates"]:checked').length;
+            const textEl = document.getElementById('date-picker-text');
+            if(textEl) textEl.textContent = count > 0 ? `Đã chọn ${count} ngày` : 'Chọn các ngày trong tháng...';
+        }
+
+        function renderDateSelector() {
+            const container = document.getElementById('form-dates-grid');
+            if(!container || !currentMonth) return;
+            const parts = currentMonth.split('-'); 
+            const year = parseInt(parts[0]); 
+            const month = parseInt(parts[1]);
+            const daysInMonth = new Date(year, month, 0).getDate();
+            
+            const firstDateOfMonth = new Date(year, month - 1, 1);
+            let firstDayOfWeek = firstDateOfMonth.getDay(); 
+            firstDayOfWeek = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
+            
+            document.querySelectorAll('.current-month-display-picker').forEach(el => el.textContent = `Tháng ${month}/${year}`);
+
+            let html = '';
+            for(let i=0; i<firstDayOfWeek; i++) {
+                html += `<div></div>`;
+            }
+
+            for(let i=1; i<=daysInMonth; i++) {
+                const dateStr = `${year}-${String(month).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
+                const isSun = new Date(year, month - 1, i).getDay() === 0;
+                
+                html += `
+                    <label class="cursor-pointer relative flex items-center justify-center aspect-square">
+                        <input type="checkbox" name="form-exact-dates" value="${dateStr}" class="peer sr-only day-checkbox" onchange="updateDatePickerText()">
+                        <div class="w-full h-full rounded-md border border-slate-100 bg-slate-50 flex items-center justify-center text-[12px] font-bold ${isSun ? 'text-rose-500' : 'text-slate-600'} transition-all duration-200 peer-hover:bg-slate-200">
+                            ${i}
+                        </div>
+                    </label>
+                `;
+            }
+            container.innerHTML = html;
+            updateDatePickerText();
+        }
+
+        function handleMonthChange() {
+            const newMonth = document.getElementById('month-input').value;
+            if(!newMonth) return;
+            saveStateToHistory(); 
+            monthlyData[currentMonth] = { schedule: [...schedule], attendanceData: {...attendanceData} };
+            currentMonth = newMonth;
+            if (!monthlyData[currentMonth]) {
+                monthlyData[currentMonth] = { schedule: [], attendanceData: {} };
+            }
+            syncCurrentMonthPointers();
+            saveData();
+            initApp();
+            
+            if (!document.getElementById('tab-sheet4').classList.contains('hidden') && typeof renderCharts === 'function') {
+                renderCharts();
+            }
+            
+            showToast("Đã đổi sang tháng " + currentMonth);
+        }
+
+        async function saveData() {
+            monthlyData[currentMonth] = { schedule, attendanceData };
+            const payload = { teachers, students, branches, monthlyData };
+            try {
+                await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
+            } catch (error) {}
+        }
+
+        function initApp() {
+            renderTeachers(); renderStudents(); renderBranches();
+            populateDropdowns(); renderMasterTable(); renderWeeklySchedule(); renderTeacherStats();
+        }
+
+        function switchTab(tabId, title) {
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.classList.add('hidden');
+                el.classList.remove('animate-slide-up');
+            });
+            
+            const targetTab = document.getElementById('tab-' + tabId);
+            targetTab.classList.remove('hidden');
+            void targetTab.offsetWidth;
+            targetTab.classList.add('animate-slide-up');
+
+            if (title) document.getElementById('header-title').textContent = title;
+
+            document.querySelectorAll('.nav-btn').forEach(el => {
+                el.classList.remove('bg-indigo-50', 'text-indigo-700', 'font-bold', 'shadow-md');
+                el.classList.add('text-slate-600', 'hover:bg-slate-50', 'font-medium');
+            });
+            const activeBtn = document.getElementById('nav-' + tabId);
+            if (activeBtn) {
+                activeBtn.classList.remove('text-slate-600', 'hover:bg-slate-50', 'font-medium');
+                activeBtn.classList.add('bg-indigo-50', 'text-indigo-700', 'font-bold', 'shadow-md');
+            }
+
+            if(tabId === 'sheet4') {
+                renderTeacherStats();
+                if (typeof renderCharts === 'function') renderCharts(); 
+            }
+        }
+
+        window.editField = function(entityArrayName, id, field, td) {
+            if (td.getAttribute('data-editing')) return;
+            let array = entityArrayName === 'teachers' ? teachers : (entityArrayName === 'students' ? students : branches);
+            const item = array.find(x => x.id === id);
+            if (!item) return;
+            td.setAttribute('data-editing', 'true');
+            const type = (field === 'lessons' || field === 'completedLessons') ? 'number' : 'text';
+            td.innerHTML = `<input type="${type}" value="${item[field] || '0'}" class="w-full min-w-[80px] bg-white border-2 border-indigo-400 rounded-lg px-2 py-1.5 text-xs focus:outline-none shadow-[0_0_10px_rgba(79,70,229,0.2)]" onblur="saveField('${entityArrayName}', '${id}', '${field}', this.value)" onkeydown="if(event.key==='Enter') this.blur();">`;
+            td.querySelector('input').focus();
+        };
+
+        window.saveField = function(entityArrayName, id, field, newValue) {
+            let array = entityArrayName === 'teachers' ? teachers : (entityArrayName === 'students' ? students : branches);
+            const item = array.find(x => x.id === id);
+            if (item) {
+                saveStateToHistory();
+                if (entityArrayName === 'branches' && field === 'name') {
+                    const oldName = item.name;
+                    const newName = newValue.trim();
+                    if(newName && newName !== oldName) {
+                        item.name = newName;
+                        Object.values(monthlyData).forEach(m => {
+                            m.schedule.forEach(s => { if (s.branch === oldName) s.branch = newName; }); 
+                        });
+                    }
+                } else if (field === 'lessons' || field === 'completedLessons') {
+                    item[field] = newValue ? parseInt(newValue) : 0;
+                } else {
+                    item[field] = newValue.trim();
+                }
+                saveData();
+            }
+            initApp();
+            showToast("Đã lưu chỉnh sửa");
+        };
+
+        window.editTeacherId = function(id, td) {
+            if (td.getAttribute('data-editing')) return;
+            td.setAttribute('data-editing', 'true');
+            td.innerHTML = `<input type="text" value="${id}" class="w-16 bg-white border-2 border-indigo-400 rounded-lg px-1.5 py-1 text-xs font-bold focus:outline-none shadow-[0_0_10px_rgba(79,70,229,0.2)]" onblur="saveTeacherId('${id}', this.value)" onkeydown="if(event.key==='Enter') this.blur();">`;
+            td.querySelector('input').focus();
+        };
+        window.saveTeacherId = function(oldId, newId) {
+            newId = newId.trim();
+            if (!newId || newId === oldId) { initApp(); return; }
+            if (teachers.some(t => t.id === newId)) { showToast('Mã Giáo Viên này đã tồn tại!', 'error'); initApp(); return; }
+            const t = teachers.find(t => t.id === oldId);
+            if (t) {
+                saveStateToHistory(); 
+                t.id = newId;
+                Object.values(monthlyData).forEach(m => {
+                    m.schedule.forEach(s => { if (s.teacherId === oldId) s.teacherId = newId; });
+                });
+                saveData();
+                showToast("Đã cập nhật Mã GV");
+            }
+            initApp();
+        };
+
+        window.editTeacherDisplay = function(id, td) {
+            if (td.getAttribute('data-editing')) return;
+            const teacher = teachers.find(t => t.id === id);
+            if (!teacher) return;
+            td.setAttribute('data-editing', 'true');
+            let options = TAILWIND_COLORS.map(c => `<option value="${c.class}" ${c.class === teacher.colorClass ? 'selected' : ''}>${c.label}</option>`).join('');
+            td.innerHTML = `
+                <div class="flex flex-col gap-1.5 w-max bg-white p-2.5 border-2 border-indigo-400 rounded-xl shadow-[0_10px_25px_rgba(79,70,229,0.15)] z-10 relative animate-slide-up" style="animation-duration:0.2s">
+                    <input type="text" id="edit-t-disp-${id}" value="${teacher.display}" class="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1.5 text-xs">
+                    <select id="edit-t-color-${id}" class="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1.5 text-xs">${options}</select>
+                    <div class="flex justify-end mt-1"><button onclick="saveTeacherDisplay('${id}')" class="interactive-btn bg-indigo-600 text-white px-4 py-1.5 text-xs rounded-lg hover:bg-indigo-700 font-semibold active:scale-95">Lưu</button></div>
+                </div>
+            `;
+        };
+        window.saveTeacherDisplay = function(id) {
+            const teacher = teachers.find(t => t.id === id);
+            if (teacher) {
+                saveStateToHistory();
+                teacher.display = document.getElementById(`edit-t-disp-${id}`).value.trim() || teacher.display;
+                teacher.colorClass = document.getElementById(`edit-t-color-${id}`).value;
+                saveData();
+                showToast("Đã đổi màu hiển thị GV");
+            }
+            initApp();
+        };
+
+        window.editBranchColor = function(id, td) {
+            if (td.getAttribute('data-editing')) return;
+            const branch = branches.find(b => b.id === id);
+            if (!branch) return;
+            td.setAttribute('data-editing', 'true');
+            let options = TAILWIND_COLORS.map(c => `<option value="${c.class}" ${c.class === branch.colorClass ? 'selected' : ''}>${c.label}</option>`).join('');
+            td.innerHTML = `<select class="w-full bg-white border-2 border-indigo-400 rounded-lg px-1 py-1.5 text-xs shadow-[0_0_10px_rgba(79,70,229,0.2)]" onblur="saveBranchColor('${id}', this.value)" onchange="this.blur()">${options}</select>`;
+            td.querySelector('select').focus();
+        };
+        window.saveBranchColor = function(id, newColor) {
+            const branch = branches.find(b => b.id === id);
+            if (branch) { 
+                saveStateToHistory();
+                branch.colorClass = newColor; 
+                saveData(); 
+                showToast("Đã đổi màu Cơ sở");
+            }
+            initApp();
+        };
+
+        // === CẬP NHẬT: HÀM HIỂN THỊ GIÁO VIÊN (TỰ ĐỘNG SẮP XẾP MÃ GV) ===
+        function renderTeachers() {
+            const tbody = document.getElementById('teachers-table-body');
+            document.getElementById('teacher-count').textContent = `${teachers.length} GV`;
+            
+            // Sắp xếp tự nhiên theo Mã GV (Vd: T2 đứng trước T10)
+            const sortedTeachers = [...teachers].sort((a, b) => {
+                return a.id.localeCompare(b.id, undefined, {numeric: true, sensitivity: 'base'});
+            });
+
+            tbody.innerHTML = sortedTeachers.map((t, index) => `
+                <tr class="hover:bg-indigo-50/50 transition-colors animate-slide-up" style="animation-delay: ${index * 0.05}s; opacity: 0; animation-fill-mode: forwards;">
+                    <td class="py-3 px-4 font-bold text-slate-600 cursor-pointer" ondblclick="editTeacherId('${t.id}', this)">${t.id}</td>
+                    <td class="py-3 px-4 font-bold text-slate-800 cursor-pointer" ondblclick="editField('teachers', '${t.id}', 'name', this)">${t.name}</td>
+                    <td class="py-3 px-4 text-slate-600 cursor-pointer" ondblclick="editField('teachers', '${t.id}', 'phone', this)">${t.phone||'-'}</td>
+                    <td class="py-3 px-4 text-slate-600 cursor-pointer" ondblclick="editField('teachers', '${t.id}', 'bank', this)">${t.bank||'-'}</td>
+                    <td class="py-3 px-4 cursor-pointer" ondblclick="editTeacherDisplay('${t.id}', this)"><span class="px-2.5 py-1 rounded-md text-xs font-semibold border shadow-sm ${t.colorClass}">${t.display}</span></td>
+                    <td class="py-3 px-4 text-right"><button onclick="deleteTeacher('${t.id}')" class="interactive-btn text-xs text-rose-500 hover:text-white hover:bg-rose-500 px-3 py-1.5 rounded-lg font-semibold transition-colors active:scale-95">Xóa</button></td>
+                </tr>`).join('');
+        }
+
+        // === CẬP NHẬT: HÀM HIỂN THỊ HỌC VIÊN (TỰ ĐỘNG SẮP XẾP SỐ BUỔI / ĐẨY XUỐNG DƯỚI NẾU ĐÃ XONG) ===
+        function renderStudents() {
+            const tbody = document.getElementById('students-table-body');
+            document.getElementById('student-count').textContent = `${students.length} HV`;
+            
+            // Sắp xếp:
+            // 1. Nếu hoàn thành -> xuống dưới
+            // 2. Nếu cùng trạng thái -> Xếp số buổi tăng dần
+            // 3. Nếu số buổi bằng nhau -> ABC
+            const sortedStudents = [...students].sort((a, b) => {
+                const aCompleted = a.completedLessons > 0 && a.completedLessons >= a.lessons;
+                const bCompleted = b.completedLessons > 0 && b.completedLessons >= b.lessons;
+                
+                if (aCompleted && !bCompleted) return 1; 
+                if (!aCompleted && bCompleted) return -1;
+                
+                if (a.lessons !== b.lessons) {
+                    return a.lessons - b.lessons;
+                }
+                
+                return a.name.localeCompare(b.name, 'vi');
+            });
+
+            tbody.innerHTML = sortedStudents.map((s, index) => {
+                let statusText = "";
+                let statusClass = "";
+                
+                if (s.completedLessons === 0) {
+                    statusText = "Chưa học";
+                    statusClass = "bg-slate-100 text-slate-600";
+                } else if (s.completedLessons >= s.lessons) {
+                    statusText = "Đã hoàn thành";
+                    statusClass = "bg-emerald-100 text-emerald-700";
+                } else {
+                    statusText = "Đang học";
+                    statusClass = "bg-blue-50 border border-blue-200 text-blue-700";
+                }
+                
+                let statusHtml = `<span class="${statusClass} px-2.5 py-1 rounded-md text-[10px] font-bold shadow-sm">${statusText}</span>`;
+
+                return `
+                <tr class="hover:bg-sky-50/50 transition-colors animate-slide-up" style="animation-delay: ${index * 0.05}s; opacity: 0; animation-fill-mode: forwards;">
+                    <td class="py-3 px-4 font-bold text-slate-800 cursor-pointer" ondblclick="editField('students', '${s.id}', 'name', this)">${s.name}</td>
+                    <td class="py-3 px-4 text-slate-600 cursor-pointer" ondblclick="editField('students', '${s.id}', 'phone', this)">${s.phone||'-'}</td>
+                    <td class="py-3 px-4 font-semibold text-slate-700 cursor-pointer" ondblclick="editField('students', '${s.id}', 'lessons', this)" title="Nháy đúp để sửa số buổi ĐK">${s.lessons}</td>
+                    <td class="py-3 px-4 font-semibold text-blue-600 cursor-pointer" ondblclick="editField('students', '${s.id}', 'completedLessons', this)" title="Nháy đúp để sửa số buổi đã học">${s.completedLessons}</td>
+                    <td class="py-3 px-4">${statusHtml}</td>
+                    <td class="py-3 px-4 text-right"><button onclick="deleteStudent('${s.id}')" class="interactive-btn text-xs text-rose-500 hover:text-white hover:bg-rose-500 px-3 py-1.5 rounded-lg font-semibold transition-colors active:scale-95">Xóa</button></td>
+                </tr>`;
+            }).join('');
+        }
+
+        function renderBranches() {
+            const tbody = document.getElementById('branches-table-body');
+            tbody.innerHTML = branches.map((b, index) => `
+                <tr class="hover:bg-amber-50/30 transition-colors animate-slide-up" style="animation-delay: ${index * 0.05}s; opacity: 0; animation-fill-mode: forwards;">
+                    <td class="py-3 px-4 font-bold text-slate-800 cursor-pointer" ondblclick="editField('branches', '${b.id}', 'name', this)">${b.name}</td>
+                    <td class="py-3 px-4 cursor-pointer" ondblclick="editBranchColor('${b.id}', this)"><span class="px-3 py-1.5 rounded-md text-xs font-semibold border shadow-sm ${b.colorClass}">${b.name}</span></td>
+                    <td class="py-3 px-4 text-right"><button onclick="deleteBranch('${b.id}')" class="interactive-btn text-xs text-rose-500 hover:text-white hover:bg-rose-500 px-3 py-1.5 rounded-lg font-semibold transition-colors active:scale-95">Xóa</button></td>
+                </tr>`).join('');
+        }
+        
+        function addTeacher(e){ 
+            e.preventDefault(); saveStateToHistory(); 
+            const name = document.getElementById('new-teacher-name').value;
+            teachers.push({
+                id: 'T'+Date.now(), name: name, display: name, 
+                phone: document.getElementById('new-teacher-phone').value, email: "", 
+                bank: document.getElementById('new-teacher-bank').value, 
+                colorClass: document.getElementById('new-teacher-color').value
+            }); 
+            saveData(); initApp(); e.target.reset(); 
+            showToast(`Đã thêm GV: ${name}`);
+        }
+        function addStudent(e){ 
+            e.preventDefault(); saveStateToHistory(); 
+            const n = document.getElementById('new-student-name').value; 
+            const l = document.getElementById('new-student-lessons').value; 
+            students.push({id:'S'+Date.now(), name:n, phone:document.getElementById('new-student-phone').value, lessons: parseInt(l)||0, completedLessons:0}); 
+            saveData(); initApp(); e.target.reset(); 
+            showToast(`Đã thêm HV: ${n}`);
+        }
+        function addBranch(e){ 
+            e.preventDefault(); saveStateToHistory(); 
+            const bName = document.getElementById('new-branch-name').value;
+            branches.push({id: 'B'+Date.now(), name: bName, colorClass: document.getElementById('new-branch-color').value}); 
+            saveData(); initApp(); e.target.reset(); 
+            showToast(`Đã thêm CS: ${bName}`);
+        }
+        function deleteTeacher(id){ saveStateToHistory(); teachers = teachers.filter(x=>x.id!==id); saveData(); initApp(); showToast("Đã xóa GV"); }
+        function deleteStudent(id){ saveStateToHistory(); students = students.filter(x=>x.id!==id); saveData(); initApp(); showToast("Đã xóa HV"); }
+        function deleteBranch(id){ saveStateToHistory(); branches = branches.filter(x=>x.id!==id); saveData(); initApp(); showToast("Đã xóa Cơ Sở"); }
+
+        window.editMasterStudent = function(index, td) {
+            if (td.getAttribute('data-editing')) return;
+            const entry = schedule[index];
+            td.setAttribute('data-editing', 'true');
+            let options = students.map(s => `<option value="${s.id}" ${s.id === entry.studentId ? 'selected' : ''}>${s.name}</option>`).join('');
+            td.innerHTML = `<select class="w-full bg-white border-2 border-indigo-400 rounded-lg px-2 py-1.5 text-xs focus:outline-none shadow-[0_0_10px_rgba(79,70,229,0.2)]" onblur="saveMasterStudent(${index}, this.value)" onchange="this.blur()">${options}</select>`;
+            td.querySelector('select').focus();
+        };
+        window.saveMasterStudent = function(index, val) { if (schedule[index]) { saveStateToHistory(); schedule[index].studentId = val; saveData(); initApp(); } };
+
+        window.editMasterTeacher = function(index, td) {
+            if (td.getAttribute('data-editing')) return;
+            const entry = schedule[index];
+            td.setAttribute('data-editing', 'true');
+            let options = teachers.map(t => `<option value="${t.id}" ${t.id === entry.teacherId ? 'selected' : ''}>${t.display}</option>`).join('');
+            td.innerHTML = `<select class="w-full bg-white border-2 border-indigo-400 rounded-lg px-2 py-1.5 text-xs focus:outline-none shadow-[0_0_10px_rgba(79,70,229,0.2)]" onblur="saveMasterTeacher(${index}, this.value)" onchange="this.blur()">${options}</select>`;
+            td.querySelector('select').focus();
+        };
+        window.saveMasterTeacher = function(index, val) { if (schedule[index]) { saveStateToHistory(); schedule[index].teacherId = val; saveData(); initApp(); } };
+
+        window.editMasterBranch = function(index, td) {
+            if (td.getAttribute('data-editing')) return;
+            const entry = schedule[index];
+            td.setAttribute('data-editing', 'true');
+            let options = branches.map(b => `<option value="${b.name}" ${b.name === entry.branch ? 'selected' : ''}>${b.name}</option>`).join('');
+            td.innerHTML = `<select class="w-full bg-white border-2 border-indigo-400 rounded-lg px-2 py-1.5 text-xs focus:outline-none shadow-[0_0_10px_rgba(79,70,229,0.2)]" onblur="saveMasterBranch(${index}, this.value)" onchange="this.blur()">${options}</select>`;
+            td.querySelector('select').focus();
+        };
+        window.saveMasterBranch = function(index, val) { if (schedule[index]) { saveStateToHistory(); schedule[index].branch = val; saveData(); initApp(); } };
+
+        window.editMasterTime = function(index, td) {
+            if (td.getAttribute('data-editing')) return;
+            const entry = schedule[index];
+            td.setAttribute('data-editing', 'true');
+            const days = ["Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy", "Chủ Nhật"];
+            let dayOptions = days.map(d => `<option value="${d}" ${d === entry.day ? 'selected' : ''}>${d}</option>`).join('');
+            td.innerHTML = `
+                <div class="flex flex-col gap-2 w-max bg-white p-3 rounded-xl border-2 border-indigo-400 shadow-[0_10px_25px_rgba(79,70,229,0.15)] z-10 relative animate-slide-up" style="animation-duration:0.2s">
+                    <select id="edit-day-${index}" class="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1.5 text-xs w-full">${dayOptions}</select>
+                    <div class="flex items-center gap-1.5">
+                        <input type="time" id="edit-start-${index}" value="${entry.start}" class="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1.5 text-xs">
+                        <span class="text-slate-400">-</span>
+                        <input type="time" id="edit-end-${index}" value="${entry.end}" class="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1.5 text-xs">
+                    </div>
+                    <button onclick="saveMasterTime(${index})" class="interactive-btn mt-1 w-full bg-indigo-600 text-white px-2 py-1.5 rounded-lg text-xs font-bold hover:bg-indigo-700 active:scale-95">Lưu thay đổi</button>
+                </div>
+            `;
+        };
+        window.saveMasterTime = function(index) {
+            if (schedule[index]) {
+                const newDay = document.getElementById(`edit-day-${index}`).value;
+                const newStart = document.getElementById(`edit-start-${index}`).value;
+                const newEnd = document.getElementById(`edit-end-${index}`).value;
+                if(newStart && newEnd) { saveStateToHistory(); schedule[index].day = newDay; schedule[index].start = newStart; schedule[index].end = newEnd; saveData(); showToast("Đã sửa Thời gian");}
+            }
+            initApp();
+        };
+
+        window.editMasterDate = function(index, td) {
+            if (td.getAttribute('data-editing')) return;
+            const entry = schedule[index];
+            td.setAttribute('data-editing', 'true');
+            
+            const parts = currentMonth.split('-'); 
+            const year = parseInt(parts[0]); 
+            const month = parseInt(parts[1]);
+            const daysInMonth = new Date(year, month, 0).getDate();
+            
+            let html = `<div class="flex flex-col gap-2 bg-white border-2 border-indigo-400 p-2.5 rounded-xl shadow-[0_10px_25px_rgba(79,70,229,0.15)] z-10 relative w-[240px] animate-slide-up" style="animation-duration:0.2s">`;
+            html += `<div class="text-[10px] font-bold text-indigo-600 mb-1 text-center border-b border-indigo-100 pb-1">Chọn ngày áp dụng</div>`;
+            html += `<div class="grid grid-cols-7 gap-1">`;
+            for(let i=1; i<=daysInMonth; i++) {
+                const dateStr = `${year}-${String(month).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
+                const isSelected = entry.exactDates && entry.exactDates.includes(dateStr);
+                const isSun = new Date(year, month - 1, i).getDay() === 0;
+                
+                html += `
+                    <label class="cursor-pointer relative flex items-center justify-center aspect-square">
+                        <input type="checkbox" value="${dateStr}" class="edit-date-cb peer sr-only" ${isSelected ? 'checked' : ''}>
+                        <div class="w-full h-full rounded border border-slate-100 bg-slate-50 flex items-center justify-center text-[11px] font-bold ${isSun ? 'text-rose-500' : 'text-slate-600'} transition-all duration-200 peer-hover:bg-slate-200 peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600">
+                            ${i}
+                        </div>
+                    </label>
+                `;
+            }
+            html += `</div>`;
+            html += `<button onclick="saveMasterDate(${index}, this)" class="interactive-btn bg-indigo-600 text-white px-2 py-1.5 rounded-lg text-xs font-bold w-full active:scale-95 mt-1">Lưu</button>`;
+            html += `</div>`;
+            
+            td.innerHTML = html;
+        };
+
+        window.saveMasterDate = function(index, btn) {
+            const container = btn.parentElement;
+            const checked = Array.from(container.querySelectorAll('.edit-date-cb:checked')).map(cb => cb.value);
+            if(checked.length === 0) { showToast('Phải chọn ít nhất 1 ngày', 'error'); return; }
+            if (schedule[index]) { 
+                saveStateToHistory(); 
+                checked.sort();
+                schedule[index].exactDates = checked;
+                
+                delete schedule[index].exactDate;
+                delete schedule[index].day;
+                delete schedule[index].weeks;
+
+                saveData(); initApp(); showToast("Đã lưu Ngày học");
+            }
+        };
+
+        window.editMasterType = function(index, td) {
+            if (td.getAttribute('data-editing')) return;
+            const entry = schedule[index];
+            td.setAttribute('data-editing', 'true');
+            td.innerHTML = `
+                <select class="w-full bg-white border-2 border-indigo-400 rounded-lg px-2 py-1.5 text-xs font-bold focus:outline-none shadow-[0_0_10px_rgba(79,70,229,0.2)]" onblur="saveMasterType(${index}, this.value)" onchange="this.blur()">
+                    <option value="main" ${entry.type === 'main' ? 'selected' : ''}>Cố định</option>
+                    <option value="makeup" ${entry.type === 'makeup' ? 'selected' : ''}>Bù/Tạm</option>
+                </select>
+            `;
+            td.querySelector('select').focus();
+        };
+        window.saveMasterType = function(index, val) { if (schedule[index]) { saveStateToHistory(); schedule[index].type = val; saveData(); initApp(); } };
+
+        function populateDropdowns() {
+            ['form-student', 'form-teacher', 'form-branch', 'filter-teacher-master', 'view-filter-teacher', 'view-filter-branch'].forEach(id => document.getElementById(id).innerHTML='');
+            document.getElementById('form-student').innerHTML = students.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+            document.getElementById('form-teacher').innerHTML = teachers.map(t => `<option value="${t.id}">${t.display}</option>`).join('');
+            document.getElementById('form-branch').innerHTML = branches.map(b => `<option value="${b.name}">${b.name}</option>`).join('');
+            document.getElementById('filter-teacher-master').innerHTML = '<option value="">Tất cả giáo viên</option>' + teachers.map(t => `<option value="${t.id}">${t.display}</option>`).join('');
+            document.getElementById('view-filter-teacher').innerHTML = '<option value="">Tất cả giáo viên</option>' + teachers.map(t => `<option value="${t.id}">${t.display}</option>`).join('');
+            document.getElementById('view-filter-branch').innerHTML = '<option value="">Tất cả cơ sở</option>' + branches.map(b => `<option value="${b.name}">${b.name}</option>`).join('');
+        }
+
+        function addScheduleEntry(e) {
+            e.preventDefault();
+            const selectedDates = Array.from(document.querySelectorAll('input[name="form-exact-dates"]:checked')).map(cb => cb.value);
+            if(selectedDates.length === 0) { showToast("Vui lòng chọn ít nhất 1 ngày", "error"); return; }
+            const studentId = document.getElementById('form-student').value;
+            const teacherId = document.getElementById('form-teacher').value;
+            const start = document.getElementById('form-start').value;
+            const end = document.getElementById('form-end').value;
+            const branch = document.getElementById('form-branch').value;
+            const type = document.getElementById('form-type').value;
+
+            saveStateToHistory(); 
+
+            selectedDates.sort();
+            
+            schedule.push({ 
+                id: 'C' + Date.now() + Math.floor(Math.random() * 1000), 
+                studentId, 
+                teacherId, 
+                start, 
+                end, 
+                branch, 
+                type,
+                exactDates: selectedDates
+            });
+            
+            saveData(); initApp();
+            
+            showToast(`Đã thêm lịch với ${selectedDates.length} ngày!`);
+            
+            document.getElementById('form-start').value = ''; document.getElementById('form-end').value = '';
+            document.querySelectorAll('input[name="form-exact-dates"]').forEach(cb => cb.checked = false);
+            updateDatePickerText();
+        }
+
+        function deleteScheduleEntry(index) {
+            if(confirm("Xóa lịch này khỏi hệ thống?")) { saveStateToHistory(); schedule.splice(index, 1); saveData(); initApp(); showToast("Đã xóa ca học");}
+        }
+
+        function filterMasterTable() { renderMasterTable(); }
+
+        function renderMasterTable() {
+            const tbody = document.getElementById('master-table-body');
+            tbody.innerHTML = '';
+            const searchValue = document.getElementById('search-master').value.toLowerCase();
+            const teacherFilter = document.getElementById('filter-teacher-master').value;
+            const dayFilter = document.getElementById('filter-day-master').value;
+
+            let displaySchedule = [...schedule];
+            displaySchedule.sort((a, b) => {
+                const getFirstDayWeight = (entry) => {
+                    if (!entry.exactDates || entry.exactDates.length === 0) return 8;
+                    const d = new Date(entry.exactDates[0]).getDay();
+                    return d === 0 ? 7 : d;
+                };
+                const weightA = getFirstDayWeight(a);
+                const weightB = getFirstDayWeight(b);
+                if (weightA !== weightB) return weightA - weightB;
+                
+                return a.start.localeCompare(b.start);
+            });
+
+            displaySchedule.forEach((entry, idx) => {
+                const index = schedule.indexOf(entry); 
+                const student = students.find(s => s.id === entry.studentId);
+                const teacher = teachers.find(t => t.id === entry.teacherId);
+                const branchObj = branches.find(b => b.name === entry.branch) || { name: entry.branch, colorClass: "bg-slate-100 text-slate-800 border-slate-300" };
+                
+                if (!student || !teacher) return;
+                if (searchValue && !student.name.toLowerCase().includes(searchValue)) return;
+                if (teacherFilter && entry.teacherId !== teacherFilter) return;
+                
+                const daysNameList = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
+                if (dayFilter) {
+                    const matchesDay = entry.exactDates && entry.exactDates.some(d => daysNameList[new Date(d).getDay()] === dayFilter);
+                    if (!matchesDay) return;
+                }
+
+                const fullDays = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
+                let uniqueDays = [];
+                if (entry.exactDates) {
+                    const daysSet = new Set(entry.exactDates.map(d => new Date(d).getDay()));
+                    let daysArr = Array.from(daysSet);
+                    daysArr.sort((a, b) => (a === 0 ? 7 : a) - (b === 0 ? 7 : b));
+                    uniqueDays = daysArr.map(d => fullDays[d]);
+                }
+                const dayDisplay = uniqueDays.length > 0 ? uniqueDays.join(', ') : '';
+
+                const dateBadge = (entry.exactDates || []).map(d => `<span class="bg-indigo-50 text-indigo-700 text-[11px] px-2 py-1 rounded-md font-bold border border-indigo-100">${d.split('-').reverse().join('/')}</span>`).join(' ');
+                const typeBadge = entry.type === 'makeup' ? `<span class="bg-amber-100 text-amber-800 text-[10px] px-2 py-1 rounded font-bold">Bù/Tạm</span>` : `<span class="bg-emerald-50 text-emerald-600 text-[10px] px-2 py-1 rounded font-semibold border border-emerald-100">Cố định</span>`;
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 transition-colors animate-slide-up" style="animation-delay: ${idx * 0.03}s; opacity: 0; animation-fill-mode: forwards;">
+                        <td class="py-3 px-4 text-slate-400 text-xs font-medium">${index+1}</td>
+                        <td class="py-3 px-4 font-bold text-slate-800 cursor-pointer" ondblclick="editMasterStudent(${index}, this)">${student.name}</td>
+                        <td class="py-3 px-4 cursor-pointer" ondblclick="editMasterTeacher(${index}, this)"><span class="px-2.5 py-1 rounded-md text-xs font-semibold border shadow-sm ${teacher.colorClass}">${teacher.display}</span></td>
+                        <td class="py-3 px-4 cursor-pointer" ondblclick="editMasterTime(${index}, this)"><span class="font-bold text-slate-700">${dayDisplay}</span> <span class="text-[11px] font-medium text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded-md ml-1 border border-slate-200 shadow-sm">${entry.start} - ${entry.end}</span></td>
+                        <td class="py-3 px-4 cursor-pointer" ondblclick="editMasterBranch(${index}, this)"><span class="text-xs px-2.5 py-1 rounded-md border shadow-sm ${branchObj.colorClass} font-medium">${entry.branch}</span></td>
+                        <td class="py-3 px-4 flex gap-1 items-center flex-wrap cursor-pointer min-h-[50px]" ondblclick="editMasterDate(${index}, this)">${dateBadge}</td>
+                        <td class="py-3 px-4 cursor-pointer" ondblclick="editMasterType(${index}, this)">${typeBadge}</td>
+                        <td class="py-3 px-4 text-right"><button onclick="deleteScheduleEntry(${index})" class="interactive-btn text-xs text-rose-500 hover:text-white hover:bg-rose-500 px-3 py-1.5 rounded-lg font-semibold transition-colors active:scale-95">Xóa</button></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function formatDate(date) {
+            if(!date) return "";
+            return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        }
+
+        function markAttendance(scheduleId, dateString, status, studentId) {
+            saveStateToHistory(); 
+            const key = `${scheduleId}_${dateString}`;
+            const oldStatus = attendanceData[key];
+            const student = students.find(s => s.id === studentId);
+
+            let msg = "";
+            if (oldStatus === status) {
+                delete attendanceData[key];
+                if(status === 'present' && student) student.completedLessons = Math.max(0, student.completedLessons - 1);
+                msg = "Đã bỏ chọn điểm danh";
+            } else {
+                attendanceData[key] = status;
+                if(status === 'present' && oldStatus !== 'present' && student) student.completedLessons++;
+                if(oldStatus === 'present' && status !== 'present' && student) student.completedLessons = Math.max(0, student.completedLessons - 1);
+                msg = status === 'present' ? `Đã điểm danh "Lên lớp" cho ${student.name}` : `Đã báo "Nghỉ" cho ${student.name}`;
+            }
+            
+            saveData(); 
+            renderWeeklySchedule(); 
+            renderStudents(); 
+            renderTeacherStats(); 
+            
+            if (!document.getElementById('tab-sheet4').classList.contains('hidden') && typeof renderCharts === 'function') {
+                renderCharts();
+            }
+
+            showToast(msg, status === 'present' ? 'success' : 'info');
+        }
+
+        function renderWeeklySchedule() {
+            const selectedWeek = document.getElementById('view-filter-week').value; 
+            const filterTeacher = document.getElementById('view-filter-teacher').value;
+            const filterBranch = document.getElementById('view-filter-branch').value;
+            const isSummary = selectedWeek === 'summary';
+            
+            const parts = currentMonth.split('-'); 
+            const year = parseInt(parts[0]); 
+            const month = parseInt(parts[1]);
+
+            const daysInMonth = new Date(year, month, 0).getDate();
+            const days = ["Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy", "Chủ Nhật"];
+
+            const firstDateOfMonth = new Date(year, month - 1, 1);
+            const firstDayOfWeek = firstDateOfMonth.getDay(); 
+            const offset = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1; 
+            const startDateOfCalendar = new Date(year, month - 1, 1 - offset); 
+
+            const totalDaysSpanned = offset + daysInMonth;
+            const totalWeeks = Math.ceil(totalDaysSpanned / 7);
+            
+            days.forEach((dayName, dayIndex) => {
+                const col = document.getElementById(`day-col-${dayName}`);
+                let html = `
+                    <div class="pb-3 mb-2 border-b border-slate-200/60 flex justify-center items-center sticky top-0 z-10 rounded-t-lg">
+                        <span class="font-bold ${dayName==='Chủ Nhật'?'text-rose-600 bg-rose-50 border-rose-200':'text-slate-700 bg-white border-slate-200/60 shadow-sm'} text-[11px] uppercase tracking-wider px-4 py-1.5 rounded-full border">${dayName}</span>
+                    </div>
+                    <div class="space-y-3 flex-1 custom-scrollbar overflow-y-auto max-h-[800px] pr-1 pb-4 pt-1">
+                `;
+
+                let hasAnyDate = false;
+
+                for (let w = 1; w <= totalWeeks; w++) {
+                    const displayWeekNum = w > 5 ? 5 : w; 
+                    if (selectedWeek !== 'all' && !isSummary && parseInt(selectedWeek) !== displayWeekNum) continue;
+
+                    hasAnyDate = true;
+                    const currentDate = new Date(startDateOfCalendar);
+                    currentDate.setDate(startDateOfCalendar.getDate() + (w - 1) * 7 + dayIndex);
+
+                    const isCurrentMonth = currentDate.getMonth() + 1 === month;
+                    const dateDisplay = `${String(currentDate.getDate()).padStart(2,'0')}/${String(currentDate.getMonth() + 1).padStart(2,'0')}`;
+                    const dateKey = formatDate(currentDate);
+
+                    if (!isCurrentMonth) {
+                        if (!isSummary) {
+                            html += `
+                            <div class="bg-white/40 rounded-xl p-2.5 border border-slate-200/50 mb-3 opacity-60">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-[10px] font-bold text-slate-400">${dateDisplay}</span>
+                                </div>
+                                <div class="text-center text-[10px] font-medium text-slate-400">Trống</div>
+                            </div>`;
+                        }
+                        continue; 
+                    }
+
+                    if (isSummary) {
+                        html += `
+                        <div class="mb-3 bg-white p-2.5 rounded-xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
+                            <div class="text-[10px] font-bold text-indigo-700 mb-1.5 flex justify-between items-center border-b border-slate-100 pb-1">
+                                <span>${dateDisplay}</span>
+                                <span class="text-[8px] bg-indigo-50 px-1.5 py-0.5 rounded-md text-indigo-500 font-bold border border-indigo-100">T${displayWeekNum}</span>
+                            </div>
+                            <div class="space-y-1">
+                        `;
+                    } else {
+                        html += `
+                        <div class="bg-white rounded-2xl p-3 border border-slate-200 shadow-sm mb-4 hover:shadow-md transition-shadow">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-[11px] font-bold text-slate-800 bg-slate-100 px-2.5 py-1 rounded-md border border-slate-200 shadow-sm">${dateDisplay}</span>
+                                <span class="text-[9px] font-bold text-indigo-500 bg-indigo-50 px-2 py-1 rounded-md border border-indigo-100">Tuần ${displayWeekNum}</span>
+                            </div>
+                            <div class="space-y-3">
+                        `;
+                    }
+
+                    let dayEvents = schedule.filter(entry => {
+                        let matchDate = false;
+                        if (entry.exactDates && entry.exactDates.length > 0) {
+                            matchDate = entry.exactDates.includes(dateKey);
+                        } else if (entry.exactDate) {
+                            matchDate = (entry.exactDate === dateKey);
+                        } else {
+                            matchDate = (entry.day === dayName && entry.weeks && entry.weeks.includes(displayWeekNum));
+                        }
+                        return matchDate &&
+                               (filterTeacher ? entry.teacherId === filterTeacher : true) &&
+                               (filterBranch ? entry.branch === filterBranch : true);
+                    });
+                    
+                    dayEvents.sort((a,b) => a.start.localeCompare(b.start));
+
+                    if (dayEvents.length === 0) {
+                        if (isSummary) html += `<div class="text-[9px] text-slate-300 italic text-center py-0.5">Không có lịch</div>`;
+                        else html += `<div class="border border-dashed border-slate-200 rounded-xl p-3 text-center text-[10px] font-medium text-slate-400 bg-slate-50">Trống lịch</div>`;
+                    } else {
+                        dayEvents.forEach((entry, idx) => {
+                            const student = students.find(s => s.id === entry.studentId);
+                            const teacher = teachers.find(t => t.id === entry.teacherId);
+                            const branchObj = branches.find(b => b.name === entry.branch) || { name: entry.branch, colorClass: "bg-slate-100 text-slate-800" };
+                            if (!student || !teacher) return;
+
+                            const attendanceKey = `${entry.id}_${dateKey}`;
+                            const attStatus = attendanceData[attendanceKey];
+
+                            if (isSummary) {
+                                const btnP = attStatus === 'present' ? 'bg-emerald-500 text-white' : 'bg-slate-200 text-slate-500 hover:bg-emerald-100 hover:text-emerald-700';
+                                const btnO = attStatus === 'off' ? 'bg-rose-500 text-white' : 'bg-slate-200 text-slate-500 hover:bg-rose-100 hover:text-rose-700';
+                                html += `
+                                    <div class="flex items-center justify-between text-[10px] py-1.5 border-b border-slate-50 last:border-0 gap-1 hover:bg-slate-50 rounded px-1 transition-colors">
+                                        <span class="font-bold text-slate-700 w-8">${entry.start}</span>
+                                        <span class="font-bold text-slate-800 truncate flex-1">${student.name}</span>
+                                        <div class="flex gap-1 items-center flex-shrink-0">
+                                            <span class="text-[8px] px-1.5 py-0.5 rounded border ${teacher.colorClass} shadow-sm font-semibold mr-1">${teacher.display}</span>
+                                            <button onclick="markAttendance('${entry.id}', '${dateKey}', 'present', '${student.id}')" class="${btnP} w-4 h-4 rounded flex items-center justify-center font-bold transition-colors">✓</button>
+                                            <button onclick="markAttendance('${entry.id}', '${dateKey}', 'off', '${student.id}')" class="${btnO} w-4 h-4 rounded flex items-center justify-center font-bold transition-colors">✗</button>
+                                        </div>
+                                    </div>
+                                `;
+                            } else {
+                                const btnPresentClass = attStatus === 'present' ? 'bg-emerald-500 text-white shadow-md shadow-emerald-200 transform scale-105 z-10' : 'bg-slate-100 text-slate-600 hover:bg-slate-200';
+                                const btnOffClass = attStatus === 'off' ? 'bg-rose-500 text-white shadow-md shadow-rose-200 transform scale-105 z-10' : 'bg-slate-100 text-slate-600 hover:bg-slate-200';
+                                const makeupTag = entry.type === 'makeup' ? `<span class="absolute -top-2 -right-2 bg-gradient-to-br from-amber-400 to-orange-500 text-white text-[9px] px-2 py-0.5 rounded-full font-bold shadow-md border border-white z-10 animate-pulse">BÙ</span>` : '';
+
+                                html += `
+                                    <div class="bg-white border ${attStatus==='present'?'border-emerald-400 ring-2 ring-emerald-100':(attStatus==='off'?'border-rose-400 ring-2 ring-rose-100':'border-slate-100 hover:border-indigo-300')} p-3.5 rounded-xl shadow-[0_2px_10px_rgba(0,0,0,0.03)] relative transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(0,0,0,0.06)] animate-slide-up" style="animation-delay: ${idx * 0.05}s; opacity: 0; animation-fill-mode: forwards;">
+                                        ${makeupTag}
+                                        <div class="flex justify-between items-center mb-2">
+                                            <span class="text-[10px] font-bold text-indigo-700 bg-indigo-50 px-2 py-1 rounded-lg border border-indigo-100 shadow-sm">${entry.start}</span>
+                                            <span class="text-[8px] font-bold border shadow-sm ${branchObj.colorClass} px-2 py-1 rounded-lg">${entry.branch}</span>
+                                        </div>
+                                        <div class="mb-3.5">
+                                            <p class="font-bold text-slate-900 text-[13px] truncate" title="${student.name}">${student.name}</p>
+                                            <span class="px-2 py-1 rounded-lg text-[9px] font-bold border shadow-sm ${teacher.colorClass} mt-1.5 inline-block">${teacher.display}</span>
+                                        </div>
+                                        <div class="flex gap-2 pt-3 border-t border-slate-100/80 relative">
+                                            <button onclick="markAttendance('${entry.id}', '${dateKey}', 'present', '${student.id}')" class="interactive-btn ${btnPresentClass} flex-1 text-[10px] font-bold py-2 rounded-lg transition-all duration-300 active:scale-95">Lên lớp</button>
+                                            <button onclick="markAttendance('${entry.id}', '${dateKey}', 'off', '${student.id}')" class="interactive-btn ${btnOffClass} flex-1 text-[10px] font-bold py-2 rounded-lg transition-all duration-300 active:scale-95">Nghỉ</button>
+                                        </div>
+                                    </div>
+                                `;
+                            }
+                        });
+                    }
+                    html += `</div></div>`; 
+                }
+                if (!hasAnyDate) { html += `<div class="p-4 text-center text-[11px] text-slate-400 italic">Không có lịch</div>`; }
+                html += `</div>`;
+                col.innerHTML = html;
+            });
+        }
+        
+        function renderTeacherStats() {
+            const tbody = document.getElementById('teacher-stats-body');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+            let stats = {};
+            teachers.forEach(t => stats[t.id] = 0);
+            for (let key in attendanceData) {
+                if (attendanceData[key] === 'present') {
+                    let schedId = key.split('_')[0];
+                    let s = schedule.find(x => x.id === schedId);
+                    if (s && stats[s.teacherId] !== undefined) stats[s.teacherId]++;
+                }
+            }
+
+            const sortedTeachers = [...teachers].sort((a, b) => stats[b.id] - stats[a.id]);
+
+            sortedTeachers.forEach((t, index) => {
+                tbody.innerHTML += `
+                    <tr class="hover:bg-indigo-50/30 transition-colors animate-slide-up" style="animation-delay: ${index * 0.1}s; opacity: 0; animation-fill-mode: forwards;">
+                        <td class="py-4 px-6 font-bold text-slate-500">${t.id}</td>
+                        <td class="py-4 px-6"><span class="px-3 py-1.5 rounded-lg text-xs font-bold border shadow-sm ${t.colorClass}">${t.display}</span></td>
+                        <td class="py-4 px-6 font-black text-indigo-600 text-2xl text-right">${stats[t.id]} <span class="text-xs font-semibold text-slate-400">ca</span></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function toggleCharts() {
+            const filter = document.getElementById('chart-filter').value;
+            const wrapPie = document.getElementById('wrap-chart-pie');
+            const wrapLine = document.getElementById('wrap-chart-line');
+            const wrapBar = document.getElementById('wrap-chart-bar');
+
+            wrapPie.classList.remove('hidden', 'lg:col-span-3');
+            wrapLine.classList.remove('hidden', 'lg:col-span-3');
+            wrapBar.classList.remove('hidden');
+
+            if (filter === 'all') {
+                wrapLine.classList.add('lg:col-span-2');
+            } else if (filter === 'pie') {
+                wrapLine.classList.add('hidden');
+                wrapBar.classList.add('hidden');
+                wrapPie.classList.add('lg:col-span-3');
+            } else if (filter === 'line') {
+                wrapPie.classList.add('hidden');
+                wrapBar.classList.add('hidden');
+                wrapLine.classList.remove('lg:col-span-2');
+                wrapLine.classList.add('lg:col-span-3');
+            } else if (filter === 'bar') {
+                wrapPie.classList.add('hidden');
+                wrapLine.classList.add('hidden');
+            }
+        }
+
+        function renderCharts() {
+            let totalPresent = 0;
+            let totalOff = 0;
+            let weeklySchedules = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+            let branchSchedules = {};
+            
+            branches.forEach(b => branchSchedules[b.name] = 0);
+
+            for (let key in attendanceData) {
+                if (attendanceData[key] === 'present') totalPresent++;
+                if (attendanceData[key] === 'off') totalOff++;
+            }
+
+            let totalSchedules = 0;
+            schedule.forEach(entry => {
+                const dates = entry.exactDates || [];
+                dates.forEach(d => {
+                    totalSchedules++;
+                    
+                    const year = parseInt(d.split('-')[0]);
+                    const month = parseInt(d.split('-')[1]);
+                    const dateDay = parseInt(d.split('-')[2]);
+                    const firstDateOfMonth = new Date(year, month - 1, 1);
+                    const firstDayOfWeek = firstDateOfMonth.getDay() === 0 ? 6 : firstDateOfMonth.getDay() - 1;
+                    let w = Math.ceil((firstDayOfWeek + dateDay) / 7);
+                    if (w > 5) w = 5;
+
+                    if (weeklySchedules[w] !== undefined) weeklySchedules[w]++;
+                    else weeklySchedules[w] = 1;
+                    
+                    if (branchSchedules[entry.branch] !== undefined) {
+                        branchSchedules[entry.branch]++;
+                    } else {
+                        branchSchedules[entry.branch] = 1;
+                    }
+                });
+            });
+
+            let totalPending = Math.max(0, totalSchedules - totalPresent - totalOff);
+
+            if (myPieChart) myPieChart.destroy();
+            if (myLineChart) myLineChart.destroy();
+            if (myBarChart) myBarChart.destroy();
+
+            Chart.defaults.font.family = "'Inter', sans-serif";
+
+            const ctxPie = document.getElementById('pieChart').getContext('2d');
+            myPieChart = new Chart(ctxPie, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Đã Lên Lớp', 'Đã Báo Nghỉ', 'Chưa Điểm Danh'],
+                    datasets: [{
+                        data: [totalPresent, totalOff, totalPending],
+                        backgroundColor: ['#10b981', '#f43f5e', '#cbd5e1'],
+                        borderWidth: 2,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } }
+                    }
+                }
+            });
+
+            const ctxLine = document.getElementById('lineChart').getContext('2d');
+            myLineChart = new Chart(ctxLine, {
+                type: 'line',
+                data: {
+                    labels: ['Tuần 1', 'Tuần 2', 'Tuần 3', 'Tuần 4', 'Tuần 5'],
+                    datasets: [{
+                        label: 'Số lượng ca dạy',
+                        data: [weeklySchedules[1], weeklySchedules[2], weeklySchedules[3], weeklySchedules[4], weeklySchedules[5]],
+                        borderColor: '#6366f1',
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#fff',
+                        pointBorderColor: '#6366f1',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { stepSize: 1 } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+
+            const ctxBar = document.getElementById('barChart').getContext('2d');
+            const branchNames = Object.keys(branchSchedules);
+            const branchCounts = Object.values(branchSchedules);
+            
+            const barColors = branchNames.map((_, i) => {
+                const colors = ['#f59e0b', '#3b82f6', '#8b5cf6', '#ec4899', '#14b8a6'];
+                return colors[i % colors.length];
+            });
+
+            myBarChart = new Chart(ctxBar, {
+                type: 'bar',
+                data: {
+                    labels: branchNames,
+                    datasets: [{
+                        label: 'Tổng số ca phân bổ',
+                        data: branchCounts,
+                        backgroundColor: barColors,
+                        borderRadius: 6,
+                        barThickness: 40
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { borderDash: [4, 4] }, ticks: { stepSize: 1 } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        function exportToCSV() { showToast("Đang mô phỏng chức năng xuất file Excel/CSV!", "info"); }
+
+        const APP_TIPS = [
+            '✨ <span class="font-bold">Mẹo:</span> Nháy đúp vào bất kỳ ô dữ liệu nào trong bảng để sửa nhanh. Hệ thống tự động lưu.',
+            '✨ <span class="font-bold">Mẹo:</span> Nhấn tổ hợp phím Ctrl+Z để Hoàn tác hoặc Ctrl+Y để Làm lại thao tác cuối.',
+            '✨ <span class="font-bold">Mẹo:</span> Biểu đồ Thống kê sẽ tự động nhảy số thời gian thực mỗi khi bạn thao tác Điểm danh.',
+            '✨ <span class="font-bold">Mẹo:</span> Sử dụng "Chế độ Siêu gọn" ở tab Lịch Học để dễ dàng bao quát toàn bộ lịch.',
+            '✨ <span class="font-bold">Mẹo:</span> Khi đổi sang tháng mới, hệ thống tự động tạo bản lưu của tháng cũ để không mất dữ liệu.',
+            '✨ <span class="font-bold">Mẹo:</span> Ca học Bù hoặc Tạm thời sẽ có nhãn "BÙ" nhấp nháy trên Lịch học.',
+            '✨ <span class="font-bold">Mẹo:</span> Tuỳ chỉnh màu sắc hiển thị của từng Cơ sở và Giáo viên để nhận diện dễ dàng hơn.',
+            '✨ <span class="font-bold">Mẹo:</span> Tiến độ học viên (số buổi đã học) sẽ tự động cộng dồn khi bạn điểm danh Lên lớp.'
+        ];
+
+        setInterval(() => {
+            const tipEl = document.getElementById('app-tip');
+            if (tipEl) {
+                tipEl.style.opacity = '0';
+                setTimeout(() => {
+                    tipEl.innerHTML = APP_TIPS[Math.floor(Math.random() * APP_TIPS.length)];
+                    tipEl.style.opacity = '1';
+                }, 500); 
+            }
+        }, 30000);
+    </script>
+</body>
+</html>
