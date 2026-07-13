@@ -350,7 +350,6 @@
                             <option value="3">Tuần 3</option>
                             <option value="4">Tuần 4</option>
                             <option value="5">Tuần 5</option>
-                            <option value="6">Tuần 6</option>
                         </select>
                         <select id="view-filter-teacher" onchange="renderWeeklySchedule()" class="bg-white border-transparent rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm transition-all cursor-pointer"></select>
                         <select id="view-filter-branch" onchange="renderWeeklySchedule()" class="bg-white border-transparent rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm transition-all cursor-pointer"></select>
@@ -1329,7 +1328,7 @@
                 let hasAnyDate = false;
 
                 for (let w = 1; w <= totalWeeks; w++) {
-                    const displayWeekNum = w; 
+                    const displayWeekNum = w > 5 ? 5 : w; 
                     if (selectedWeek !== 'all' && !isSummary && parseInt(selectedWeek) !== displayWeekNum) continue;
 
                     hasAnyDate = true;
@@ -1527,7 +1526,8 @@
                     const dateDay = parseInt(d.split('-')[2]);
                     const firstDateOfMonth = new Date(year, month - 1, 1);
                     const firstDayOfWeek = firstDateOfMonth.getDay() === 0 ? 6 : firstDateOfMonth.getDay() - 1;
-                    const w = Math.ceil((firstDayOfWeek + dateDay) / 7);
+                    let w = Math.ceil((firstDayOfWeek + dateDay) / 7);
+                    if (w > 5) w = 5;
 
                     if (weeklySchedules[w] !== undefined) weeklySchedules[w]++;
                     else weeklySchedules[w] = 1;
@@ -1573,10 +1573,10 @@
             myLineChart = new Chart(ctxLine, {
                 type: 'line',
                 data: {
-                    labels: ['Tuần 1', 'Tuần 2', 'Tuần 3', 'Tuần 4'],
+                    labels: ['Tuần 1', 'Tuần 2', 'Tuần 3', 'Tuần 4', 'Tuần 5'],
                     datasets: [{
                         label: 'Số lượng ca dạy',
-                        data: [weeklySchedules[1], weeklySchedules[2], weeklySchedules[3], weeklySchedules[4]],
+                        data: [weeklySchedules[1], weeklySchedules[2], weeklySchedules[3], weeklySchedules[4], weeklySchedules[5]],
                         borderColor: '#6366f1',
                         backgroundColor: 'rgba(99, 102, 241, 0.1)',
                         borderWidth: 3,
