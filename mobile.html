@@ -63,6 +63,43 @@
         @keyframes toastOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
         .toast-enter { animation: toastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         .toast-exit { animation: toastOut 0.3s forwards; }
+
+        /* Sticky Header với Shrink-on-Scroll */
+        #mobile-header {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        #mobile-header.header-compact {
+            padding: 0.5rem 1rem !important;
+        }
+        #mobile-header.header-compact .logo-icon {
+            width: 2rem !important;
+            height: 2rem !important;
+            font-size: 0.875rem !important;
+        }
+        #mobile-header.header-compact .logo-text {
+            font-size: 0.875rem !important;
+        }
+        #mobile-header.header-compact .logo-version {
+            font-size: 0.5rem !important;
+        }
+        #mobile-header.header-compact .hamburger-btn {
+            padding: 0.375rem !important;
+        }
+        #mobile-header.header-compact .hamburger-btn svg {
+            width: 1.25rem !important;
+            height: 1.25rem !important;
+        }
+
+        /* Responsive font sizing để tránh chữ đè lên nhau */
+        @media (max-width: 640px) {
+            body { font-size: 14px; }
+            h1 { font-size: 1.25rem; }
+            h2 { font-size: 1.125rem; }
+            h3 { font-size: 1rem; }
+            .text-sm { font-size: 0.8125rem; }
+            .text-xs { font-size: 0.6875rem; }
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 h-screen flex overflow-hidden relative">
@@ -137,17 +174,17 @@
         <main class="flex-1 overflow-y-auto w-full custom-scrollbar bg-gradient-to-br from-slate-50 to-slate-100/50 relative">
         
         <!-- Top Bar with Hamburger -->
-        <div class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200 px-6 py-4 flex items-center shadow-sm">
-            <button onclick="toggleSidebar()" class="p-2 mr-4 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 active:scale-95 transition-all shadow-sm outline-none focus:outline-none">
+        <div id="mobile-header" class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200 px-6 py-4 flex items-center shadow-sm">
+            <button onclick="toggleSidebar()" class="hamburger-btn p-2 mr-4 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 active:scale-95 transition-all shadow-sm outline-none focus:outline-none">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
             </button>
-            <div class="flex items-center gap-3 cursor-pointer" onclick="window.location.reload();" title="Tải lại trang">
-                <div class="bg-indigo-600 text-white w-10 h-10 flex items-center justify-center rounded-xl shadow-lg shadow-indigo-200 font-bold text-lg">
+            <div class="flex items-center gap-3">
+                <div class="logo-icon bg-indigo-600 text-white w-10 h-10 flex items-center justify-center rounded-xl shadow-lg shadow-indigo-200 font-bold text-lg transition-all">
                     MV
                 </div>
                 <div>
-                    <h2 class="font-bold text-slate-800 text-lg leading-tight uppercase tracking-wider">Mai Vy Piano</h2>
-                    <p class="text-[10px] font-semibold text-emerald-500 mt-0.5 tracking-wide uppercase">Version 3.5</p>
+                    <h2 class="logo-text font-bold text-slate-800 text-lg leading-tight uppercase tracking-wider transition-all">Mai Vy Piano</h2>
+                    <p class="logo-version text-[10px] font-semibold text-emerald-500 mt-0.5 tracking-wide uppercase transition-all">Version 3.5</p>
                 </div>
             </div>
         </div>
@@ -484,6 +521,36 @@
                 // Xóa margin để nội dung kéo giãn ra full width
                 mainContent.classList.remove('ml-64');
             }
+        }
+
+        // === HEADER SHRINK ON SCROLL ===
+        let lastScrollTop = 0;
+        const mobileHeader = document.getElementById('mobile-header');
+        const mainContentArea = document.querySelector('main');
+
+        if (mainContentArea && mobileHeader) {
+            // Auto-compact header when scrolling down
+            mainContentArea.addEventListener('scroll', function() {
+                const scrollTop = mainContentArea.scrollTop;
+
+                // Scrolling down past 50px -> compact
+                if (scrollTop > 50 && scrollTop > lastScrollTop) {
+                    mobileHeader.classList.add('header-compact');
+                }
+                // Near top (< 20px) -> expand
+                else if (scrollTop < 20) {
+                    mobileHeader.classList.remove('header-compact');
+                }
+
+                lastScrollTop = scrollTop;
+            });
+
+            // Click header to toggle size (except when clicking hamburger)
+            mobileHeader.addEventListener('click', function(e) {
+                if (!e.target.closest('.hamburger-btn')) {
+                    mobileHeader.classList.toggle('header-compact');
+                }
+            });
         }
 
         // Close sidebar when clicking a tab menu item
