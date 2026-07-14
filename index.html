@@ -131,12 +131,16 @@
             
             <div class="flex items-center gap-4 animate-slide-up" style="animation-delay: 0.1s;">
                 <div class="flex items-center gap-1 bg-slate-50 border border-slate-200 rounded-xl p-1 shadow-inner">
-                    <button id="btn-undo" onclick="undo()" disabled class="interactive-btn text-slate-400 px-3 py-2 rounded-lg text-sm font-semibold cursor-not-allowed transition-all active:scale-95" title="Hoàn tác (Ctrl+Z)">
+                    <button id="btn-undo" onclick="undo()" disabled class="interactive-btn text-slate-400 px-3 py-2 rounded-lg text-sm font-semibold cursor-not-allowed transition-all active:scale-95 outline-none focus:outline-none" title="Hoàn tác (Ctrl+Z)">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" /></svg>
                     </button>
                     <div class="w-px h-5 bg-slate-200 mx-1"></div>
-                    <button id="btn-redo" onclick="redo()" disabled class="interactive-btn text-slate-400 px-3 py-2 rounded-lg text-sm font-semibold cursor-not-allowed transition-all active:scale-95" title="Làm lại (Ctrl+Shift+Z / Ctrl+Y)">
+                    <button id="btn-redo" onclick="redo()" disabled class="interactive-btn text-slate-400 px-3 py-2 rounded-lg text-sm font-semibold cursor-not-allowed transition-all active:scale-95 outline-none focus:outline-none" title="Làm lại (Ctrl+Shift+Z / Ctrl+Y)">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 10h-10a8 8 0 00-8 8v2M21 10l-6 6m6-6l-6-6" /></svg>
+                    </button>
+                    <div class="w-px h-5 bg-slate-200 mx-1"></div>
+                    <button onclick="showHistoryModal()" class="interactive-btn text-slate-700 hover:text-indigo-600 hover:bg-white hover:shadow px-3 py-2 rounded-lg text-sm font-semibold cursor-pointer transition-all active:scale-95 outline-none focus:outline-none" title="Lịch sử thao tác">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                     </button>
                 </div>
 
@@ -462,6 +466,28 @@
         </main>
     </div>
 
+    <!-- History Modal -->
+    <div id="history-modal" class="fixed inset-0 bg-slate-900/50 z-[100] hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform scale-95 transition-transform duration-300">
+            <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                <h3 class="font-bold text-slate-800 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    Lịch Sử Chỉnh Sửa
+                </h3>
+                <button onclick="closeHistoryModal()" class="text-slate-400 hover:text-rose-500 transition-colors p-1 rounded-lg hover:bg-rose-50 outline-none">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div id="history-list" class="p-4 max-h-[60vh] overflow-y-auto custom-scrollbar space-y-3 bg-slate-50/50">
+                <!-- History items will be inserted here -->
+            </div>
+            <div class="px-6 py-3 border-t border-slate-100 bg-slate-50 flex justify-between items-center">
+                <span class="text-xs text-slate-500 font-medium">Lưu trữ tối đa 50 thao tác gần nhất</span>
+                <button onclick="clearHistory()" class="text-xs font-bold text-rose-500 hover:text-rose-700 bg-rose-50 px-3 py-1.5 rounded-lg transition-colors">Xóa Lịch Sử</button>
+            </div>
+        </div>
+    </div>
+
     <div id="toast-container" class="fixed bottom-6 right-6 z-[9999] flex flex-col gap-3"></div>
 
     <script>
@@ -488,8 +514,56 @@
             }
         }
 
+        // === HISTORY LOG MỚI ===
+        let activityLog = JSON.parse(localStorage.getItem('mvActivityLog')) || [];
+
+        function logActivity(message) {
+            if (message.includes("Không có gì")) return;
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' ' + now.toLocaleDateString('vi-VN');
+            activityLog.unshift({ time: timeStr, action: message });
+            if (activityLog.length > 50) activityLog.pop();
+            localStorage.setItem('mvActivityLog', JSON.stringify(activityLog));
+        }
+
+        function showHistoryModal() {
+            const modal = document.getElementById('history-modal');
+            const list = document.getElementById('history-list');
+            modal.classList.remove('hidden');
+            setTimeout(() => { modal.classList.remove('opacity-0'); modal.querySelector('div').classList.remove('scale-95'); }, 10);
+            
+            list.innerHTML = activityLog.length === 0 ? '<div class="text-center text-slate-400 py-4 text-sm font-medium">Chưa có thao tác nào được ghi nhận</div>' : '';
+            activityLog.forEach(log => {
+                list.innerHTML += `
+                    <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm flex flex-col gap-1">
+                        <span class="text-slate-700 font-medium text-sm">${log.action}</span>
+                        <span class="text-slate-400 text-[11px] font-medium flex items-center gap-1">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            ${log.time}
+                        </span>
+                    </div>
+                `;
+            });
+        }
+
+        function closeHistoryModal() {
+            const modal = document.getElementById('history-modal');
+            modal.classList.add('opacity-0');
+            modal.querySelector('div').classList.add('scale-95');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        function clearHistory() {
+            if(confirm("Bạn có chắc chắn muốn xóa toàn bộ lịch sử thao tác?")) {
+                activityLog = [];
+                localStorage.removeItem('mvActivityLog');
+                showHistoryModal();
+            }
+        }
+
         // === TOAST & ANIMATIONS MỚI ===
         function showToast(message, type = 'success') {
+            logActivity(message);
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
             const icon = type === 'success' ? '✅' : (type === 'error' ? '❌' : 'ℹ️');
