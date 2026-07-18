@@ -1753,10 +1753,10 @@
                                 const btnP = attStatus === 'present' ? 'bg-emerald-500 text-white' : 'bg-slate-200 text-slate-500 hover:bg-emerald-100 hover:text-emerald-700';
                                 const btnO = attStatus === 'off' ? 'bg-rose-500 text-white' : 'bg-slate-200 text-slate-500 hover:bg-rose-100 hover:text-rose-700';
                                 html += `
-                                    <div class="flex items-center justify-between text-[10px] py-1.5 border-b border-slate-50 last:border-0 gap-1 hover:bg-slate-50 rounded px-1 transition-colors">
+                                    <div class="flex flex-wrap items-center justify-between text-[10px] py-1.5 border-b border-slate-50 last:border-0 gap-1 hover:bg-slate-50 rounded px-1 transition-colors">
                                         <span class="font-bold text-slate-700 w-8 flex-shrink-0">${entry.start}</span>
-                                        <span class="font-bold text-slate-800 flex-1 whitespace-normal leading-tight pr-1">${student.name}</span>
-                                        <div class="flex gap-1 items-center flex-shrink-0">
+                                        <span class="font-bold text-slate-800 flex-1 min-w-[50px] whitespace-normal leading-tight pr-1">${student.name}</span>
+                                        <div class="flex gap-1 items-center flex-shrink-0 ml-auto">
                                             <span class="text-[8px] px-1.5 py-0.5 rounded border ${teacher.colorClass} shadow-sm font-semibold mr-1">${teacher.display}</span>
                                             <button onclick="markAttendance('${entry.id}', '${dateKey}', 'present', '${student.id}')" class="${btnP} w-4 h-4 rounded flex items-center justify-center font-bold transition-colors">✓</button>
                                             <button onclick="markAttendance('${entry.id}', '${dateKey}', 'off', '${student.id}')" class="${btnO} w-4 h-4 rounded flex items-center justify-center font-bold transition-colors">✗</button>
