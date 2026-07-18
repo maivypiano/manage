@@ -1533,8 +1533,8 @@
                                 const btnO = attStatus === 'off' ? 'bg-rose-500 text-white' : 'bg-slate-200 text-slate-500 hover:bg-rose-100 hover:text-rose-700';
                                 html += `
                                     <div class="flex items-center justify-between text-[10px] py-1.5 border-b border-slate-50 last:border-0 gap-1 hover:bg-slate-50 rounded px-1 transition-colors">
-                                        <span class="font-bold text-slate-700 w-8">${entry.start}</span>
-                                        <span class="font-bold text-slate-800 truncate flex-1">${student.name}</span>
+                                        <span class="font-bold text-slate-700 w-8 flex-shrink-0">${entry.start}</span>
+                                        <span class="font-bold text-slate-800 flex-1 min-w-0 whitespace-normal break-words leading-tight">${student.name}</span>
                                         <div class="flex gap-1 items-center flex-shrink-0">
                                             <span class="text-[8px] px-1.5 py-0.5 rounded border ${teacher.colorClass} shadow-sm font-semibold mr-1">${teacher.display}</span>
                                             <button onclick="markAttendance('${entry.id}', '${dateKey}', 'present', '${student.id}')" class="${btnP} w-4 h-4 rounded flex items-center justify-center font-bold transition-colors">✓</button>
@@ -1555,7 +1555,7 @@
                                             <span class="text-[8px] font-bold border shadow-sm ${branchObj.colorClass} px-2 py-1 rounded-lg">${entry.branch}</span>
                                         </div>
                                         <div class="mb-3.5">
-                                            <p class="font-bold text-slate-900 text-[13px] truncate" title="${student.name}">${student.name}</p>
+                                            <p class="font-bold text-slate-900 text-[13px] whitespace-normal break-words leading-tight" title="${student.name}">${student.name}</p>
                                             <span class="px-2 py-1 rounded-lg text-[9px] font-bold border shadow-sm ${teacher.colorClass} mt-1.5 inline-block">${teacher.display}</span>
                                         </div>
                                         <div class="flex gap-2 pt-3 border-t border-slate-100/80 relative">
