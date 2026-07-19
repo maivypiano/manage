@@ -72,17 +72,17 @@
 
     <aside id="sidebar" class="w-64 bg-white border-r border-slate-200 flex flex-col flex-shrink-0 z-30 shadow-[2px_0_20px_rgba(0,0,0,0.1)] fixed inset-y-0 left-0 transform transition-transform duration-300">
         <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto custom-scrollbar mt-4">
-            <button id="nav-sheet1" onclick="switchTab('sheet1', 'Danh Sách Tổng Hợp')" class="nav-btn interactive-btn w-full flex items-center gap-3 px-4 py-3 text-sm rounded-xl transition-all duration-300 bg-indigo-50 text-indigo-700 font-bold hover:-translate-y-0.5 hover:shadow-md active:scale-95">
+            <button id="nav-sheet3" onclick="switchTab('sheet3', 'Lịch Trực Quan & Điểm Danh')" class="nav-btn interactive-btn w-full flex items-center gap-3 px-4 py-3 text-sm rounded-xl transition-all duration-300 bg-indigo-50 text-indigo-700 font-bold hover:-translate-y-0.5 hover:shadow-md active:scale-95">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                Lịch Học & Điểm Danh
+            </button>
+            <button id="nav-sheet1" onclick="switchTab('sheet1', 'Danh Sách Tổng Hợp')" class="nav-btn interactive-btn w-full flex items-center gap-3 px-4 py-3 text-sm rounded-xl transition-all duration-300 text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium hover:-translate-y-0.5 active:scale-95">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                 Quản Lý Danh Sách
             </button>
             <button id="nav-sheet2" onclick="switchTab('sheet2', 'Dữ Liệu Lịch Trực (Master Data)')" class="nav-btn interactive-btn w-full flex items-center gap-3 px-4 py-3 text-sm rounded-xl transition-all duration-300 text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium hover:-translate-y-0.5 active:scale-95">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
                 Master Data
-            </button>
-            <button id="nav-sheet3" onclick="switchTab('sheet3', 'Lịch Trực Quan & Điểm Danh')" class="nav-btn interactive-btn w-full flex items-center gap-3 px-4 py-3 text-sm rounded-xl transition-all duration-300 text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium hover:-translate-y-0.5 active:scale-95">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                Lịch Học & Điểm Danh
             </button>
             <button id="nav-sheet4" onclick="switchTab('sheet4', 'Thống Kê Hoạt Động')" class="nav-btn interactive-btn w-full flex items-center gap-3 px-4 py-3 text-sm rounded-xl transition-all duration-300 text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium hover:-translate-y-0.5 active:scale-95">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
@@ -370,8 +370,8 @@
                             <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
                         </div>
                         <select id="view-filter-week" onchange="renderWeeklySchedule()" class="bg-white font-bold border-transparent rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm text-indigo-700 transition-all cursor-pointer">
-                            <option value="all" selected>Cả Tháng</option>
-                            <option value="summary">Xem Tổng Quát</option>
+                            <option value="all">Cả Tháng</option>
+                            <option value="summary" selected>Xem Tổng Quát</option>
                             <option value="1">Tuần 1</option>
                             <option value="2">Tuần 2</option>
                             <option value="3">Tuần 3</option>
@@ -692,7 +692,7 @@
             initApp();
             updateUndoRedoUI();
             
-            switchTab('sheet1', 'Danh Sách Tổng Hợp');
+            switchTab('sheet3', 'Lịch Học & Điểm Danh');
         };
 
         function captureState() {
@@ -1532,10 +1532,10 @@
                                 const btnP = attStatus === 'present' ? 'bg-emerald-500 text-white' : 'bg-slate-200 text-slate-500 hover:bg-emerald-100 hover:text-emerald-700';
                                 const btnO = attStatus === 'off' ? 'bg-rose-500 text-white' : 'bg-slate-200 text-slate-500 hover:bg-rose-100 hover:text-rose-700';
                                 html += `
-                                    <div class="flex items-center justify-between text-[10px] py-1.5 border-b border-slate-50 last:border-0 gap-1 hover:bg-slate-50 rounded px-1 transition-colors">
+                                    <div class="flex flex-wrap items-center justify-between text-[10px] py-1.5 border-b border-slate-50 last:border-0 gap-1 hover:bg-slate-50 rounded px-1 transition-colors">
                                         <span class="font-bold text-slate-700 w-8 flex-shrink-0">${entry.start}</span>
-                                        <span class="font-bold text-slate-800 flex-1 min-w-0 whitespace-normal break-words leading-tight">${student.name}</span>
-                                        <div class="flex gap-1 items-center flex-shrink-0">
+                                        <span class="font-bold text-slate-800 flex-1 min-w-[50px] whitespace-normal leading-tight pr-1">${student.name}</span>
+                                        <div class="flex gap-1 items-center flex-shrink-0 ml-auto">
                                             <span class="text-[8px] px-1.5 py-0.5 rounded border ${teacher.colorClass} shadow-sm font-semibold mr-1">${teacher.display}</span>
                                             <button onclick="markAttendance('${entry.id}', '${dateKey}', 'present', '${student.id}')" class="${btnP} w-4 h-4 rounded flex items-center justify-center font-bold transition-colors">✓</button>
                                             <button onclick="markAttendance('${entry.id}', '${dateKey}', 'off', '${student.id}')" class="${btnO} w-4 h-4 rounded flex items-center justify-center font-bold transition-colors">✗</button>
@@ -1555,7 +1555,7 @@
                                             <span class="text-[8px] font-bold border shadow-sm ${branchObj.colorClass} px-2 py-1 rounded-lg">${entry.branch}</span>
                                         </div>
                                         <div class="mb-3.5">
-                                            <p class="font-bold text-slate-900 text-[13px] whitespace-normal break-words leading-tight" title="${student.name}">${student.name}</p>
+                                            <p class="font-bold text-slate-900 text-[13px] whitespace-normal leading-tight" title="${student.name}">${student.name}</p>
                                             <span class="px-2 py-1 rounded-lg text-[9px] font-bold border shadow-sm ${teacher.colorClass} mt-1.5 inline-block">${teacher.display}</span>
                                         </div>
                                         <div class="flex gap-2 pt-3 border-t border-slate-100/80 relative">
