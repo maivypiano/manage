@@ -1423,11 +1423,6 @@
         }
 
         function renderWeeklySchedule() {
-            const selectedWeek = document.getElementById('view-filter-week').value; 
-            const filterTeacher = document.getElementById('view-filter-teacher').value;
-            const filterBranch = document.getElementById('view-filter-branch').value;
-            const isSummary = selectedWeek === 'summary';
-            
             const parts = currentMonth.split('-'); 
             const year = parseInt(parts[0]); 
             const month = parseInt(parts[1]);
@@ -1439,17 +1434,24 @@
             const firstDayOfWeek = firstDateOfMonth.getDay(); 
             const offset = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1; 
             const startDateOfCalendar = new Date(year, month - 1, 1 - offset); 
-
+            
             const totalDaysSpanned = offset + daysInMonth;
             const totalWeeks = Math.ceil(totalDaysSpanned / 7);
             
+            let forceAutoSelect = false;
+            if (window.lastAutoSelectedMonth !== currentMonth) {
+                forceAutoSelect = true;
+                window.lastAutoSelectedMonth = currentMonth;
+            }
+
             const now = new Date();
             const weekSelect = document.getElementById('view-filter-week');
             if (weekSelect) {
-                const currentWeekVal = weekSelect.value;
+                let currentWeekVal = weekSelect.value;
                 while (weekSelect.options.length > 2) {
                     weekSelect.remove(2);
                 }
+                let autoSelectWeek = null;
                 for (let w = 1; w <= 5; w++) {
                     const weekStart = new Date(startDateOfCalendar);
                     weekStart.setDate(startDateOfCalendar.getDate() + (w - 1) * 7);
