@@ -1472,9 +1472,18 @@
                     }
                     weekSelect.add(new Option(label, w.toString()));
                 }
+                
+                if (forceAutoSelect) {
+                    currentWeekVal = autoSelectWeek ? autoSelectWeek : 'summary';
+                }
                 weekSelect.value = currentWeekVal;
             }
             
+            const selectedWeek = document.getElementById('view-filter-week').value; 
+            const filterTeacher = document.getElementById('view-filter-teacher').value;
+            const filterBranch = document.getElementById('view-filter-branch').value;
+            const isSummary = selectedWeek === 'summary';
+
             days.forEach((dayName, dayIndex) => {
                 const col = document.getElementById(`day-col-${dayName}`);
                 let html = `
@@ -1578,6 +1587,7 @@
                                         <span class="font-bold text-slate-700 w-8 flex-shrink-0">${entry.start}</span>
                                         <span class="font-bold text-slate-800 flex-1 min-w-[50px] whitespace-normal leading-tight pr-1">${student.name}</span>
                                         <div class="flex gap-1 items-center flex-shrink-0 ml-auto">
+                                            <span class="text-[8px] px-1.5 py-0.5 rounded border ${branchObj.colorClass} shadow-sm font-semibold mr-1">${entry.branch}</span>
                                             <span class="text-[8px] px-1.5 py-0.5 rounded border ${teacher.colorClass} shadow-sm font-semibold mr-1">${teacher.display}</span>
                                             <button onclick="markAttendance('${entry.id}', '${dateKey}', 'present', '${student.id}')" class="${btnP} w-4 h-4 rounded flex items-center justify-center font-bold transition-colors">✓</button>
                                             <button onclick="markAttendance('${entry.id}', '${dateKey}', 'off', '${student.id}')" class="${btnO} w-4 h-4 rounded flex items-center justify-center font-bold transition-colors">✗</button>
