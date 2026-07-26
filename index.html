@@ -197,6 +197,7 @@
                         </div>
                         <div class="p-4 border-b border-slate-100 bg-slate-50/80">
                             <form onsubmit="addStudent(event)" class="flex flex-wrap gap-2">
+                                <input type="text" id="new-student-id" placeholder="Mã ID (tự động)..." class="bg-white border border-slate-200 rounded-lg px-2.5 py-2 text-sm w-36 focus:outline-none focus:ring-2 focus:ring-sky-500 font-bold text-sky-700 transition-all" title="Mã ID học viên (tự động nếu để trống)">
                                 <input type="text" id="new-student-name" placeholder="Tên học viên..." required class="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm flex-1 focus:outline-none focus:ring-2 focus:ring-sky-500 transition-all">
                                 <input type="text" id="new-student-phone" placeholder="SĐT..." class="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm w-32 focus:outline-none focus:ring-2 focus:ring-sky-500 transition-all">
                                 <input type="number" id="new-student-lessons" placeholder="Số buổi..." class="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm w-24 focus:outline-none focus:ring-2 focus:ring-sky-500 transition-all">
@@ -207,6 +208,7 @@
                             <table class="w-full text-left border-collapse table-cell-nowrap">
                                 <thead class="bg-slate-50/90 backdrop-blur-md sticky top-0 z-10 shadow-sm">
                                     <tr class="text-[11px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-200">
+                                        <th class="py-3 px-4">Mã HV</th>
                                         <th class="py-3 px-4">Học Viên</th>
                                         <th class="py-3 px-4">SĐT</th>
                                         <th class="py-3 px-4">Số Buổi ĐK</th>
@@ -764,6 +766,29 @@
             return (subSelectEl && subSelectEl.value) ? subSelectEl.value : mainTeacherId;
         }
 
+        function getTeacherDisplayHtml(entry) {
+            const teacher = teachers.find(t => t.id === entry.teacherId) || { display: "GV", colorClass: "bg-slate-100 text-slate-800 border-slate-300" };
+            if (entry.type === 'substitute' && entry.subTeacherId) {
+                const subT = teachers.find(t => t.id === entry.subTeacherId) || { display: entry.subTeacherId, colorClass: "bg-teal-100 text-teal-800 border-teal-300" };
+                return {
+                    text: `${teacher.display} ➔ <b class="text-teal-700 font-bold">${subT.display}</b>`,
+                    plainText: `${teacher.display} ➔ ${subT.display}`,
+                    colorClass: "bg-teal-50 text-teal-900 border-teal-300 ring-1 ring-teal-200"
+                };
+            } else if (entry.type === 'substitute') {
+                return {
+                    text: `${teacher.display} (Thế)`,
+                    plainText: `${teacher.display} (Thế)`,
+                    colorClass: "bg-teal-50 text-teal-900 border-teal-300"
+                };
+            }
+            return {
+                text: teacher.display,
+                plainText: teacher.display,
+                colorClass: teacher.colorClass
+            };
+        }
+
         function openQuickEditScheduleModal(scheduleId, dateKey) {
             const entry = schedule.find(s => s.id === scheduleId);
             if (!entry) return;
@@ -781,7 +806,7 @@
             teacherSelect.innerHTML = teachers.map(t => `<option value="${t.id}" ${t.id === entry.teacherId ? 'selected' : ''}>${t.display} (${t.id})</option>`).join('');
             
             const subSelect = document.getElementById('qe-sub-teacher-select');
-            if (subSelect) subSelect.innerHTML = teachers.map(t => `<option value="${t.id}" ${t.id === entry.teacherId ? 'selected' : ''}>${t.display} (${t.id})</option>`).join('');
+            if (subSelect) subSelect.innerHTML = teachers.map(t => `<option value="${t.id}" ${t.id === (entry.subTeacherId || entry.teacherId) ? 'selected' : ''}>${t.display} (${t.id})</option>`).join('');
             const subInput = document.getElementById('qe-sub-teacher-input');
             if (subInput) subInput.value = '';
 
@@ -819,8 +844,9 @@
             const entry = schedule.find(s => s.id === schedId);
             if (!entry) return;
 
+            let newSubTeacherId = null;
             if (newType === 'substitute') {
-                newTeacherId = resolveTeacherSelection(newTeacherId, 'qe-sub-teacher-select', 'qe-sub-teacher-input', true);
+                newSubTeacherId = resolveTeacherSelection(newTeacherId, 'qe-sub-teacher-select', 'qe-sub-teacher-input', true);
             }
 
             saveStateToHistory();
@@ -829,6 +855,8 @@
                 entry.start = newStart;
                 entry.end = newEnd;
                 entry.teacherId = newTeacherId;
+                if (newType === 'substitute') entry.subTeacherId = newSubTeacherId;
+                else delete entry.subTeacherId;
                 entry.branch = newBranch;
                 entry.type = newType;
                 showToast("Đã cập nhật cố định ca gốc trong Master Data");
@@ -842,6 +870,7 @@
                     id: "sched_" + Date.now() + Math.floor(Math.random() * 100),
                     studentId: entry.studentId,
                     teacherId: newTeacherId,
+                    subTeacherId: newSubTeacherId,
                     branch: newBranch,
                     start: newStart,
                     end: newEnd,
@@ -849,6 +878,7 @@
                     exactDates: [dateKey],
                     weeks: []
                 };
+                if (newType !== 'substitute') delete newEntry.subTeacherId;
                 schedule.push(newEntry);
                 showToast(`Đã điều chỉnh lịch riêng cho ngày ${dateKey.split('-').reverse().join('/')} vào Master Data`);
             }
@@ -941,25 +971,30 @@
             
             if (!studentId || !teacherId) { showToast('Vui lòng chọn đầy đủ thông tin', 'error'); return; }
             
+            let subTeacherId = null;
             if (type === 'substitute') {
-                teacherId = resolveTeacherSelection(teacherId, 'qa-sub-teacher-select', 'qa-sub-teacher-input', true);
+                subTeacherId = resolveTeacherSelection(teacherId, 'qa-sub-teacher-select', 'qa-sub-teacher-input', true);
             }
             
             saveStateToHistory();
             
             const newId = 'C' + Date.now() + Math.floor(Math.random() * 1000);
+            const newEntryObj = {
+                id: newId,
+                studentId,
+                teacherId,
+                subTeacherId,
+                start,
+                end,
+                branch,
+                type
+            };
+            if (type !== 'substitute') delete newEntryObj.subTeacherId;
+
             if (scope === 'recurring') {
-                schedule.push({
-                    id: newId,
-                    studentId,
-                    teacherId,
-                    start,
-                    end,
-                    branch,
-                    type,
-                    day: dayName,
-                    weeks: [1, 2, 3, 4, 5]
-                });
+                newEntryObj.day = dayName;
+                newEntryObj.weeks = [1, 2, 3, 4, 5];
+                schedule.push(newEntryObj);
                 showToast(`Đã thêm lịch cố định vào ${dayName} trong Master Data!`);
             } else {
                 const selectedDates = Array.from(document.querySelectorAll('input[name="qa-exact-dates"]:checked')).map(cb => cb.value);
@@ -968,16 +1003,8 @@
                     return;
                 }
                 selectedDates.sort();
-                schedule.push({
-                    id: newId,
-                    studentId,
-                    teacherId,
-                    start,
-                    end,
-                    branch,
-                    type,
-                    exactDates: selectedDates
-                });
+                newEntryObj.exactDates = selectedDates;
+                schedule.push(newEntryObj);
                 showToast(`Đã thêm lịch cho ${selectedDates.length} buổi vào Master Data!`);
             }
             
@@ -1050,8 +1077,8 @@
             { id: "T1", name: "Minh Phạm", display: "Minh", phone: "0339901506", email: "", bank: "", colorClass: "bg-yellow-100 text-yellow-800 border-yellow-300" }
         ];
         const DEFAULT_STUDENTS = [
-            { id: "S1", name: "Chị Hằng", phone: "", lessons: 24, completedLessons: 0 },
-            { id: "S2", name: "Phúc An", phone: "", lessons: 24, completedLessons: 10 }
+            { id: "HV01", name: "Chị Hằng", phone: "", lessons: 24, completedLessons: 0 },
+            { id: "HV02", name: "Phúc An", phone: "", lessons: 24, completedLessons: 10 }
         ];
         const DEFAULT_BRANCHES = [
             { id: "B1", name: "Cơ sở 1", colorClass: "bg-slate-100 text-slate-800 border-slate-300" }
@@ -1447,6 +1474,30 @@
             initApp();
         };
 
+        window.editStudentId = function(id, td) {
+            if (td.getAttribute('data-editing')) return;
+            td.setAttribute('data-editing', 'true');
+            td.innerHTML = `<input type="text" value="${id}" class="w-20 bg-white border-2 border-indigo-400 rounded-lg px-1.5 py-1 text-xs font-bold focus:outline-none shadow-[0_0_10px_rgba(79,70,229,0.2)]" onblur="saveStudentId('${id}', this.value)" onkeydown="if(event.key==='Enter') this.blur();">`;
+            td.querySelector('input').focus();
+        };
+        window.saveStudentId = function(oldId, newId) {
+            newId = newId.trim();
+            if (!newId || newId === oldId) { initApp(); return; }
+            if (students.some(s => s.id.toLowerCase() === newId.toLowerCase())) { showToast('Mã Học Viên này đã tồn tại!', 'error'); initApp(); return; }
+            const s = students.find(s => s.id === oldId);
+            if (s) {
+                saveStateToHistory(); 
+                s.id = newId;
+                Object.values(monthlyData).forEach(m => {
+                    if (m.schedule) m.schedule.forEach(sc => { if (sc.studentId === oldId) sc.studentId = newId; });
+                });
+                schedule.forEach(sc => { if (sc.studentId === oldId) sc.studentId = newId; });
+                saveData();
+                showToast("Đã cập nhật Mã HV");
+            }
+            initApp();
+        };
+
         window.editTeacherDisplay = function(id, td) {
             if (td.getAttribute('data-editing')) return;
             const teacher = teachers.find(t => t.id === id);
@@ -1556,6 +1607,7 @@
 
                 return `
                 <tr class="hover:bg-sky-50/50 transition-colors animate-slide-up" style="animation-delay: ${index * 0.05}s; opacity: 0; animation-fill-mode: forwards;">
+                    <td class="py-3 px-4 font-bold text-slate-400 cursor-pointer hover:text-sky-600 transition-colors" onclick="editStudentId('${s.id}', this)" ondblclick="editStudentId('${s.id}', this)" title="Bấm để xem/sửa Mã HV">...</td>
                     <td class="py-3 px-4 font-bold text-slate-800 cursor-pointer" ondblclick="editField('students', '${s.id}', 'name', this)">${s.name}</td>
                     <td class="py-3 px-4 text-slate-600 cursor-pointer" ondblclick="editField('students', '${s.id}', 'phone', this)">${s.phone||'-'}</td>
                     <td class="py-3 px-4 font-semibold text-slate-700 cursor-pointer" ondblclick="editField('students', '${s.id}', 'lessons', this)" title="Nháy đúp để sửa số buổi ĐK">${s.lessons}</td>
@@ -1588,13 +1640,37 @@
             saveData(); initApp(); e.target.reset(); 
             showToast(`Đã thêm GV: ${name}`);
         }
+        function generateNextStudentId() {
+            let maxNum = 0;
+            students.forEach(s => {
+                const match = s.id.match(/^(?:HV|S)(\d+)$/i);
+                if (match) {
+                    const num = parseInt(match[1], 10);
+                    if (num > maxNum) maxNum = num;
+                }
+            });
+            let nextNum = maxNum + 1;
+            let nextId = `HV${String(nextNum).padStart(2, '0')}`;
+            while (students.some(s => s.id.toLowerCase() === nextId.toLowerCase())) {
+                nextNum++;
+                nextId = `HV${String(nextNum).padStart(2, '0')}`;
+            }
+            return nextId;
+        }
         function addStudent(e){ 
             e.preventDefault(); saveStateToHistory(); 
-            const n = document.getElementById('new-student-name').value; 
+            const n = document.getElementById('new-student-name').value.trim(); 
             const l = document.getElementById('new-student-lessons').value; 
-            students.push({id:'S'+Date.now(), name:n, phone:document.getElementById('new-student-phone').value, lessons: parseInt(l)||0, completedLessons:0}); 
+            const idEl = document.getElementById('new-student-id');
+            let customId = idEl && idEl.value ? idEl.value.trim() : '';
+            if (customId && students.some(s => s.id.toLowerCase() === customId.toLowerCase())) {
+                showToast("Mã ID học viên đã tồn tại!");
+                return;
+            }
+            const newId = customId || generateNextStudentId();
+            students.push({id: newId, name: n, phone: document.getElementById('new-student-phone').value.trim(), lessons: parseInt(l)||0, completedLessons:0}); 
             saveData(); initApp(); e.target.reset(); 
-            showToast(`Đã thêm HV: ${n}`);
+            showToast(`Đã thêm HV: ${n} (${newId})`);
         }
         function addBranch(e){ 
             e.preventDefault(); saveStateToHistory(); 
@@ -1755,24 +1831,28 @@
             const branch = document.getElementById('form-branch').value;
             const type = document.getElementById('form-type').value;
 
+            let subTeacherId = null;
             if (type === 'substitute') {
-                teacherId = resolveTeacherSelection(teacherId, 'form-sub-teacher-select', 'form-sub-teacher-input', true);
+                subTeacherId = resolveTeacherSelection(teacherId, 'form-sub-teacher-select', 'form-sub-teacher-input', true);
             }
 
             saveStateToHistory(); 
 
             selectedDates.sort();
             
-            schedule.push({ 
+            const newEntryObj = { 
                 id: 'C' + Date.now() + Math.floor(Math.random() * 1000), 
                 studentId, 
-                teacherId, 
+                teacherId,
+                subTeacherId,
                 start, 
                 end, 
                 branch, 
                 type,
                 exactDates: selectedDates
-            });
+            };
+            if (type !== 'substitute') delete newEntryObj.subTeacherId;
+            schedule.push(newEntryObj);
             
             saveData(); initApp();
             
@@ -1842,13 +1922,13 @@
                 else if (entry.type === 'substitute') typeBadge = `<span class="bg-teal-100 text-teal-800 text-[10px] px-2 py-1 rounded font-bold">Dạy thế</span>`;
                 else if (entry.type === 'trial') typeBadge = `<span class="bg-purple-100 text-purple-800 text-[10px] px-2 py-1 rounded font-bold">Học thử</span>`;
 
-                const tDispMaster = entry.type === 'substitute' ? `${teacher.display} (Thế)` : teacher.display;
+                const tInfo = getTeacherDisplayHtml(entry);
 
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-50 transition-colors animate-slide-up" style="animation-delay: ${idx * 0.03}s; opacity: 0; animation-fill-mode: forwards;">
                         <td class="py-3 px-4 text-slate-400 text-xs font-medium">${index+1}</td>
                         <td class="py-3 px-4 font-bold text-slate-800 cursor-pointer" ondblclick="editMasterStudent(${index}, this)">${student.name}</td>
-                        <td class="py-3 px-4 cursor-pointer" ondblclick="editMasterTeacher(${index}, this)"><span class="px-2.5 py-1 rounded-md text-xs font-semibold border shadow-sm ${teacher.colorClass}">${tDispMaster}</span></td>
+                        <td class="py-3 px-4 cursor-pointer" ondblclick="editMasterTeacher(${index}, this)"><span class="px-2.5 py-1 rounded-md text-xs font-semibold border shadow-sm ${tInfo.colorClass}">${tInfo.plainText}</span></td>
                         <td class="py-3 px-4 cursor-pointer" ondblclick="editMasterTime(${index}, this)"><span class="font-bold text-slate-700">${dayDisplay}</span> <span class="text-[11px] font-medium text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded-md ml-1 border border-slate-200 shadow-sm">${entry.start} - ${entry.end}</span></td>
                         <td class="py-3 px-4 cursor-pointer" ondblclick="editMasterBranch(${index}, this)"><span class="text-xs px-2.5 py-1 rounded-md border shadow-sm ${branchObj.colorClass} font-medium">${entry.branch}</span></td>
                         <td class="py-3 px-4 flex gap-1 items-center flex-wrap cursor-pointer min-h-[50px]" ondblclick="editMasterDate(${index}, this)">${dateBadge}</td>
@@ -2037,7 +2117,7 @@
                             matchDate = (entry.day === dayName && entry.weeks && entry.weeks.includes(displayWeekNum));
                         }
                         return matchDate &&
-                               (filterTeacher ? entry.teacherId === filterTeacher : true) &&
+                               (filterTeacher ? (entry.teacherId === filterTeacher || entry.subTeacherId === filterTeacher) : true) &&
                                (filterBranch ? entry.branch === filterBranch : true);
                     });
                     
@@ -2052,6 +2132,7 @@
                             const teacher = teachers.find(t => t.id === entry.teacherId);
                             const branchObj = branches.find(b => b.name === entry.branch) || { name: entry.branch, colorClass: "bg-slate-100 text-slate-800" };
                             if (!student || !teacher) return;
+                            const tInfo = getTeacherDisplayHtml(entry);
 
                             const attendanceKey = `${entry.id}_${dateKey}`;
                             const attStatus = attendanceData[attendanceKey];
@@ -2065,7 +2146,7 @@
                                 const btnP = attStatus === 'present' ? 'bg-emerald-500 text-white' : 'bg-slate-200 text-slate-500 hover:bg-emerald-100 hover:text-emerald-700';
                                 const btnO = attStatus === 'off' ? 'bg-rose-500 text-white' : 'bg-slate-200 text-slate-500 hover:bg-rose-100 hover:text-rose-700';
                                 html += `
-                                    <div ondblclick="openQuickEditScheduleModal('${entry.id}', '${dateKey}')" class="py-2 border-b border-slate-100 last:border-0 hover:bg-indigo-50/50 rounded-lg px-1 transition-colors cursor-pointer group/item relative">
+                                    <div ondblclick="openQuickEditScheduleModal('${entry.id}', '${dateKey}')" class="py-2 border-b border-slate-100 last:border-0 hover:bg-indigo-50/50 rounded-lg px-1.5 transition-colors cursor-pointer group/item relative">
                                         <div class="flex items-center justify-between gap-1 mb-1">
                                             <div class="flex items-center gap-1">
                                                 <span class="text-[10px] font-bold text-indigo-700 bg-indigo-50/80 px-1.5 py-0.5 rounded border border-indigo-100">${entry.start}</span>
@@ -2080,7 +2161,7 @@
                                         <p class="font-bold text-slate-800 text-[11px] leading-tight break-words pr-1">${student.name}</p>
                                         <div class="flex items-center gap-1 mt-1.5 flex-wrap">
                                             <span class="text-[8px] px-1.5 py-0.5 rounded border ${branchObj.colorClass} shadow-sm font-semibold">${entry.branch}</span>
-                                            <span class="text-[8px] px-1.5 py-0.5 rounded border ${teacher.colorClass} shadow-sm font-semibold">${teacher.display}</span>
+                                            <span class="text-[8px] px-1.5 py-0.5 rounded border ${tInfo.colorClass} shadow-sm font-semibold">${tInfo.text}</span>
                                         </div>
                                     </div>
                                 `;
@@ -2104,7 +2185,7 @@
                                         </div>
                                         <div class="mb-3.5">
                                             <p class="font-bold text-slate-900 text-[13px] whitespace-normal leading-tight" title="${student.name}">${student.name}</p>
-                                            <span class="px-2 py-1 rounded-lg text-[9px] font-bold border shadow-sm ${teacher.colorClass} mt-1.5 inline-block">${teacher.display}</span>
+                                            <span class="px-2 py-1 rounded-lg text-[9px] font-bold border shadow-sm ${tInfo.colorClass} mt-1.5 inline-block">${tInfo.text}</span>
                                         </div>
                                         <div class="flex gap-2 pt-3 border-t border-slate-100/80 relative">
                                             <button onclick="markAttendance('${entry.id}', '${dateKey}', 'present', '${student.id}'); event.stopPropagation();" class="interactive-btn ${btnPresentClass} flex-1 text-[10px] font-bold py-2 rounded-lg transition-all duration-300 active:scale-95">Lên lớp</button>
@@ -2152,7 +2233,10 @@
                     }
 
                     let s = schedule.find(x => x.id === schedId);
-                    if (s && stats[s.teacherId] !== undefined) stats[s.teacherId]++;
+                    if (s) {
+                        const targetTid = (s.type === 'substitute' && s.subTeacherId) ? s.subTeacherId : s.teacherId;
+                        if (stats[targetTid] !== undefined) stats[targetTid]++;
+                    }
                 }
             }
 
