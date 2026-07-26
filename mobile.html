@@ -2401,7 +2401,7 @@
 
                 for (let w = 1; w <= totalWeeks; w++) {
                     const displayWeekNum = w > 5 ? 5 : w; 
-                    if (selectedWeek !== 'all' && !compactMode && parseInt(selectedWeek) !== displayWeekNum) continue;
+                    if (selectedWeek !== 'all' && !isSummary && parseInt(selectedWeek) !== displayWeekNum) continue;
 
                     hasAnyDate = true;
                     const currentDate = new Date(startDateOfCalendar);
