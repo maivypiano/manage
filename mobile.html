@@ -224,6 +224,18 @@
             <p id="loading-status-text" class="text-[11px] font-bold text-slate-400 mt-3">Đang tải 35%...</p>
         </div>
     </div>
+    <script>
+        // Watchdog tự cứu nguy cho điện thoại: Bất kể mạng hay trình duyệt di động (Safari/Zalo/Chrome) tải chậm đến đâu,
+        // sau đúng 1 giây kể từ khi dựng giao diện, chắc chắn 100% tự động ẩn và xóa màn hình loading!
+        setTimeout(function() {
+            var screen = document.getElementById('app-loading-screen');
+            if (screen && screen.parentNode) {
+                screen.style.opacity = '0';
+                screen.style.pointerEvents = 'none';
+                setTimeout(function() { if(screen && screen.parentNode) screen.remove(); }, 500);
+            }
+        }, 1000);
+    </script>
 
     <!-- Overlay for mobile sidebar -->
     <div id="sidebar-overlay" class="fixed inset-0 bg-slate-900/50 z-20 hidden opacity-0 transition-opacity duration-300" onclick="toggleSidebar()"></div>
@@ -1317,13 +1329,16 @@
         });
 
         // BẢN VÁ LỖI LOAD TRANG & FETCH DỮ LIỆU
-        window.onload = function() {
+        function startApp() {
+            if (window.appStarted) return;
+            window.appStarted = true;
+
             const loadingFill = document.getElementById('loading-bar-fill');
             const loadingText = document.getElementById('loading-status-text');
             if (loadingFill) loadingFill.style.width = '50%';
             if (loadingText) loadingText.textContent = 'Đang tải dữ liệu 50%...';
 
-            if (typeof populateColors === 'function') populateColors();
+            if (typeof populateColors === 'function') try { populateColors(); } catch(e){}
             
             const now = new Date();
             const realCurrentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
@@ -1350,24 +1365,23 @@
                 monthlyData[currentMonth] = { schedule: [], attendanceData: {} };
             }
             
-            syncCurrentMonthPointers();
-            initApp();
-            updateUndoRedoUI();
+            try { syncCurrentMonthPointers(); } catch(e){}
+            try { initApp(); } catch(e){}
+            try { updateUndoRedoUI(); } catch(e){}
             
             if (loadingFill) loadingFill.style.width = '100%';
             if (loadingText) loadingText.textContent = 'Hoàn tất 100%';
 
             // Tuyệt đối không chờ mạng (tránh treo trên điện thoại): Tắt loading screen và vào Lịch học ngay lập tức
             setTimeout(() => {
-                try {
-                    switchTab('sheet3', 'Lịch Học & Điểm Danh');
-                } catch(e) {}
+                try { switchTab('sheet3', 'Lịch Học & Điểm Danh'); } catch(e) {}
                 const screen = document.getElementById('app-loading-screen');
                 if (screen) {
-                    screen.classList.add('opacity-0', 'pointer-events-none');
-                    setTimeout(() => screen.remove(), 500);
+                    screen.style.opacity = '0';
+                    screen.style.pointerEvents = 'none';
+                    setTimeout(() => { if(screen && screen.parentNode) screen.remove(); }, 500);
                 }
-            }, 300);
+            }, 200);
 
             // 2. BACKGROUND SYNC: Đồng bộ ngầm từ server về (Không block UI, tự động hủy nếu quá 10s)
             setTimeout(async () => {
@@ -1410,7 +1424,15 @@
                     console.log("Đồng bộ ngầm kết thúc hoặc sử dụng cache."); 
                 }
             }, 500);
-        };
+        }
+
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            setTimeout(startApp, 1);
+        } else {
+            document.addEventListener('DOMContentLoaded', startApp);
+            window.addEventListener('load', startApp);
+        }
+        setTimeout(startApp, 1000); // Failsafe dự phòng khởi chạy sau 1s
 
         function captureState() {
             return {
