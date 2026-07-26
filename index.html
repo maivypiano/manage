@@ -279,10 +279,19 @@
                         </div>
                         <div class="xl:col-span-2">
                             <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Loại Lịch</label>
-                            <select id="form-type" class="w-full bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all">
+                            <select id="form-type" onchange="toggleSubTeacherWrap('form-type', 'wrap-form-sub-teacher')" class="w-full bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all">
                                 <option value="main">Cố định</option>
                                 <option value="makeup">Bù / Tạm</option>
+                                <option value="substitute">Dạy thế</option>
+                                <option value="trial">Học thử</option>
                             </select>
+                        </div>
+                        <div id="wrap-form-sub-teacher" class="hidden xl:col-span-4 p-2 bg-teal-50/80 border border-teal-200 rounded-xl flex flex-col justify-center animate-fade-in">
+                            <label class="block text-[10px] font-bold text-teal-800 uppercase tracking-wider mb-1">Chọn hoặc Nhập GV Dạy Thế:</label>
+                            <div class="flex gap-2">
+                                <select id="form-sub-teacher-select" class="w-1/2 bg-white border border-teal-300 rounded-lg px-2 py-1 text-xs font-bold text-teal-900"></select>
+                                <input type="text" id="form-sub-teacher-input" placeholder="Hoặc nhập tên GV mới..." class="w-1/2 bg-white border border-teal-300 rounded-lg px-2 py-1 text-xs font-bold text-teal-900">
+                            </div>
                         </div>
 
                         <div class="xl:col-span-7 bg-white border border-slate-200 p-2.5 rounded-xl shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] transition-all hover:border-indigo-300 relative">
@@ -371,7 +380,7 @@
                         </div>
                         <select id="view-filter-week" onchange="renderWeeklySchedule()" class="bg-white font-bold border-transparent rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm text-indigo-700 transition-all cursor-pointer">
                             <option value="all">Cả Tháng</option>
-                            <option value="summary" selected>Xem Tổng Quát</option>
+                            <option value="summary">Xem Tổng Quát</option>
                             <option value="1">Tuần 1</option>
                             <option value="2">Tuần 2</option>
                             <option value="3">Tuần 3</option>
@@ -443,10 +452,21 @@
                     </div>
                 </div>
 
-                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden w-full lg:w-2/3 mx-auto mt-8 hover:shadow-lg transition-shadow duration-500">
-                    <div class="p-5 border-b border-slate-100 bg-white flex justify-between items-center">
-                        <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">Chi Tiết Số Ca Đã Dạy Của Giáo Viên</h3>
-                        <span class="text-xs bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-md border border-emerald-100 font-bold">Chỉ tính ca "Lên lớp"</span>
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden w-full lg:w-3/4 mx-auto mt-8 hover:shadow-lg transition-shadow duration-500">
+                    <div class="p-5 border-b border-slate-100 bg-white flex flex-wrap justify-between items-center gap-3">
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">Chi Tiết Số Ca Đã Dạy Của Giáo Viên</h3>
+                            <p id="stats-period-desc" class="text-[11px] text-slate-400 font-medium mt-0.5">Đang hiển thị: Cả tháng (Phục vụ tổng kết tháng)</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <label class="text-xs font-bold text-slate-600">Kỳ lương:</label>
+                            <select id="stats-period-filter" onchange="renderTeacherStats()" class="bg-indigo-50 border border-indigo-200 text-indigo-700 font-bold rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm cursor-pointer transition-all">
+                                <option value="all">Cả tháng (Ngày 1 - hết tháng)</option>
+                                <option value="period1">Đợt 1 (Ngày 1 - 15)</option>
+                                <option value="period2">Đợt 2 (Ngày 16 - hết tháng)</option>
+                            </select>
+                            <span class="text-xs bg-emerald-50 text-emerald-600 px-2.5 py-1.5 rounded-md border border-emerald-100 font-bold">Chỉ tính "Lên lớp"</span>
+                        </div>
                     </div>
                     <div class="p-0">
                         <table class="w-full text-left border-collapse table-cell-nowrap">
@@ -484,6 +504,158 @@
             <div class="px-6 py-3 border-t border-slate-100 bg-slate-50 flex justify-between items-center">
                 <span class="text-xs text-slate-500 font-medium">Lưu trữ tối đa 50 thao tác gần nhất</span>
                 <button onclick="clearHistory()" class="text-xs font-bold text-rose-500 hover:text-rose-700 bg-rose-50 px-3 py-1.5 rounded-lg transition-colors">Xóa Lịch Sử</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Edit Schedule Modal -->
+    <div id="quick-edit-modal" class="fixed inset-0 bg-slate-900/50 z-[100] hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform scale-95 transition-transform duration-300">
+            <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-indigo-50/50">
+                <h3 class="font-bold text-indigo-900 flex items-center gap-2 text-base">
+                    <span>⚡</span> Điều Chỉnh Ca Học (<span id="qe-date-display" class="text-indigo-600 font-extrabold"></span>)
+                </h3>
+                <button onclick="closeQuickEditScheduleModal()" class="text-slate-400 hover:text-rose-500 transition-colors p-1 rounded-lg hover:bg-rose-50 outline-none">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div class="p-6 space-y-4 text-left">
+                <input type="hidden" id="qe-schedule-id">
+                <input type="hidden" id="qe-date-key">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Học sinh</label>
+                    <input type="text" id="qe-student-name" class="w-full bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 text-sm font-bold text-slate-700 cursor-not-allowed" disabled>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Giờ bắt đầu</label>
+                        <input type="time" id="qe-start-time" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-bold text-indigo-600 focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Giờ kết thúc</label>
+                        <input type="time" id="qe-end-time" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-bold text-indigo-600 focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Giáo viên (Đổi người dạy / Dạy thế)</label>
+                    <select id="qe-teacher-select" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500"></select>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Cơ sở</label>
+                        <select id="qe-branch-select" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500"></select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Phân loại buổi học</label>
+                        <select id="qe-type-select" onchange="toggleSubTeacherWrap('qe-type-select', 'wrap-qe-sub-teacher')" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-bold text-indigo-700 focus:ring-2 focus:ring-indigo-500">
+                            <option value="main">Chính thức</option>
+                            <option value="makeup">Lịch bù / Tạm</option>
+                            <option value="substitute">Dạy thế</option>
+                            <option value="trial">Học thử</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="wrap-qe-sub-teacher" class="hidden p-3 bg-teal-50/80 border border-teal-200 rounded-xl space-y-2 animate-fade-in">
+                    <label class="block text-xs font-bold text-teal-800 uppercase tracking-wider">Chọn hoặc Nhập GV Dạy Thế:</label>
+                    <div class="flex gap-2">
+                        <select id="qe-sub-teacher-select" class="w-1/2 bg-white border border-teal-300 rounded-lg px-2 py-1.5 text-xs font-bold text-teal-900"></select>
+                        <input type="text" id="qe-sub-teacher-input" placeholder="Hoặc nhập tên GV mới..." class="w-1/2 bg-white border border-teal-300 rounded-lg px-2 py-1.5 text-xs font-bold text-teal-900">
+                    </div>
+                </div>
+                <div class="pt-2 border-t border-slate-100">
+                    <label class="block text-xs font-bold text-slate-600 mb-2">Phạm vi áp dụng (Cập nhật Master Data):</label>
+                    <div class="space-y-2 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                        <label class="flex items-center gap-2 text-xs font-bold text-indigo-700 cursor-pointer">
+                            <input type="radio" name="qe-scope" value="only_today" checked class="text-indigo-600 focus:ring-indigo-500">
+                            <span>Chỉ riêng hôm nay (Tự động thêm vào Master Data cho ngày này, xóa lịch cũ ngày này)</span>
+                        </label>
+                        <label class="flex items-center gap-2 text-xs font-medium text-slate-600 cursor-pointer">
+                            <input type="radio" name="qe-scope" value="all_weeks" class="text-indigo-600 focus:ring-indigo-500">
+                            <span>Cập nhật cố định ca gốc trong Master Data (Áp dụng các tuần)</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="px-6 py-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">
+                <button onclick="closeQuickEditScheduleModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-200 transition-colors">Hủy</button>
+                <button onclick="saveQuickEditSchedule()" class="px-5 py-2 rounded-xl text-xs font-bold bg-indigo-600 text-white hover:bg-indigo-700 shadow-md transition-all">Lưu & Đồng bộ Master Data</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Add Schedule Modal -->
+    <div id="quick-add-modal" class="fixed inset-0 bg-slate-900/50 z-[100] hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform scale-95 transition-transform duration-300">
+            <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-indigo-50/50">
+                <h3 class="font-bold text-indigo-900 flex items-center gap-2 text-base">
+                    <span>➕</span> Thêm Lịch Mới (<span id="qa-day-display" class="text-indigo-600 font-extrabold"></span>)
+                </h3>
+                <button onclick="closeQuickAddScheduleModal()" class="text-slate-400 hover:text-rose-500 transition-colors p-1 rounded-lg hover:bg-rose-50 outline-none">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div class="p-6 space-y-4 text-left max-h-[75vh] overflow-y-auto custom-scrollbar">
+                <input type="hidden" id="qa-day-name">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Học sinh</label>
+                    <select id="qa-student-select" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500"></select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Giáo viên</label>
+                    <select id="qa-teacher-select" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500"></select>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Giờ bắt đầu</label>
+                        <input type="time" id="qa-start-time" value="08:00" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-bold text-indigo-600 focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Giờ kết thúc</label>
+                        <input type="time" id="qa-end-time" value="09:30" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-bold text-indigo-600 focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Cơ sở</label>
+                        <select id="qa-branch-select" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500"></select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Phân loại</label>
+                        <select id="qa-type-select" onchange="toggleSubTeacherWrap('qa-type-select', 'wrap-qa-sub-teacher')" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-bold text-indigo-700 focus:ring-2 focus:ring-indigo-500">
+                            <option value="main">Chính thức</option>
+                            <option value="makeup">Lịch bù / Tạm</option>
+                            <option value="substitute">Dạy thế</option>
+                            <option value="trial">Học thử</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="wrap-qa-sub-teacher" class="hidden p-3 bg-teal-50/80 border border-teal-200 rounded-xl space-y-2 animate-fade-in">
+                    <label class="block text-xs font-bold text-teal-800 uppercase tracking-wider">Chọn hoặc Nhập GV Dạy Thế:</label>
+                    <div class="flex gap-2">
+                        <select id="qa-sub-teacher-select" class="w-1/2 bg-white border border-teal-300 rounded-lg px-2 py-1.5 text-xs font-bold text-teal-900"></select>
+                        <input type="text" id="qa-sub-teacher-input" placeholder="Hoặc nhập tên GV mới..." class="w-1/2 bg-white border border-teal-300 rounded-lg px-2 py-1.5 text-xs font-bold text-teal-900">
+                    </div>
+                </div>
+                <div class="pt-2 border-t border-slate-100">
+                    <label class="block text-xs font-bold text-slate-600 mb-2">Chế độ tạo lịch (Lưu vào Master Data):</label>
+                    <div class="space-y-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                        <label class="flex items-start gap-2 text-xs font-bold text-indigo-700 cursor-pointer">
+                            <input type="radio" name="qa-scope" value="recurring" checked onchange="toggleQaDateSelection(this.value)" class="mt-0.5 text-indigo-600 focus:ring-indigo-500">
+                            <span>Cố định hàng tuần vào <span id="qa-scope-day-name"></span> (Lịch cố định các tuần)</span>
+                        </label>
+                        <label class="flex items-start gap-2 text-xs font-medium text-slate-600 cursor-pointer">
+                            <input type="radio" name="qa-scope" value="specific_dates" onchange="toggleQaDateSelection(this.value)" class="mt-0.5 text-indigo-600 focus:ring-indigo-500">
+                            <span>Chỉ chọn các ngày cụ thể trong tháng này:</span>
+                        </label>
+                        <div id="qa-dates-list" class="hidden grid grid-cols-2 gap-1.5 pl-5 pt-1">
+                            <!-- Dynamically generated dates for this day in the month -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="px-6 py-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">
+                <button onclick="closeQuickAddScheduleModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-200 transition-colors">Hủy</button>
+                <button onclick="saveQuickAddSchedule()" class="px-5 py-2 rounded-xl text-xs font-bold bg-indigo-600 text-white hover:bg-indigo-700 shadow-md transition-all">Lưu vào Master Data</button>
             </div>
         </div>
     </div>
@@ -559,6 +731,259 @@
                 localStorage.removeItem('mvActivityLog');
                 showHistoryModal();
             }
+        }
+
+        function toggleSubTeacherWrap(selectId, wrapId) {
+            const val = document.getElementById(selectId).value;
+            const wrap = document.getElementById(wrapId);
+            if (!wrap) return;
+            if (val === 'substitute') {
+                wrap.classList.remove('hidden');
+            } else {
+                wrap.classList.add('hidden');
+            }
+        }
+
+        function resolveTeacherSelection(mainTeacherId, subSelectId, subInputId, isSub) {
+            if (!isSub) return mainTeacherId;
+            const customNameEl = document.getElementById(subInputId);
+            const subSelectEl = document.getElementById(subSelectId);
+            const customName = customNameEl ? customNameEl.value.trim() : '';
+            if (customName) {
+                const exist = teachers.find(t => t.id === customName || t.display.toLowerCase() === customName.toLowerCase() || t.name.toLowerCase() === customName.toLowerCase());
+                if (exist) return exist.id;
+                const newT = {
+                    id: customName,
+                    name: customName,
+                    display: customName,
+                    colorClass: "bg-teal-50 text-teal-800 border-teal-200 shadow-2xs"
+                };
+                teachers.push(newT);
+                return customName;
+            }
+            return (subSelectEl && subSelectEl.value) ? subSelectEl.value : mainTeacherId;
+        }
+
+        function openQuickEditScheduleModal(scheduleId, dateKey) {
+            const entry = schedule.find(s => s.id === scheduleId);
+            if (!entry) return;
+            const student = students.find(s => s.id === entry.studentId);
+            const modal = document.getElementById('quick-edit-modal');
+            
+            document.getElementById('qe-schedule-id').value = scheduleId;
+            document.getElementById('qe-date-key').value = dateKey;
+            document.getElementById('qe-date-display').textContent = dateKey.split('-').reverse().join('/');
+            document.getElementById('qe-student-name').value = student ? student.name : '';
+            document.getElementById('qe-start-time').value = entry.start || '';
+            document.getElementById('qe-end-time').value = entry.end || '';
+            
+            const teacherSelect = document.getElementById('qe-teacher-select');
+            teacherSelect.innerHTML = teachers.map(t => `<option value="${t.id}" ${t.id === entry.teacherId ? 'selected' : ''}>${t.display} (${t.id})</option>`).join('');
+            
+            const subSelect = document.getElementById('qe-sub-teacher-select');
+            if (subSelect) subSelect.innerHTML = teachers.map(t => `<option value="${t.id}" ${t.id === entry.teacherId ? 'selected' : ''}>${t.display} (${t.id})</option>`).join('');
+            const subInput = document.getElementById('qe-sub-teacher-input');
+            if (subInput) subInput.value = '';
+
+            const branchSelect = document.getElementById('qe-branch-select');
+            branchSelect.innerHTML = branches.map(b => `<option value="${b.name}" ${b.name === entry.branch ? 'selected' : ''}>${b.name}</option>`).join('');
+            
+            document.getElementById('qe-type-select').value = entry.type || 'main';
+            toggleSubTeacherWrap('qe-type-select', 'wrap-qe-sub-teacher');
+            
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modal.querySelector('div').classList.remove('scale-95');
+            }, 10);
+        }
+
+        function closeQuickEditScheduleModal() {
+            const modal = document.getElementById('quick-edit-modal');
+            modal.classList.add('opacity-0');
+            modal.querySelector('div').classList.add('scale-95');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        function saveQuickEditSchedule() {
+            const schedId = document.getElementById('qe-schedule-id').value;
+            const dateKey = document.getElementById('qe-date-key').value;
+            const newStart = document.getElementById('qe-start-time').value;
+            const newEnd = document.getElementById('qe-end-time').value;
+            let newTeacherId = document.getElementById('qe-teacher-select').value;
+            const newBranch = document.getElementById('qe-branch-select').value;
+            const newType = document.getElementById('qe-type-select').value;
+            const scopeEl = document.querySelector('input[name="qe-scope"]:checked');
+            const scope = scopeEl ? scopeEl.value : 'only_today';
+
+            const entry = schedule.find(s => s.id === schedId);
+            if (!entry) return;
+
+            if (newType === 'substitute') {
+                newTeacherId = resolveTeacherSelection(newTeacherId, 'qe-sub-teacher-select', 'qe-sub-teacher-input', true);
+            }
+
+            saveStateToHistory();
+
+            if (scope === 'all_weeks' || (entry.exactDates && entry.exactDates.length === 1 && entry.exactDates[0] === dateKey)) {
+                entry.start = newStart;
+                entry.end = newEnd;
+                entry.teacherId = newTeacherId;
+                entry.branch = newBranch;
+                entry.type = newType;
+                showToast("Đã cập nhật cố định ca gốc trong Master Data");
+            } else {
+                entry.excludedDates = entry.excludedDates || [];
+                if (!entry.excludedDates.includes(dateKey)) {
+                    entry.excludedDates.push(dateKey);
+                }
+                
+                const newEntry = {
+                    id: "sched_" + Date.now() + Math.floor(Math.random() * 100),
+                    studentId: entry.studentId,
+                    teacherId: newTeacherId,
+                    branch: newBranch,
+                    start: newStart,
+                    end: newEnd,
+                    type: newType,
+                    exactDates: [dateKey],
+                    weeks: []
+                };
+                schedule.push(newEntry);
+                showToast(`Đã điều chỉnh lịch riêng cho ngày ${dateKey.split('-').reverse().join('/')} vào Master Data`);
+            }
+
+            closeQuickEditScheduleModal();
+            saveData();
+            initApp();
+        }
+
+        function openQuickAddScheduleModal(dayName) {
+            const modal = document.getElementById('quick-add-modal');
+            if (!modal) return;
+            document.getElementById('qa-day-name').value = dayName;
+            document.getElementById('qa-day-display').textContent = dayName;
+            document.getElementById('qa-scope-day-name').textContent = dayName;
+            
+            document.getElementById('qa-student-select').innerHTML = students.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+            document.getElementById('qa-teacher-select').innerHTML = teachers.map(t => `<option value="${t.id}">${t.display} (${t.id})</option>`).join('');
+            document.getElementById('qa-branch-select').innerHTML = branches.map(b => `<option value="${b.name}">${b.name}</option>`).join('');
+            
+            const subSelect = document.getElementById('qa-sub-teacher-select');
+            if (subSelect) subSelect.innerHTML = teachers.map(t => `<option value="${t.id}">${t.display} (${t.id})</option>`).join('');
+            const subInput = document.getElementById('qa-sub-teacher-input');
+            if (subInput) subInput.value = '';
+            
+            document.getElementById('qa-type-select').value = 'main';
+            toggleSubTeacherWrap('qa-type-select', 'wrap-qa-sub-teacher');
+            
+            const parts = currentMonth.split('-'); 
+            const year = parseInt(parts[0]); 
+            const month = parseInt(parts[1]);
+            const daysInMonth = new Date(year, month, 0).getDate();
+            const daysName = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
+            
+            let datesHtml = '';
+            for(let i=1; i<=daysInMonth; i++) {
+                let dt = new Date(year, month - 1, i);
+                if (daysName[dt.getDay()] === dayName) {
+                    let dStr = formatDate(dt);
+                    let dDisp = `${String(i).padStart(2,'0')}/${String(month).padStart(2,'0')}`;
+                    datesHtml += `
+                        <label class="flex items-center gap-1.5 text-xs text-slate-700 bg-white p-1.5 rounded border border-slate-200 cursor-pointer hover:bg-slate-50">
+                            <input type="checkbox" name="qa-exact-dates" value="${dStr}" checked class="text-indigo-600 focus:ring-indigo-500 rounded">
+                            <span class="font-bold">${dDisp}</span>
+                        </label>
+                    `;
+                }
+            }
+            document.getElementById('qa-dates-list').innerHTML = datesHtml;
+            
+            const radioRec = document.querySelector('input[name="qa-scope"][value="recurring"]');
+            if (radioRec) radioRec.checked = true;
+            toggleQaDateSelection('recurring');
+            
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modal.querySelector('div').classList.remove('scale-95');
+            }, 10);
+        }
+
+        function closeQuickAddScheduleModal() {
+            const modal = document.getElementById('quick-add-modal');
+            if (!modal) return;
+            modal.classList.add('opacity-0');
+            modal.querySelector('div').classList.add('scale-95');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        function toggleQaDateSelection(val) {
+            const list = document.getElementById('qa-dates-list');
+            if (!list) return;
+            if (val === 'specific_dates') {
+                list.classList.remove('hidden');
+            } else {
+                list.classList.add('hidden');
+            }
+        }
+
+        function saveQuickAddSchedule() {
+            const dayName = document.getElementById('qa-day-name').value;
+            const studentId = document.getElementById('qa-student-select').value;
+            let teacherId = document.getElementById('qa-teacher-select').value;
+            const start = document.getElementById('qa-start-time').value;
+            const end = document.getElementById('qa-end-time').value;
+            const branch = document.getElementById('qa-branch-select').value;
+            const type = document.getElementById('qa-type-select').value;
+            const scopeEl = document.querySelector('input[name="qa-scope"]:checked');
+            const scope = scopeEl ? scopeEl.value : 'recurring';
+            
+            if (!studentId || !teacherId) { showToast('Vui lòng chọn đầy đủ thông tin', 'error'); return; }
+            
+            if (type === 'substitute') {
+                teacherId = resolveTeacherSelection(teacherId, 'qa-sub-teacher-select', 'qa-sub-teacher-input', true);
+            }
+            
+            saveStateToHistory();
+            
+            const newId = 'C' + Date.now() + Math.floor(Math.random() * 1000);
+            if (scope === 'recurring') {
+                schedule.push({
+                    id: newId,
+                    studentId,
+                    teacherId,
+                    start,
+                    end,
+                    branch,
+                    type,
+                    day: dayName,
+                    weeks: [1, 2, 3, 4, 5]
+                });
+                showToast(`Đã thêm lịch cố định vào ${dayName} trong Master Data!`);
+            } else {
+                const selectedDates = Array.from(document.querySelectorAll('input[name="qa-exact-dates"]:checked')).map(cb => cb.value);
+                if (selectedDates.length === 0) {
+                    showToast('Vui lòng chọn ít nhất 1 ngày', 'error');
+                    return;
+                }
+                selectedDates.sort();
+                schedule.push({
+                    id: newId,
+                    studentId,
+                    teacherId,
+                    start,
+                    end,
+                    branch,
+                    type,
+                    exactDates: selectedDates
+                });
+                showToast(`Đã thêm lịch cho ${selectedDates.length} buổi vào Master Data!`);
+            }
+            
+            closeQuickAddScheduleModal();
+            saveData();
+            initApp();
         }
 
         // === TOAST & ANIMATIONS MỚI ===
@@ -669,6 +1094,28 @@
             const realCurrentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
             currentMonth = realCurrentMonth; 
 
+            // 1. OFFLINE-FIRST: Tải trước từ cache cục bộ (Tốc độ mở trang 0ms)
+            try {
+                const cached = localStorage.getItem('mv_cache_data');
+                if (cached) {
+                    const data = JSON.parse(cached);
+                    if (data.teachers?.length > 0) teachers = data.teachers;
+                    if (data.students?.length > 0) students = data.students;
+                    if (data.branches?.length > 0) branches = data.branches;
+                    if (data.monthlyData && Object.keys(data.monthlyData).length > 0) {
+                        monthlyData = data.monthlyData;
+                    }
+                    if (!monthlyData[currentMonth]) {
+                        monthlyData[currentMonth] = { schedule: [], attendanceData: {} };
+                    }
+                    document.getElementById('month-input').value = currentMonth;
+                    syncCurrentMonthPointers();
+                    initApp();
+                    updateUndoRedoUI();
+                }
+            } catch(e) { console.log("Lỗi đọc cache:", e); }
+
+            // 2. BACKGROUND SYNC: Đồng bộ ngầm từ server về
             try {
                 const response = await fetch(API_URL + "?t=" + new Date().getTime());
                 const data = await response.json();
@@ -680,6 +1127,7 @@
                     if (data.monthlyData && Object.keys(data.monthlyData).length > 0) {
                         monthlyData = data.monthlyData;
                     }
+                    localStorage.setItem('mv_cache_data', JSON.stringify({ teachers, students, branches, monthlyData }));
                 }
             } catch (error) { console.log("Lỗi mạng, sử dụng dữ liệu cục bộ."); }
             
@@ -880,12 +1328,23 @@
             showToast("Đã đổi sang tháng " + currentMonth);
         }
 
+        let saveTimeout = null;
         async function saveData() {
             monthlyData[currentMonth] = { schedule, attendanceData };
             const payload = { teachers, students, branches, monthlyData };
+            
+            // 1. LƯU NGAY VÀO CACHE TRÌNH DUYỆT (Đảm bảo không bao giờ mất dữ liệu kể cả tắt trang)
             try {
-                await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
-            } catch (error) {}
+                localStorage.setItem('mv_cache_data', JSON.stringify(payload));
+            } catch(e) {}
+
+            // 2. DEBOUNCE / GỘP LỆNH GỬI LÊN SERVER (Trì hoãn 1.5s để giảm tải server 80%)
+            if (saveTimeout) clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(async () => {
+                try {
+                    await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
+                } catch (error) {}
+            }, 1500);
         }
 
         function initApp() {
@@ -1265,6 +1724,8 @@
                 <select class="w-full bg-white border-2 border-indigo-400 rounded-lg px-2 py-1.5 text-xs font-bold focus:outline-none shadow-[0_0_10px_rgba(79,70,229,0.2)]" onblur="saveMasterType(${index}, this.value)" onchange="this.blur()">
                     <option value="main" ${entry.type === 'main' ? 'selected' : ''}>Cố định</option>
                     <option value="makeup" ${entry.type === 'makeup' ? 'selected' : ''}>Bù/Tạm</option>
+                    <option value="substitute" ${entry.type === 'substitute' ? 'selected' : ''}>Dạy thế</option>
+                    <option value="trial" ${entry.type === 'trial' ? 'selected' : ''}>Học thử</option>
                 </select>
             `;
             td.querySelector('select').focus();
@@ -1275,6 +1736,8 @@
             ['form-student', 'form-teacher', 'form-branch', 'filter-teacher-master', 'view-filter-teacher', 'view-filter-branch'].forEach(id => document.getElementById(id).innerHTML='');
             document.getElementById('form-student').innerHTML = students.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
             document.getElementById('form-teacher').innerHTML = teachers.map(t => `<option value="${t.id}">${t.display}</option>`).join('');
+            const formSubSel = document.getElementById('form-sub-teacher-select');
+            if (formSubSel) formSubSel.innerHTML = teachers.map(t => `<option value="${t.id}">${t.display}</option>`).join('');
             document.getElementById('form-branch').innerHTML = branches.map(b => `<option value="${b.name}">${b.name}</option>`).join('');
             document.getElementById('filter-teacher-master').innerHTML = '<option value="">Tất cả giáo viên</option>' + teachers.map(t => `<option value="${t.id}">${t.display}</option>`).join('');
             document.getElementById('view-filter-teacher').innerHTML = '<option value="">Tất cả giáo viên</option>' + teachers.map(t => `<option value="${t.id}">${t.display}</option>`).join('');
@@ -1286,11 +1749,15 @@
             const selectedDates = Array.from(document.querySelectorAll('input[name="form-exact-dates"]:checked')).map(cb => cb.value);
             if(selectedDates.length === 0) { showToast("Vui lòng chọn ít nhất 1 ngày", "error"); return; }
             const studentId = document.getElementById('form-student').value;
-            const teacherId = document.getElementById('form-teacher').value;
+            let teacherId = document.getElementById('form-teacher').value;
             const start = document.getElementById('form-start').value;
             const end = document.getElementById('form-end').value;
             const branch = document.getElementById('form-branch').value;
             const type = document.getElementById('form-type').value;
+
+            if (type === 'substitute') {
+                teacherId = resolveTeacherSelection(teacherId, 'form-sub-teacher-select', 'form-sub-teacher-input', true);
+            }
 
             saveStateToHistory(); 
 
@@ -1370,13 +1837,18 @@
                 const dayDisplay = uniqueDays.length > 0 ? uniqueDays.join(', ') : '';
 
                 const dateBadge = (entry.exactDates || []).map(d => `<span class="bg-indigo-50 text-indigo-700 text-[11px] px-2 py-1 rounded-md font-bold border border-indigo-100">${d.split('-').reverse().join('/')}</span>`).join(' ');
-                const typeBadge = entry.type === 'makeup' ? `<span class="bg-amber-100 text-amber-800 text-[10px] px-2 py-1 rounded font-bold">Bù/Tạm</span>` : `<span class="bg-emerald-50 text-emerald-600 text-[10px] px-2 py-1 rounded font-semibold border border-emerald-100">Cố định</span>`;
+                let typeBadge = `<span class="bg-emerald-50 text-emerald-600 text-[10px] px-2 py-1 rounded font-semibold border border-emerald-100">Cố định</span>`;
+                if (entry.type === 'makeup') typeBadge = `<span class="bg-amber-100 text-amber-800 text-[10px] px-2 py-1 rounded font-bold">Lịch bù</span>`;
+                else if (entry.type === 'substitute') typeBadge = `<span class="bg-teal-100 text-teal-800 text-[10px] px-2 py-1 rounded font-bold">Dạy thế</span>`;
+                else if (entry.type === 'trial') typeBadge = `<span class="bg-purple-100 text-purple-800 text-[10px] px-2 py-1 rounded font-bold">Học thử</span>`;
+
+                const tDispMaster = entry.type === 'substitute' ? `${teacher.display} (Thế)` : teacher.display;
 
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-50 transition-colors animate-slide-up" style="animation-delay: ${idx * 0.03}s; opacity: 0; animation-fill-mode: forwards;">
                         <td class="py-3 px-4 text-slate-400 text-xs font-medium">${index+1}</td>
                         <td class="py-3 px-4 font-bold text-slate-800 cursor-pointer" ondblclick="editMasterStudent(${index}, this)">${student.name}</td>
-                        <td class="py-3 px-4 cursor-pointer" ondblclick="editMasterTeacher(${index}, this)"><span class="px-2.5 py-1 rounded-md text-xs font-semibold border shadow-sm ${teacher.colorClass}">${teacher.display}</span></td>
+                        <td class="py-3 px-4 cursor-pointer" ondblclick="editMasterTeacher(${index}, this)"><span class="px-2.5 py-1 rounded-md text-xs font-semibold border shadow-sm ${teacher.colorClass}">${tDispMaster}</span></td>
                         <td class="py-3 px-4 cursor-pointer" ondblclick="editMasterTime(${index}, this)"><span class="font-bold text-slate-700">${dayDisplay}</span> <span class="text-[11px] font-medium text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded-md ml-1 border border-slate-200 shadow-sm">${entry.start} - ${entry.end}</span></td>
                         <td class="py-3 px-4 cursor-pointer" ondblclick="editMasterBranch(${index}, this)"><span class="text-xs px-2.5 py-1 rounded-md border shadow-sm ${branchObj.colorClass} font-medium">${entry.branch}</span></td>
                         <td class="py-3 px-4 flex gap-1 items-center flex-wrap cursor-pointer min-h-[50px]" ondblclick="editMasterDate(${index}, this)">${dateBadge}</td>
@@ -1469,12 +1941,13 @@
 
                     if (now >= weekStartCheck && now <= weekEndCheck) {
                         label = `Tuần ${w} (Hiện tại) (${startStr} - ${endStr})`;
+                        autoSelectWeek = w.toString();
                     }
                     weekSelect.add(new Option(label, w.toString()));
                 }
                 
                 if (forceAutoSelect) {
-                    currentWeekVal = autoSelectWeek ? autoSelectWeek : 'summary';
+                    currentWeekVal = autoSelectWeek ? autoSelectWeek : '1';
                 }
                 weekSelect.value = currentWeekVal;
             }
@@ -1487,8 +1960,11 @@
             days.forEach((dayName, dayIndex) => {
                 const col = document.getElementById(`day-col-${dayName}`);
                 let html = `
-                    <div class="pb-3 mb-2 border-b border-slate-200/60 flex justify-center items-center sticky top-0 z-10 rounded-t-lg">
-                        <span class="font-bold ${dayName==='Chủ Nhật'?'text-rose-600 bg-rose-50 border-rose-200':'text-slate-700 bg-white border-slate-200/60 shadow-sm'} text-[11px] uppercase tracking-wider px-4 py-1.5 rounded-full border">${dayName}</span>
+                    <div class="pb-2.5 mb-2 border-b border-slate-200/60 flex flex-col gap-1.5 justify-center items-center sticky top-0 z-10 rounded-t-lg bg-slate-100/95 backdrop-blur-sm pt-1.5">
+                        <span class="font-bold ${dayName==='Chủ Nhật'?'text-rose-600 bg-rose-50 border-rose-200':'text-slate-700 bg-white border-slate-200/60 shadow-sm'} text-[11px] uppercase tracking-wider px-4 py-1 rounded-full border">${dayName}</span>
+                        <button onclick="openQuickAddScheduleModal('${dayName}')" class="text-[10px] font-bold text-indigo-600 bg-indigo-50/90 hover:bg-indigo-100 hover:text-indigo-700 border border-indigo-200/80 px-2.5 py-0.5 rounded-full transition-all shadow-2xs hover:scale-105 flex items-center gap-1 cursor-pointer w-4/5 justify-center">
+                            <span>+</span> Thêm lịch mới
+                        </button>
                     </div>
                     <div class="space-y-3 flex-1 custom-scrollbar overflow-y-auto max-h-[80vh] pr-1 pb-4 pt-1">
                 `;
@@ -1551,6 +2027,7 @@
                     }
 
                     let dayEvents = schedule.filter(entry => {
+                        if (entry.excludedDates && entry.excludedDates.includes(dateKey)) return false;
                         let matchDate = false;
                         if (entry.exactDates && entry.exactDates.length > 0) {
                             matchDate = entry.exactDates.includes(dateKey);
@@ -1579,40 +2056,59 @@
                             const attendanceKey = `${entry.id}_${dateKey}`;
                             const attStatus = attendanceData[attendanceKey];
 
+                            let badgeInline = '';
+                            if (entry.type === 'makeup') badgeInline = `<span class="text-[8px] bg-amber-500 text-white px-1 py-0.5 rounded font-bold">BÙ</span>`;
+                            else if (entry.type === 'substitute') badgeInline = `<span class="text-[8px] bg-emerald-500 text-white px-1 py-0.5 rounded font-bold">THẾ</span>`;
+                            else if (entry.type === 'trial') badgeInline = `<span class="text-[8px] bg-purple-500 text-white px-1 py-0.5 rounded font-bold">THỬ</span>`;
+
                             if (isSummary) {
                                 const btnP = attStatus === 'present' ? 'bg-emerald-500 text-white' : 'bg-slate-200 text-slate-500 hover:bg-emerald-100 hover:text-emerald-700';
                                 const btnO = attStatus === 'off' ? 'bg-rose-500 text-white' : 'bg-slate-200 text-slate-500 hover:bg-rose-100 hover:text-rose-700';
                                 html += `
-                                    <div class="flex flex-wrap items-center justify-between text-[10px] py-1.5 border-b border-slate-50 last:border-0 gap-1 hover:bg-slate-50 rounded px-1 transition-colors">
-                                        <span class="font-bold text-slate-700 w-8 flex-shrink-0">${entry.start}</span>
-                                        <span class="font-bold text-slate-800 flex-1 min-w-[50px] whitespace-normal leading-tight pr-1">${student.name}</span>
-                                        <div class="flex gap-1 items-center flex-shrink-0 ml-auto">
-                                            <span class="text-[8px] px-1.5 py-0.5 rounded border ${branchObj.colorClass} shadow-sm font-semibold mr-1">${entry.branch}</span>
-                                            <span class="text-[8px] px-1.5 py-0.5 rounded border ${teacher.colorClass} shadow-sm font-semibold mr-1">${teacher.display}</span>
-                                            <button onclick="markAttendance('${entry.id}', '${dateKey}', 'present', '${student.id}')" class="${btnP} w-4 h-4 rounded flex items-center justify-center font-bold transition-colors">✓</button>
-                                            <button onclick="markAttendance('${entry.id}', '${dateKey}', 'off', '${student.id}')" class="${btnO} w-4 h-4 rounded flex items-center justify-center font-bold transition-colors">✗</button>
+                                    <div ondblclick="openQuickEditScheduleModal('${entry.id}', '${dateKey}')" class="py-2 border-b border-slate-100 last:border-0 hover:bg-indigo-50/50 rounded-lg px-1 transition-colors cursor-pointer group/item relative">
+                                        <div class="flex items-center justify-between gap-1 mb-1">
+                                            <div class="flex items-center gap-1">
+                                                <span class="text-[10px] font-bold text-indigo-700 bg-indigo-50/80 px-1.5 py-0.5 rounded border border-indigo-100">${entry.start}</span>
+                                                ${badgeInline}
+                                            </div>
+                                            <div class="flex gap-1 items-center flex-shrink-0">
+                                                <button onclick="openQuickEditScheduleModal('${entry.id}', '${dateKey}'); event.stopPropagation();" class="text-slate-300 hover:text-indigo-600 px-1 text-[10px]" title="Sửa ca học">✎</button>
+                                                <button onclick="markAttendance('${entry.id}', '${dateKey}', 'present', '${student.id}'); event.stopPropagation();" class="${btnP} w-4 h-4 rounded flex items-center justify-center font-bold text-[9px] transition-all active:scale-95 shadow-sm" title="Lên lớp">✓</button>
+                                                <button onclick="markAttendance('${entry.id}', '${dateKey}', 'off', '${student.id}'); event.stopPropagation();" class="${btnO} w-4 h-4 rounded flex items-center justify-center font-bold text-[9px] transition-all active:scale-95 shadow-sm" title="Nghỉ">✗</button>
+                                            </div>
+                                        </div>
+                                        <p class="font-bold text-slate-800 text-[11px] leading-tight break-words pr-1">${student.name}</p>
+                                        <div class="flex items-center gap-1 mt-1.5 flex-wrap">
+                                            <span class="text-[8px] px-1.5 py-0.5 rounded border ${branchObj.colorClass} shadow-sm font-semibold">${entry.branch}</span>
+                                            <span class="text-[8px] px-1.5 py-0.5 rounded border ${teacher.colorClass} shadow-sm font-semibold">${teacher.display}</span>
                                         </div>
                                     </div>
                                 `;
                             } else {
                                 const btnPresentClass = attStatus === 'present' ? 'bg-emerald-500 text-white shadow-md shadow-emerald-200 transform scale-105 z-10' : 'bg-slate-100 text-slate-600 hover:bg-slate-200';
                                 const btnOffClass = attStatus === 'off' ? 'bg-rose-500 text-white shadow-md shadow-rose-200 transform scale-105 z-10' : 'bg-slate-100 text-slate-600 hover:bg-slate-200';
-                                const makeupTag = entry.type === 'makeup' ? `<span class="absolute -top-2 -right-2 bg-gradient-to-br from-amber-400 to-orange-500 text-white text-[9px] px-2 py-0.5 rounded-full font-bold shadow-md border border-white z-10 animate-pulse">BÙ</span>` : '';
+                                let typeTag = '';
+                                if (entry.type === 'makeup') typeTag = `<span class="absolute -top-2 -right-2 bg-gradient-to-br from-amber-400 to-orange-500 text-white text-[9px] px-2 py-0.5 rounded-full font-bold shadow-md border border-white z-10 animate-pulse">BÙ</span>`;
+                                else if (entry.type === 'substitute') typeTag = `<span class="absolute -top-2 -right-2 bg-gradient-to-br from-emerald-500 to-teal-600 text-white text-[9px] px-2 py-0.5 rounded-full font-bold shadow-md border border-white z-10">DẠY THẾ</span>`;
+                                else if (entry.type === 'trial') typeTag = `<span class="absolute -top-2 -right-2 bg-gradient-to-br from-purple-500 to-indigo-600 text-white text-[9px] px-2 py-0.5 rounded-full font-bold shadow-md border border-white z-10">HỌC THỬ</span>`;
 
                                 html += `
-                                    <div class="bg-white border ${attStatus==='present'?'border-emerald-400 ring-2 ring-emerald-100':(attStatus==='off'?'border-rose-400 ring-2 ring-rose-100':'border-slate-100 hover:border-indigo-300')} p-3.5 rounded-xl shadow-[0_2px_10px_rgba(0,0,0,0.03)] relative transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(0,0,0,0.06)] animate-slide-up" style="animation-delay: ${idx * 0.05}s; opacity: 0; animation-fill-mode: forwards;">
-                                        ${makeupTag}
+                                    <div ondblclick="openQuickEditScheduleModal('${entry.id}', '${dateKey}')" class="bg-white border ${attStatus==='present'?'border-emerald-400 ring-2 ring-emerald-100':(attStatus==='off'?'border-rose-400 ring-2 ring-rose-100':'border-slate-100 hover:border-indigo-300')} p-3.5 rounded-xl shadow-[0_2px_10px_rgba(0,0,0,0.03)] relative transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(0,0,0,0.06)] animate-slide-up cursor-pointer group/item" style="animation-delay: ${idx * 0.05}s; opacity: 0; animation-fill-mode: forwards;">
+                                        ${typeTag}
                                         <div class="flex justify-between items-center mb-2">
-                                            <span class="text-[10px] font-bold text-indigo-700 bg-indigo-50 px-2 py-1 rounded-lg border border-indigo-100 shadow-sm">${entry.start}</span>
-                                            <span class="text-[8px] font-bold border shadow-sm ${branchObj.colorClass} px-2 py-1 rounded-lg">${entry.branch}</span>
+                                            <span class="text-[10px] font-bold text-indigo-700 bg-indigo-50 px-2 py-1 rounded-lg border border-indigo-100 shadow-sm">${entry.start} - ${entry.end}</span>
+                                            <div class="flex items-center gap-1">
+                                                <button onclick="openQuickEditScheduleModal('${entry.id}', '${dateKey}'); event.stopPropagation();" class="text-slate-300 hover:text-indigo-600 px-1 text-xs" title="Sửa nhanh">✎</button>
+                                                <span class="text-[8px] font-bold border shadow-sm ${branchObj.colorClass} px-2 py-1 rounded-lg">${entry.branch}</span>
+                                            </div>
                                         </div>
                                         <div class="mb-3.5">
                                             <p class="font-bold text-slate-900 text-[13px] whitespace-normal leading-tight" title="${student.name}">${student.name}</p>
                                             <span class="px-2 py-1 rounded-lg text-[9px] font-bold border shadow-sm ${teacher.colorClass} mt-1.5 inline-block">${teacher.display}</span>
                                         </div>
                                         <div class="flex gap-2 pt-3 border-t border-slate-100/80 relative">
-                                            <button onclick="markAttendance('${entry.id}', '${dateKey}', 'present', '${student.id}')" class="interactive-btn ${btnPresentClass} flex-1 text-[10px] font-bold py-2 rounded-lg transition-all duration-300 active:scale-95">Lên lớp</button>
-                                            <button onclick="markAttendance('${entry.id}', '${dateKey}', 'off', '${student.id}')" class="interactive-btn ${btnOffClass} flex-1 text-[10px] font-bold py-2 rounded-lg transition-all duration-300 active:scale-95">Nghỉ</button>
+                                            <button onclick="markAttendance('${entry.id}', '${dateKey}', 'present', '${student.id}'); event.stopPropagation();" class="interactive-btn ${btnPresentClass} flex-1 text-[10px] font-bold py-2 rounded-lg transition-all duration-300 active:scale-95">Lên lớp</button>
+                                            <button onclick="markAttendance('${entry.id}', '${dateKey}', 'off', '${student.id}'); event.stopPropagation();" class="interactive-btn ${btnOffClass} flex-1 text-[10px] font-bold py-2 rounded-lg transition-all duration-300 active:scale-95">Nghỉ</button>
                                         </div>
                                     </div>
                                 `;
@@ -1631,11 +2127,30 @@
             const tbody = document.getElementById('teacher-stats-body');
             if(!tbody) return;
             tbody.innerHTML = '';
+            
+            const periodFilter = document.getElementById('stats-period-filter');
+            const periodVal = periodFilter ? periodFilter.value : 'all';
+            const descEl = document.getElementById('stats-period-desc');
+            if (descEl) {
+                if (periodVal === 'period1') descEl.textContent = 'Đang hiển thị: Đợt 1 (Ngày 1 đến ngày 15) - Phục vụ thanh toán lương Đợt 1';
+                else if (periodVal === 'period2') descEl.textContent = 'Đang hiển thị: Đợt 2 (Ngày 16 đến ngày cuối tháng) - Phục vụ thanh toán lương Đợt 2';
+                else descEl.textContent = 'Đang hiển thị: Cả tháng (Ngày 1 đến ngày cuối tháng) - Tổng kết toàn bộ';
+            }
+
             let stats = {};
             teachers.forEach(t => stats[t.id] = 0);
             for (let key in attendanceData) {
                 if (attendanceData[key] === 'present') {
-                    let schedId = key.split('_')[0];
+                    let parts = key.split('_');
+                    let schedId = parts[0];
+                    let dateStr = parts[1];
+                    
+                    if (periodVal !== 'all' && dateStr) {
+                        const dayNum = parseInt(dateStr.split('-')[2], 10);
+                        if (periodVal === 'period1' && dayNum > 15) continue;
+                        if (periodVal === 'period2' && dayNum <= 15) continue;
+                    }
+
                     let s = schedule.find(x => x.id === schedId);
                     if (s && stats[s.teacherId] !== undefined) stats[s.teacherId]++;
                 }
