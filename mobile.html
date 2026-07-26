@@ -1317,7 +1317,7 @@
         });
 
         // BẢN VÁ LỖI LOAD TRANG & FETCH DỮ LIỆU
-        window.onload = async function() {
+        window.onload = function() {
             const loadingFill = document.getElementById('loading-bar-fill');
             const loadingText = document.getElementById('loading-status-text');
             if (loadingFill) loadingFill.style.width = '50%';
@@ -1343,37 +1343,9 @@
                     if (data.monthlyData && Object.keys(data.monthlyData).length > 0) {
                         monthlyData = data.monthlyData;
                     }
-                    if (!monthlyData[currentMonth]) {
-                        monthlyData[currentMonth] = { schedule: [], attendanceData: {} };
-                    }
-                    syncCurrentMonthPointers();
-                    initApp();
                 }
             } catch(e) { console.log("Lỗi đọc cache mobile:", e); }
 
-            if (loadingFill) loadingFill.style.width = '80%';
-            if (loadingText) loadingText.textContent = 'Đang đồng bộ máy chủ 80%...';
-
-            // 2. BACKGROUND SYNC: Đồng bộ ngầm từ server về
-            try {
-                // Fetch API với cơ chế an toàn hơn
-                const response = await fetch(API_URL + "?t=" + new Date().getTime());
-                const data = await response.json();
-                
-                if (data && typeof data === 'object') {
-                    if (data.teachers?.length > 0) teachers = data.teachers;
-                    if (data.students?.length > 0) students = data.students;
-                    if (data.branches?.length > 0) branches = data.branches;
-                    if (data.monthlyData && Object.keys(data.monthlyData).length > 0) {
-                        monthlyData = data.monthlyData;
-                    }
-                    localStorage.setItem('mv_cache_data', JSON.stringify({ teachers, students, branches, monthlyData }));
-                }
-            } catch (error) { 
-                console.error("Lỗi tải dữ liệu:", error);
-                showToast("Lỗi kết nối máy chủ, đang dùng dữ liệu nội bộ", "error"); 
-            }
-            
             if (!monthlyData[currentMonth]) {
                 monthlyData[currentMonth] = { schedule: [], attendanceData: {} };
             }
@@ -1385,14 +1357,59 @@
             if (loadingFill) loadingFill.style.width = '100%';
             if (loadingText) loadingText.textContent = 'Hoàn tất 100%';
 
+            // Tuyệt đối không chờ mạng (tránh treo trên điện thoại): Tắt loading screen và vào Lịch học ngay lập tức
             setTimeout(() => {
-                switchTab('sheet3', 'Lịch Học & Điểm Danh');
+                try {
+                    switchTab('sheet3', 'Lịch Học & Điểm Danh');
+                } catch(e) {}
                 const screen = document.getElementById('app-loading-screen');
                 if (screen) {
                     screen.classList.add('opacity-0', 'pointer-events-none');
                     setTimeout(() => screen.remove(), 500);
                 }
             }, 300);
+
+            // 2. BACKGROUND SYNC: Đồng bộ ngầm từ server về (Không block UI, tự động hủy nếu quá 10s)
+            setTimeout(async () => {
+                try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 10000);
+                    const response = await fetch(API_URL + "?t=" + new Date().getTime(), { signal: controller.signal });
+                    clearTimeout(timeoutId);
+                    const data = await response.json();
+                    
+                    if (data && typeof data === 'object') {
+                        let updated = false;
+                        if (data.teachers?.length > 0) { teachers = data.teachers; updated = true; }
+                        if (data.students?.length > 0) { students = data.students; updated = true; }
+                        if (data.branches?.length > 0) { branches = data.branches; updated = true; }
+                        if (data.monthlyData && Object.keys(data.monthlyData).length > 0) {
+                            monthlyData = data.monthlyData;
+                            updated = true;
+                        }
+                        if (updated) {
+                            localStorage.setItem('mv_cache_data', JSON.stringify({ teachers, students, branches, monthlyData }));
+                            if (!monthlyData[currentMonth]) {
+                                monthlyData[currentMonth] = { schedule: [], attendanceData: {} };
+                            }
+                            syncCurrentMonthPointers();
+                            initApp();
+                            updateUndoRedoUI();
+                            
+                            const activeTabBtn = document.querySelector('.nav-btn.bg-indigo-50');
+                            if (activeTabBtn) {
+                                const tabId = activeTabBtn.id.replace('nav-', '');
+                                if (tabId === 'sheet1') { renderStudents(); renderTeachers(); renderBranches(); }
+                                else if (tabId === 'sheet2') { populateDropdowns(); renderDateSelector(); renderMasterTable(); }
+                                else if (tabId === 'sheet3') { renderWeeklySchedule(); }
+                                else if (tabId === 'sheet4') { renderTeacherStats(); if (typeof renderCharts === 'function') renderCharts(); }
+                            }
+                        }
+                    }
+                } catch (error) { 
+                    console.log("Đồng bộ ngầm kết thúc hoặc sử dụng cache."); 
+                }
+            }, 500);
         };
 
         function captureState() {
