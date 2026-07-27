@@ -8,7 +8,8 @@
         if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768) {
             window.location.href = "mobile.html" + window.location.search;
         }
-    </script>
+    
+</script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -95,22 +96,42 @@
     <div id="sidebar-overlay" class="fixed inset-0 bg-slate-900/50 z-20 hidden opacity-0 transition-opacity duration-300" onclick="toggleSidebar()"></div>
 
     <aside id="sidebar" class="w-64 bg-white border-r border-slate-200 flex flex-col flex-shrink-0 z-30 shadow-[2px_0_20px_rgba(0,0,0,0.1)] fixed inset-y-0 left-0 transform transition-transform duration-300">
-        <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto custom-scrollbar mt-4">
-            <button id="nav-sheet3" onclick="switchTab('sheet3', 'Lịch Trực Quan & Điểm Danh')" class="nav-btn interactive-btn w-full flex items-center gap-3 px-4 py-3 text-sm rounded-xl transition-all duration-300 bg-indigo-50 text-indigo-700 font-bold hover:-translate-y-0.5 hover:shadow-md active:scale-95">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto custom-scrollbar mt-4">
+            <button id="nav-sheet3" onclick="switchTab('sheet3', 'Lịch Trực Quan & Điểm Danh')" class="nav-btn interactive-btn w-full flex items-center gap-3 px-3 py-2.5 text-sm rounded-xl transition-all duration-300 bg-indigo-50 text-indigo-700 font-bold hover:-translate-y-0.5 hover:shadow-md active:scale-95">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-blue-600 text-white flex items-center justify-center shadow-sm flex-shrink-0">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                </div>
                 Lịch Học & Điểm Danh
             </button>
-            <button id="nav-sheet1" onclick="switchTab('sheet1', 'Danh Sách Tổng Hợp')" class="nav-btn interactive-btn w-full flex items-center gap-3 px-4 py-3 text-sm rounded-xl transition-all duration-300 text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium hover:-translate-y-0.5 active:scale-95">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+            <button id="nav-sheet1" onclick="switchTab('sheet1', 'Danh Sách Tổng Hợp')" class="nav-btn interactive-btn w-full flex items-center gap-3 px-3 py-2.5 text-sm rounded-xl transition-all duration-300 text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium hover:-translate-y-0.5 active:scale-95">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-sky-500 to-cyan-600 text-white flex items-center justify-center shadow-sm flex-shrink-0">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                </div>
                 Quản Lý Danh Sách
             </button>
-            <button id="nav-sheet2" onclick="switchTab('sheet2', 'Dữ Liệu Lịch Trực (Master Data)')" class="nav-btn interactive-btn w-full flex items-center gap-3 px-4 py-3 text-sm rounded-xl transition-all duration-300 text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium hover:-translate-y-0.5 active:scale-95">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
+            <button id="nav-sheet2" onclick="switchTab('sheet2', 'Dữ Liệu Lịch Trực (Master Data)')" class="nav-btn interactive-btn w-full flex items-center gap-3 px-3 py-2.5 text-sm rounded-xl transition-all duration-300 text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium hover:-translate-y-0.5 active:scale-95">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 text-white flex items-center justify-center shadow-sm flex-shrink-0">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
+                </div>
                 Master Data
             </button>
-            <button id="nav-sheet4" onclick="switchTab('sheet4', 'Thống Kê Hoạt Động')" class="nav-btn interactive-btn w-full flex items-center gap-3 px-4 py-3 text-sm rounded-xl transition-all duration-300 text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium hover:-translate-y-0.5 active:scale-95">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+            <button id="nav-accounting" onclick="switchTab('accounting', 'Mục Kế Toán & Bảng Lương')" class="nav-btn interactive-btn w-full flex items-center gap-3 px-3 py-2.5 text-sm rounded-xl transition-all duration-300 text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium hover:-translate-y-0.5 active:scale-95 hidden">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center shadow-sm flex-shrink-0">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+                Mục Kế Toán & Lương
+            </button>
+            <button id="nav-sheet4" onclick="switchTab('sheet4', 'Thống Kê Hoạt Động')" class="nav-btn interactive-btn w-full flex items-center gap-3 px-3 py-2.5 text-sm rounded-xl transition-all duration-300 text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium hover:-translate-y-0.5 active:scale-95">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-rose-500 to-pink-600 text-white flex items-center justify-center shadow-sm flex-shrink-0">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                </div>
                 Thống Kê Hoạt Động
+            </button>
+            <button id="nav-users" onclick="switchTab('users', 'Quản Lý & Phân Quyền Tài Khoản')" class="nav-btn interactive-btn w-full flex items-center gap-3 px-3 py-2.5 text-sm rounded-xl transition-all duration-300 text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium hover:-translate-y-0.5 active:scale-95 hidden">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-violet-600 text-white flex items-center justify-center shadow-sm flex-shrink-0">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                </div>
+                Phân Quyền Admin
             </button>
         </nav>
         
@@ -163,7 +184,23 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 10h-10a8 8 0 00-8 8v2M21 10l-6 6m6-6l-6-6" /></svg>
                     </button>
                     <div class="w-px h-5 bg-slate-200 mx-1"></div>
-                    <button onclick="showHistoryModal()" class="interactive-btn text-slate-700 hover:text-indigo-600 hover:bg-white hover:shadow px-3 py-2 rounded-lg text-sm font-semibold cursor-pointer transition-all active:scale-95 outline-none focus:outline-none" title="Lịch sử thao tác">
+                    
+<div class="relative inline-block text-left mr-2">
+    <button onclick="showUserProfileMenu()" id="auth-profile-badge" class="hidden flex items-center gap-1.5 px-3 py-2 rounded-xl bg-indigo-50 border border-indigo-200 text-indigo-700 hover:bg-indigo-100 transition shadow-xs text-xs font-bold cursor-pointer">
+        <span id="auth-user-display">👤 Admin</span>
+        <svg class="w-3.5 h-3.5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+    </button>
+    <div id="auth-profile-menu" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-100 py-2 z-50">
+        <div class="px-4 py-2 border-b border-slate-100 text-[11px] text-slate-400 font-medium">Tài khoản đăng nhập</div>
+        <a href="javascript:void(0)" onclick="openProfileModal()" class="block px-4 py-2.5 text-xs font-bold text-indigo-700 hover:bg-indigo-50 transition flex items-center gap-2">📝 Hồ sơ cá nhân (Profile)</a>
+        <a href="javascript:void(0)" onclick="openChangePasswordModal()" class="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 transition flex items-center gap-2">🔑 Đổi mật khẩu</a>
+        <a href="javascript:void(0)" onclick="if(currentAuthUser&&(currentAuthUser.role==='superadmin'||currentAuthUser.role==='admin'||currentAuthUser.role==='accountant')) switchTab('accounting', 'Mục Kế Toán & Bảng Lương'); showUserProfileMenu();" id="menu-acc-link" class="hidden px-4 py-2.5 text-xs font-bold text-emerald-700 hover:bg-emerald-50 transition flex items-center gap-2">Mục Kế Toán & Lương</a>
+        <a href="javascript:void(0)" onclick="if(currentAuthUser&&(currentAuthUser.role==='superadmin'||currentAuthUser.role==='admin')) switchTab('users', 'Phân Quyền Admin'); showUserProfileMenu();" id="menu-admin-link" class="hidden px-4 py-2.5 text-xs font-bold text-purple-700 hover:bg-purple-50 transition flex items-center gap-2">Quản lý Phân quyền</a>
+        <a href="javascript:void(0)" onclick="logoutUser()" class="block px-4 py-2.5 text-xs font-bold text-rose-600 hover:bg-rose-50 transition border-t border-slate-100 mt-1 pt-2 flex items-center gap-2">🚪 Đăng xuất</a>
+    </div>
+                </div>
+
+                <button onclick="showHistoryModal()" class="interactive-btn text-slate-700 hover:text-indigo-600 hover:bg-white hover:shadow px-3 py-2 rounded-lg text-sm font-semibold cursor-pointer transition-all active:scale-95 outline-none focus:outline-none" title="Lịch sử thao tác">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                     </button>
                 </div>
@@ -183,9 +220,13 @@
             </div>
         </header>
 
-        <main class="flex-1 overflow-y-auto p-8 custom-scrollbar bg-gradient-to-br from-slate-50 to-slate-100/50">
+        <div id="initial-loading-screen" class="fixed inset-0 bg-white z-[9999] flex flex-col items-center justify-center transition-opacity duration-500">
+    <div class="w-12 h-12 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin mb-4"></div>
+    <p class="text-sm font-bold text-slate-600 animate-pulse">Đang tải hệ thống Mai Vy Piano...</p>
+</div>
+<main class="flex-1 overflow-y-auto p-8 custom-scrollbar bg-gradient-to-br from-slate-50 to-slate-100/50">
             
-            <div id="tab-sheet1" class="tab-content animate-slide-up space-y-6">
+            <div id="tab-sheet1" class="tab-content hidden animate-slide-up space-y-6">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div class="bg-white rounded-2xl border border-slate-200 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_30px_-4px_rgba(0,0,0,0.08)] transition-shadow duration-500 overflow-hidden flex flex-col h-[550px]">
                         <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-white">
@@ -196,7 +237,7 @@
                             <form onsubmit="addTeacher(event)" class="flex flex-wrap gap-2">
                                 <input type="text" id="new-teacher-name" placeholder="Tên GV..." required class="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm flex-1 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all">
                                 <input type="text" id="new-teacher-phone" placeholder="SĐT..." class="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm w-28 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
-                                <input type="text" id="new-teacher-bank" placeholder="Số TK..." class="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm w-32 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
+                                <select id="new-teacher-contract" class="bg-white border border-slate-200 rounded-lg px-2 py-2 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all cursor-pointer"><option value="Chính thức">Chính thức</option><option value="Thử việc">Thử việc</option><option value="Quản lý">Quản lý</option><option value="Chủ TT">Chủ TT</option></select><input type="number" id="new-teacher-rate" placeholder="Lương/h (đ)..." class="bg-white border border-slate-200 rounded-lg px-2 py-2 text-sm w-28 font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
                                 <select id="new-teacher-color" class="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 w-32 transition-all"></select>
                                 <button type="submit" class="interactive-btn bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2 rounded-lg text-sm transition-all shadow-md hover:shadow-lg active:scale-95">+</button>
                             </form>
@@ -205,7 +246,7 @@
                             <table class="w-full text-left border-collapse table-cell-nowrap">
                                 <thead class="bg-slate-50/90 backdrop-blur-md sticky top-0 z-10 shadow-sm">
                                     <tr class="text-[11px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-200">
-                                        <th class="py-3 px-4">Mã</th><th class="py-3 px-4">Họ Tên</th><th class="py-3 px-4">SĐT</th><th class="py-3 px-4">STK</th>
+                                        <th class="py-3 px-4">Mã</th><th class="py-3 px-4">Họ Tên</th><th class="py-3 px-4">SĐT</th><th class="py-3 px-4">Loại HĐ</th><th class="py-3 px-4 text-right">Lương/giờ</th>
                                         <th class="py-3 px-4">Hiển Thị</th><th class="py-3 px-4 text-right">Thao tác</th>
                                     </tr>
                                 </thead>
@@ -238,6 +279,8 @@
                                         <th class="py-3 px-4">Số Buổi ĐK</th>
                                         <th class="py-3 px-4">Tiến Độ</th>
                                         <th class="py-3 px-4">Trạng Thái</th>
+                                        <th class="py-3 px-4">Môn Học</th>
+                                        <th class="py-3 px-4">Người Phụ Trách</th>
                                         <th class="py-3 px-4 text-right">Thao tác</th>
                                     </tr>
                                 </thead>
@@ -247,30 +290,60 @@
                     </div>
                 </div>
 
-                <div class="bg-white rounded-2xl border border-slate-200 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] overflow-hidden flex flex-col w-full lg:w-1/2 mx-auto">
-                    <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-white">
-                        <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">Cơ Sở Đào Tạo</h3>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Bảng 3: Môn Đào Tạo -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_30px_-4px_rgba(0,0,0,0.08)] transition-shadow duration-500 overflow-hidden flex flex-col h-[450px]">
+                        <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-white">
+                            <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">
+                                <span class="w-3 h-3 rounded-full bg-purple-500 inline-block"></span>
+                                Môn Đào Tạo
+                            </h3>
+                            <span class="bg-purple-50 text-purple-700 text-xs font-bold px-3 py-1 rounded-full" id="subject-count">0 môn</span>
+                        </div>
+                        <div class="p-4 border-b border-slate-100 bg-slate-50/80">
+                            <form onsubmit="addSubjectForm(event)" class="flex gap-2">
+                                <input type="text" id="new-subject-name" placeholder="Tên môn học mới (Vd: Guitar, Organ)..." required class="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm flex-1 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all font-semibold text-purple-900">
+                                <button type="submit" class="interactive-btn bg-purple-600 hover:bg-purple-700 text-white font-bold px-4 py-2 rounded-lg text-sm transition-all shadow-md active:scale-95">+</button>
+                            </form>
+                        </div>
+                        <div class="flex-1 overflow-y-auto custom-scrollbar p-0">
+                            <table class="w-full text-left border-collapse table-cell-nowrap">
+                                <thead class="bg-slate-50/90 backdrop-blur-md sticky top-0 z-10 shadow-sm">
+                                    <tr class="text-[11px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-200">
+                                        <th class="py-3 px-4">Tên Môn Học</th>
+                                        <th class="py-3 px-4 text-right">Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="subjects-table-body" class="divide-y divide-slate-100 text-sm"></tbody>
+                            </table>
+                        </div>
                     </div>
-                    <div class="p-4 border-b border-slate-100 bg-slate-50/80">
-                        <form onsubmit="addBranch(event)" class="flex flex-wrap gap-2">
-                            <input type="text" id="new-branch-name" placeholder="Tên cơ sở mới..." required class="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm flex-1 focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all">
-                            <select id="new-branch-color" class="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm w-48 focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all"></select>
-                            <button type="submit" class="interactive-btn bg-amber-600 hover:bg-amber-700 text-white font-bold px-4 py-2 rounded-lg text-sm transition-all shadow-md active:scale-95">+</button>
-                        </form>
-                    </div>
-                    <div class="overflow-x-auto custom-scrollbar">
-                        <table class="w-full text-left border-collapse table-cell-nowrap">
-                            <thead class="bg-slate-50/90 backdrop-blur-md">
-                                <tr class="text-[11px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-200">
-                                    <th class="py-3 px-4">Tên Cơ Sở</th><th class="py-3 px-4">Màu Hiển Thị</th><th class="py-3 px-4 text-right">Thao tác</th>
-                                </tr>
-                            </thead>
-                            <tbody id="branches-table-body" class="divide-y divide-slate-100 text-sm"></tbody>
-                        </table>
+
+                    <!-- Bảng 4: Cơ Sở Đào Tạo -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_30px_-4px_rgba(0,0,0,0.08)] transition-shadow duration-500 overflow-hidden flex flex-col h-[450px]">
+                        <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-white">
+                            <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">Cơ Sở Đào Tạo</h3>
+                        </div>
+                        <div class="p-4 border-b border-slate-100 bg-slate-50/80">
+                            <form onsubmit="addBranch(event)" class="flex flex-wrap gap-2">
+                                <input type="text" id="new-branch-name" placeholder="Tên cơ sở mới..." required class="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm flex-1 focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all font-semibold">
+                                <select id="new-branch-color" class="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm w-48 focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all font-semibold"></select>
+                                <button type="submit" class="interactive-btn bg-amber-600 hover:bg-amber-700 text-white font-bold px-4 py-2 rounded-lg text-sm transition-all shadow-md active:scale-95">+</button>
+                            </form>
+                        </div>
+                        <div class="overflow-x-auto custom-scrollbar flex-1">
+                            <table class="w-full text-left border-collapse table-cell-nowrap">
+                                <thead class="bg-slate-50/90 backdrop-blur-md sticky top-0 z-10 shadow-sm">
+                                    <tr class="text-[11px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-200">
+                                        <th class="py-3 px-4">Tên Cơ Sở</th><th class="py-3 px-4 text-right">Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="branches-table-body" class="divide-y divide-slate-100 text-sm"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
-
             <div id="tab-sheet2" class="tab-content hidden animate-slide-up space-y-6">
                 <div class="bg-white rounded-2xl border border-slate-200 shadow-lg shadow-indigo-100/50 p-6 relative group z-50">
                     <div class="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none z-0">
@@ -283,11 +356,11 @@
                     <form onsubmit="addScheduleEntry(event)" class="grid grid-cols-1 md:grid-cols-4 xl:grid-cols-10 gap-4 items-end relative z-10">
                         <div class="xl:col-span-2">
                             <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Học Viên</label>
-                            <select id="form-student" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"></select>
+                            <select id="form-student" onchange="autoSelectTeacherInMaster(this.value)" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"></select>
                         </div>
                         <div class="xl:col-span-2">
                             <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Giáo Viên</label>
-                            <select id="form-teacher" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"></select>
+                            <select id="form-teacher" onchange="autoSelectStudentByTeacher(this.value)" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"></select>
                         </div>
                         <div class="xl:col-span-2">
                             <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Cơ Sở</label>
@@ -296,7 +369,7 @@
                         <div class="xl:col-span-2 flex gap-2">
                             <div class="w-1/2">
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Bắt đầu</label>
-                                <input type="time" id="form-start" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-2.5 text-sm font-bold focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
+                                <input type="time" id="form-start" required onchange="autoFillEndTime()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-2.5 text-sm font-bold focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
                             </div>
                             <div class="w-1/2">
                                 <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Kết thúc</label>
@@ -305,7 +378,7 @@
                         </div>
                         <div class="xl:col-span-2">
                             <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Loại Lịch</label>
-                            <select id="form-type" onchange="toggleSubTeacherWrap('form-type', 'wrap-form-sub-teacher')" class="w-full bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all">
+                            <select id="form-type" onchange="handleMasterTypeChange(); toggleSubTeacherWrap('form-type', 'wrap-form-sub-teacher')" class="w-full bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all">
                                 <option value="main">Cố định</option>
                                 <option value="makeup">Bù / Tạm</option>
                                 <option value="substitute">Dạy thế</option>
@@ -509,7 +582,201 @@
                 </div>
             </div>
 
-        </main>
+        
+<!-- ==================== TAB: QUẢN LÝ TÀI KHOẢN & PHÂN QUYỀN (ONLY ADMIN) ==================== -->
+<div id="tab-users" class="tab-content hidden space-y-6 animate-slide-up">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-r from-purple-900 via-indigo-900 to-slate-900 p-6 rounded-3xl text-white shadow-xl">
+        <div>
+            <div class="flex items-center gap-2 mb-1.5">
+                <span class="px-3 py-0.5 rounded-full bg-purple-500/30 border border-purple-400/50 text-purple-200 font-extrabold text-[11px] tracking-wider uppercase">ADMIN PRIVILEGE</span>
+                <h2 class="text-2xl font-extrabold tracking-tight">Quản Lý & Phân Quyền Tài Khoản</h2>
+            </div>
+            <p class="text-xs text-slate-300 max-w-xl">Duyệt yêu cầu đăng ký, phân bổ vai trò (Admin / Kế toán / Giáo viên) và chỉ định gán Mã Giáo viên kết nối dữ liệu.</p>
+        </div>
+        <div class="flex items-center gap-3 flex-wrap">
+            <div class="bg-white/10 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-white/15 text-center min-w-[75px]">
+                <div class="text-[10px] text-slate-300 font-bold uppercase">Tổng TK</div>
+                <div id="stat-users-total" class="text-xl font-extrabold">0</div>
+            </div>
+            <div class="bg-emerald-500/20 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-emerald-500/30 text-center min-w-[75px]">
+                <div class="text-[10px] text-emerald-300 font-bold uppercase">Đã duyệt</div>
+                <div id="stat-users-approved" class="text-xl font-extrabold text-emerald-300">0</div>
+            </div>
+            <div class="bg-amber-500/20 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-amber-500/30 text-center min-w-[75px]">
+                <div class="text-[10px] text-amber-300 font-bold uppercase">Chờ duyệt</div>
+                <div id="stat-users-pending" class="text-xl font-extrabold text-amber-300">0</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- USERS TABLE CARD -->
+    <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="p-5 bg-slate-50/80 border-b border-slate-200/80 flex items-center justify-between">
+            <h3 class="font-extrabold text-slate-800 text-sm flex items-center gap-2"><span>📋</span> Danh sách Người dùng & Phân vai trò hệ thống</h3>
+
+            <div class="flex items-center gap-2">
+                <button onclick="openCreateUserModal()" class="text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-indigo-700 shadow-xs transition"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg> Tạo tài khoản mới</button>
+                <button onclick="renderUsersTable()" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-xs hover:border-indigo-300 transition">🔄 Làm mới danh sách</button>
+            </div>
+        </div>
+        <div class="overflow-x-auto custom-scrollbar">
+            <table class="w-full text-left border-collapse min-w-[750px]">
+                <thead>
+                    <tr class="bg-slate-100/70 border-b border-slate-200 text-[11px] font-extrabold text-slate-500 uppercase tracking-wider">
+                        <th class="p-4">Họ và Tên</th>
+                        <th class="p-4 hidden md:table-cell">Gmail Đăng nhập</th>
+                        <th class="p-4">Phân Vai Trò</th>
+                        <th class="p-4">Trạng thái</th>
+                        <th class="p-4">Gán Mã GV</th>
+                        <th class="p-4 text-right">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody id="users-table-body" class="divide-y divide-slate-100 font-medium">
+                    <!-- Rendered dynamically -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== MODAL HỒ SƠ CÁ NHÂN & NGÂN HÀNG (PROFILE MODAL) ==================== -->
+<div id="profile-modal" class="fixed inset-0 z-[1100] bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-4 hidden transition-all duration-300">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-8 shadow-2xl border border-slate-100 relative overflow-hidden animate-slide-up">
+        <div class="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-500"></div>
+        <button onclick="closeProfileModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm transition">✕</button>
+        
+        <div class="flex items-center gap-3 mb-6 mt-1">
+            <div id="prof-avatar-badge" class="w-12 h-12 rounded-2xl bg-indigo-600 text-white font-extrabold text-xl flex items-center justify-center shadow-md">MV</div>
+            <div>
+                <h3 class="text-xl font-extrabold text-slate-800">Hồ Sơ Cá Nhân & Ngân Hàng</h3>
+                <p id="prof-role-subtitle" class="text-xs text-slate-500 font-medium">Quản lý thông tin liên hệ và số tài khoản nhận lương</p>
+            </div>
+        </div>
+
+        <form id="profile-form" onsubmit="handleSaveProfile(event)" class="space-y-4">
+            <input type="hidden" id="prof-user-id">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Họ và Tên</label>
+                    <input type="text" id="prof-name" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Gmail đăng nhập</label>
+                    <input type="email" id="prof-email" readonly class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-medium text-slate-500 bg-slate-100 cursor-not-allowed">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Số điện thoại (SĐT)</label>
+                    <input type="text" id="prof-phone" placeholder="0912345678" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-medium text-slate-800 focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Tên Ngân hàng</label>
+                    <input type="text" id="prof-bank-name" placeholder="MB Bank, Vietcombank..." list="bank-list" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-medium text-slate-800 focus:ring-2 focus:ring-indigo-500">
+                    <datalist id="bank-list">
+                        <option value="MB Bank"></option>
+                        <option value="Vietcombank"></option>
+                        <option value="Techcombank"></option>
+                        <option value="ACB"></option>
+                        <option value="VPBank"></option>
+                        <option value="BIDV"></option>
+                        <option value="Vietinbank"></option>
+                        <option value="Agribank"></option>
+                        <option value="TPBank"></option>
+                        <option value="Sacombank"></option>
+                    </datalist>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Chủ tài khoản Ngân hàng</label>
+                    <input type="text" id="prof-bank-owner" placeholder="NGUYEN MAI VY" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-bold text-slate-800 uppercase focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Số tài khoản Ngân hàng</label>
+                    <input type="text" id="prof-bank-acc" placeholder="1010123456789" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-mono font-bold text-indigo-700 focus:ring-2 focus:ring-indigo-500">
+                </div>
+            </div>
+
+            <!-- Admin Notice -->
+            <div id="prof-admin-badge-notice" class="hidden p-3 bg-purple-50 rounded-xl border border-purple-200 text-purple-800 text-xs font-semibold flex items-center gap-2">
+                <span>🛡️</span> Bạn đang kiểm tra/chỉnh sửa Profile với quyền Admin.
+            </div>
+
+            <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+                <button type="button" onclick="closeProfileModal()" class="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition">Hủy bỏ</button>
+                <button type="submit" class="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-lg shadow-indigo-200 transition transform active:scale-[0.98]">💾 Lưu Hồ Sơ</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ==================== TAB: MỤC KẾ TOÁN & BẢNG LƯƠNG (ONLY ADMIN & ACCOUNTANT) ==================== -->
+<div id="tab-accounting" class="tab-content hidden space-y-6 animate-slide-up">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-r from-emerald-900 via-teal-900 to-slate-900 p-6 rounded-3xl text-white shadow-xl">
+        <div>
+            <div class="flex items-center gap-2 mb-1.5">
+                <span class="px-3 py-0.5 rounded-full bg-emerald-500/30 border border-emerald-400/50 text-emerald-200 font-extrabold text-[11px] tracking-wider uppercase">ACCOUNTING & PAYROLL</span>
+                <h2 class="text-2xl font-extrabold tracking-tight">Mục Kế Toán & Thanh Toán Lương</h2>
+            </div>
+            <p class="text-xs text-slate-300 max-w-xl">Tổng hợp giờ dạy từ lịch trình, kết nối trực tiếp với số tài khoản ngân hàng từ Profile cá nhân của từng giáo viên để thực hiện thanh toán chi lương.</p>
+        </div>
+        <div class="flex items-center gap-3 flex-wrap">
+            <div class="bg-white/10 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-white/15 text-center min-w-[90px]">
+                <div class="text-[10px] text-slate-300 font-bold uppercase">Quỹ Lương Ước Tính</div>
+                <div id="stat-acc-total-money" class="text-lg font-extrabold text-emerald-300">0 VNĐ</div>
+            </div>
+            <div class="bg-teal-500/20 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-teal-500/30 text-center min-w-[75px]">
+                <div class="text-[10px] text-teal-300 font-bold uppercase">Tổng Giờ Dạy</div>
+                <div id="stat-acc-total-hours" class="text-lg font-extrabold text-teal-200">0h</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ACCOUNTING TABLE CARD -->
+    <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="p-5 bg-slate-50/80 border-b border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <h3 class="font-extrabold text-slate-800 text-sm flex items-center gap-2"><span>💳</span> Bảng Lương & Ngân Hàng Thanh Toán Giáo Viên</h3>
+            <div class="flex items-center gap-2">
+                <button onclick="renderAccountingTable()" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-xs hover:border-indigo-300 transition">🔄 Tính Toán Lại Lương</button>
+                <div class="flex items-center gap-1.5 bg-white px-2.5 py-1 rounded-xl border border-slate-200 shadow-xs">
+                    <span class="text-[11px] font-bold text-slate-500">Đợt thanh toán:</span>
+                    <select id="acc-period-filter" onchange="renderAccountingTable()" class="bg-transparent text-xs font-extrabold text-indigo-700 focus:outline-none cursor-pointer">
+                        <option value="all">Cả tháng (Mặc định)</option>
+                        <option value="p1">Đợt 1 (Ngày 01 -> Ngày 15)</option>
+                        <option value="p2">Đợt 2 (Ngày 16 -> Hết tháng)</option>
+                    </select>
+                </div>
+                <button onclick="window.print()" class="text-xs font-bold text-emerald-700 hover:text-emerald-900 flex items-center gap-1 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200 shadow-xs hover:bg-emerald-100 transition">🖨️ In Bảng Lương</button>
+            </div>
+        </div>
+        <div class="overflow-x-auto custom-scrollbar">
+            <table class="w-full text-left border-collapse min-w-[850px]">
+                <thead>
+                    <tr class="bg-slate-100/70 border-b border-slate-200 text-[11px] font-extrabold text-slate-500 uppercase tracking-wider">
+                        <th class="p-4">Giáo Viên (Mã)</th>
+                        <th class="p-4">Liên Hệ (SĐT & Gmail)</th>
+                        <th class="p-4">Ngân Hàng Nhận Lương (Chủ TK - Ngân Hàng - Số TK)</th>
+                        <th class="p-4 text-center">Tổng Ca</th>
+                        <th class="p-4 text-center">Giờ Dạy</th>
+                        <th class="p-4 text-center">Loại Hợp Đồng</th>
+                        <th class="p-4 text-right">Đơn Giá / Giờ</th>
+                        <th class="p-4 text-right">Thành Tiền Lương</th>
+                        <th class="p-4 text-center">Trạng Thái Thanh Toán</th>
+                    </tr>
+                </thead>
+                <tbody id="accounting-table-body" class="divide-y divide-slate-100 font-medium">
+                    <!-- Rendered dynamically -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+</main>
     </div>
 
     <!-- History Modal -->
@@ -602,9 +869,12 @@
                     </div>
                 </div>
             </div>
-            <div class="px-6 py-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">
-                <button onclick="closeQuickEditScheduleModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-200 transition-colors">Hủy</button>
-                <button onclick="saveQuickEditSchedule()" class="px-5 py-2 rounded-xl text-xs font-bold bg-indigo-600 text-white hover:bg-indigo-700 shadow-md transition-all">Lưu & Đồng bộ Master Data</button>
+            <div class="px-6 py-4 border-t border-slate-100 bg-slate-50 flex justify-between items-center">
+                <button onclick="deleteQuickEditSchedule()" class="px-4 py-2 rounded-xl text-xs font-bold bg-rose-50 text-rose-600 hover:bg-rose-100 hover:text-rose-700 transition-colors flex items-center gap-1">🗑️ Xóa buổi này</button>
+                <div class="flex gap-2">
+                    <button onclick="closeQuickEditScheduleModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-200 transition-colors">Hủy</button>
+                    <button onclick="saveQuickEditSchedule()" class="px-5 py-2 rounded-xl text-xs font-bold bg-indigo-600 text-white hover:bg-indigo-700 shadow-md transition-all">Lưu & Đồng bộ Master Data</button>
+                </div>
             </div>
         </div>
     </div>
@@ -624,11 +894,11 @@
                 <input type="hidden" id="qa-day-name">
                 <div>
                     <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Học sinh</label>
-                    <select id="qa-student-select" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500"></select>
+                    <select id="qa-student-select" onchange="autoSelectTeacherInQuickAdd(this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500"></select>
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Giáo viên</label>
-                    <select id="qa-teacher-select" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500"></select>
+                    <select id="qa-teacher-select" onchange="autoSelectStudentInQuickAdd(this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500"></select>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
@@ -716,10 +986,20 @@
         let activityLog = JSON.parse(localStorage.getItem('mvActivityLog')) || [];
 
         function logActivity(message) {
-            if (message.includes("Không có gì")) return;
+            if (message.includes("Không có gì") || message.includes("Đã tải") || message.includes("Đã sao lưu")) return;
             const now = new Date();
             const timeStr = now.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' ' + now.toLocaleDateString('vi-VN');
-            activityLog.unshift({ time: timeStr, action: message });
+            
+            let userPrefix = "";
+            if (typeof currentAuthUser !== 'undefined' && currentAuthUser) {
+                if (currentAuthUser.role === 'superadmin' || currentAuthUser.role === 'admin') {
+                    userPrefix = "[Admin] ";
+                } else {
+                    userPrefix = `[${currentAuthUser.name || 'GV'}${currentAuthUser.teacherId ? ' - ' + currentAuthUser.teacherId : ''}] `;
+                }
+            }
+            const fullAction = userPrefix + message;
+            activityLog.unshift({ time: timeStr, action: fullAction });
             if (activityLog.length > 50) activityLog.pop();
             localStorage.setItem('mvActivityLog', JSON.stringify(activityLog));
         }
@@ -912,6 +1192,43 @@
             initApp();
         }
 
+        function deleteQuickEditSchedule() {
+            if (!confirm("Bạn có chắc muốn xóa lịch học ngày này không?")) return;
+            const schedId = document.getElementById('qe-schedule-id').value;
+            const dateKey = document.getElementById('qe-date-key').value;
+            const scopeEl = document.querySelector('input[name="qe-scope"]:checked');
+            const scope = scopeEl ? scopeEl.value : 'only_today';
+
+            const entry = schedule.find(s => s.id === schedId);
+            if (!entry) return;
+
+            saveStateToHistory();
+
+            if (scope === 'all_weeks' || (entry.exactDates && entry.exactDates.length === 1 && entry.exactDates[0] === dateKey)) {
+                const idx = schedule.findIndex(s => s.id === schedId);
+                if (idx !== -1) schedule.splice(idx, 1);
+                showToast("Đã xóa hoàn toàn ca học khỏi hệ thống");
+            } else {
+                entry.excludedDates = entry.excludedDates || [];
+                if (!entry.excludedDates.includes(dateKey)) {
+                    entry.excludedDates.push(dateKey);
+                }
+                showToast(`Đã xóa lịch học ngày ${dateKey.split('-').reverse().join('/')}`);
+            }
+
+            const attKey = `${schedId}_${dateKey}`;
+            if (attendanceData[attKey]) {
+                delete attendanceData[attKey];
+            }
+
+            closeQuickEditScheduleModal();
+            saveData();
+            if (typeof renderWeeklySchedule === 'function') renderWeeklySchedule();
+            if (typeof renderMasterTable === 'function') renderMasterTable();
+            if (typeof renderTeacherStats === 'function') renderTeacherStats();
+            if (typeof renderAccountingTable === 'function') renderAccountingTable();
+        }
+
         function openQuickAddScheduleModal(dayName) {
             const modal = document.getElementById('quick-add-modal');
             if (!modal) return;
@@ -919,8 +1236,15 @@
             document.getElementById('qa-day-display').textContent = dayName;
             document.getElementById('qa-scope-day-name').textContent = dayName;
             
-            document.getElementById('qa-student-select').innerHTML = students.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
-            document.getElementById('qa-teacher-select').innerHTML = teachers.map(t => `<option value="${t.id}">${t.display} (${t.id})</option>`).join('');
+            document.getElementById('qa-student-select').innerHTML = '<option value="" disabled selected>-- Chọn học viên --</option>' + students.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+            document.getElementById('qa-teacher-select').innerHTML = '<option value="" disabled selected>-- Chọn giáo viên --</option>' + teachers.map(t => `<option value="${t.id}">${t.display} (${t.id})</option>`).join('');
+            if (typeof currentAuthUser !== 'undefined' && currentAuthUser && currentAuthUser.role === 'teacher' && currentAuthUser.teacherId) {
+                const ts = document.getElementById('qa-teacher-select');
+                if (ts) {
+                    ts.value = currentAuthUser.teacherId;
+                    if (typeof autoSelectStudentInQuickAdd === 'function') autoSelectStudentInQuickAdd(currentAuthUser.teacherId);
+                }
+            }
             document.getElementById('qa-branch-select').innerHTML = branches.map(b => `<option value="${b.name}">${b.name}</option>`).join('');
             
             const subSelect = document.getElementById('qa-sub-teacher-select');
@@ -1228,10 +1552,35 @@
             
             document.getElementById('month-input').value = currentMonth;
             syncCurrentMonthPointers();
+
+            // 3. CLEANUP & MERGE DATA (chỉ chạy 1 lần để tránh duplicate)
+            if (!window._mvCleanupDone) {
+                window._mvCleanupDone = true;
+                const cleanupResult = cleanupAndMergeData();
+                if (cleanupResult.cleanupCount > 0 || cleanupResult.mergeCount > 0) {
+                    console.log(`🧹 [Cleanup] Đã sửa ${cleanupResult.cleanupCount} lỗi nhỏ + gộp ${cleanupResult.mergeCount} lịch trùng`);
+                    if (typeof showToast === 'function') showToast(`🧹 Đã dọn dẹp: ${cleanupResult.cleanupCount} lỗi + gộp ${cleanupResult.mergeCount} lịch trùng`, 'success');
+                }
+            }
+
             initApp();
             updateUndoRedoUI();
             
             switchTab('sheet3', 'Lịch Học & Điểm Danh');
+setTimeout(() => {
+        const loader = document.getElementById('initial-loading-screen');
+        if (loader) {
+            loader.classList.add('opacity-0');
+            setTimeout(() => loader.remove(), 500);
+        }
+    }, 350);
+setTimeout(() => {
+        const loader = document.getElementById('initial-loading-screen');
+        if (loader) {
+            loader.classList.add('opacity-0');
+            setTimeout(() => loader.remove(), 500);
+        }
+    }, 350);
         };
 
         function captureState() {
@@ -1349,6 +1698,7 @@
                 }
             });
             if(migrated && typeof saveData === 'function') { saveData(); }
+            if(typeof cleanOrphanAttendanceData === 'function') { cleanOrphanAttendanceData(); }
             
             document.querySelectorAll('.current-month-display').forEach(el => {
                 const parts = currentMonth.split('-');
@@ -1421,6 +1771,7 @@
 
         let saveTimeout = null;
         async function saveData() {
+            if (typeof cleanOrphanAttendanceData === 'function') cleanOrphanAttendanceData();
             monthlyData[currentMonth] = { schedule, attendanceData };
             const payload = { teachers, students, branches, monthlyData };
             
@@ -1440,7 +1791,95 @@
 
         function initApp() {
             renderTeachers(); renderStudents(); renderBranches();
-            populateDropdowns(); renderMasterTable(); renderWeeklySchedule(); renderTeacherStats();
+            populateDropdowns(); renderMasterTable(); renderWeeklySchedule(); if(typeof renderSubjectsTable === 'function') renderSubjectsTable(); if(typeof renderSubjectsTable === 'function') renderSubjectsTable(); renderTeacherStats(); if(typeof renderAccountingTable === 'function') renderAccountingTable(); if(typeof renderUsersTable === 'function') renderUsersTable();
+        }
+
+        // === DATA CLEANUP & MERGE ===
+        function cleanupAndMergeData() {
+            let cleanupCount = 0;
+            let mergeCount = 0;
+
+            // 1. Xóa paymentStatus cũ (chỉ giữ payments)
+            if (typeof teachers !== 'undefined' && Array.isArray(teachers)) {
+                teachers.forEach(t => {
+                    if (t.paymentStatus !== undefined) {
+                        delete t.paymentStatus;
+                        cleanupCount++;
+                    }
+                });
+            }
+
+            // 2. Fix lessons = 0 → 1 (tránh chia cho 0) và teacherId = "" → null
+            if (typeof students !== 'undefined' && Array.isArray(students)) {
+                students.forEach(s => {
+                    if (!s.lessons || s.lessons === 0) {
+                        s.lessons = 1;
+                        cleanupCount++;
+                    }
+                    if (s.teacherId === "") {
+                        s.teacherId = null;
+                        cleanupCount++;
+                    }
+                });
+            }
+
+            // 3. Gộp lịch trùng trong monthlyData
+            if (typeof monthlyData !== 'undefined' && typeof monthlyData === 'object') {
+                Object.keys(monthlyData).forEach(monthKey => {
+                    const monthData = monthlyData[monthKey];
+                    if (!monthData || !Array.isArray(monthData.schedule)) return;
+
+                    // Group by signature: studentId|teacherId|start|end|branch
+                    const groups = {};
+                    monthData.schedule.forEach((entry, idx) => {
+                        const sig = `${entry.studentId || ''}|${entry.teacherId || ''}|${entry.start || ''}|${entry.end || ''}|${entry.branch || ''}`;
+                        if (!groups[sig]) groups[sig] = [];
+                        groups[sig].push({ entry, idx });
+                    });
+
+                    // Merge các group có > 1 entries
+                    const newSchedule = [];
+                    const toRemoveIdx = new Set();
+                    Object.keys(groups).forEach(sig => {
+                        const items = groups[sig];
+                        if (items.length === 1) {
+                            newSchedule.push(items[0].entry);
+                        } else {
+                            // Merge: combine exactDates và excludedDates
+                            const merged = { ...items[0].entry };
+                            const allDates = new Set();
+                            const allExcluded = new Set();
+                            items.forEach(({entry}) => {
+                                if (Array.isArray(entry.exactDates)) {
+                                    entry.exactDates.forEach(d => allDates.add(d));
+                                }
+                                if (Array.isArray(entry.excludedDates)) {
+                                    entry.excludedDates.forEach(d => allExcluded.add(d));
+                                }
+                            });
+                            merged.exactDates = Array.from(allDates).sort();
+                            if (allExcluded.size > 0) {
+                                merged.excludedDates = Array.from(allExcluded).sort();
+                            }
+                            newSchedule.push(merged);
+                            // Đánh dấu các entries cũ để loại bỏ
+                            items.slice(1).forEach(({idx}) => toRemoveIdx.add(idx));
+                            mergeCount += items.length - 1;
+                        }
+                    });
+
+                    if (toRemoveIdx.size > 0) {
+                        monthData.schedule = newSchedule;
+                    }
+                });
+            }
+
+            // 4. Lưu nếu có thay đổi
+            if (cleanupCount > 0 || mergeCount > 0) {
+                if (typeof saveData === 'function') saveData();
+            }
+
+            return { cleanupCount, mergeCount };
         }
 
         function switchTab(tabId, title) {
@@ -1469,6 +1908,18 @@
             if(tabId === 'sheet4') {
                 renderTeacherStats();
                 if (typeof renderCharts === 'function') renderCharts();
+            }
+            if(tabId === 'users' && typeof renderUsersTable === 'function') {
+                if (localStorage.getItem('mv_users_data')) {
+                    try { users = JSON.parse(localStorage.getItem('mv_users_data')) || users; } catch(e){}
+                }
+                renderUsersTable();
+            }
+            if(tabId === 'accounting' && typeof renderAccountingTable === 'function') {
+                if (localStorage.getItem('mv_users_data')) {
+                    try { users = JSON.parse(localStorage.getItem('mv_users_data')) || users; } catch(e){}
+                }
+                renderAccountingTable();
             }
 
             // Tự động đóng sidebar sau khi chọn menu (nếu đang mở với overlay)
@@ -1623,7 +2074,15 @@
                     <td class="py-3 px-4 font-bold text-slate-600 cursor-pointer" ondblclick="editTeacherId('${t.id}', this)">${t.id}</td>
                     <td class="py-3 px-4 font-bold text-slate-800 cursor-pointer" ondblclick="editField('teachers', '${t.id}', 'name', this)">${t.name}</td>
                     <td class="py-3 px-4 text-slate-600 cursor-pointer" ondblclick="editField('teachers', '${t.id}', 'phone', this)">${t.phone||'-'}</td>
-                    <td class="py-3 px-4 text-slate-600 cursor-pointer" ondblclick="editField('teachers', '${t.id}', 'bank', this)">${t.bank||'-'}</td>
+                    <td class="py-3 px-4">
+                        <select onchange="changeTeacherContract('${t.id}', this.value)" class="p-1.5 rounded-lg border border-slate-200 text-xs font-bold ${t.contractType==='Quản lý'?'bg-purple-100 text-purple-900':(t.contractType==='Thử việc'?'bg-amber-100 text-amber-900':(t.contractType==='Chủ TT'||t.contractType==='Chủ Trung Tâm'?'bg-rose-100 text-rose-900 font-extrabold':'bg-emerald-100 text-emerald-900'))} focus:outline-none cursor-pointer" ${(!currentAuthUser||(currentAuthUser.role!=='superadmin'&&currentAuthUser.role!=='admin'&&currentAuthUser.role!=='manager'&&currentAuthUser.role!=='accountant'))?'disabled title="Chỉ Admin được chỉnh sửa"':''}>
+                            <option value="Thử việc" ${t.contractType==='Thử việc'?'selected':''}>Thử việc</option>
+                            <option value="Chính thức" ${(!t.contractType||t.contractType==='Chính thức')?'selected':''}>Chính thức</option>
+                            <option value="Quản lý" ${t.contractType==='Quản lý'?'selected':''}>Quản lý</option>
+                            <option value="Chủ TT" ${t.contractType==='Chủ TT'||t.contractType==='Chủ Trung Tâm'?'selected':''}>Chủ TT</option>
+                        </select>
+                    </td>
+                    <td class="py-3 px-4 text-right font-bold text-indigo-700 cursor-pointer" ondblclick="editTeacherRate('${t.id}', this)" title="Nháy đúp để chỉnh mức lương cá nhân">${(t.rate||0).toLocaleString('vi-VN')} đ</td>
                     <td class="py-3 px-4 cursor-pointer" ondblclick="editTeacherDisplay('${t.id}', this)"><span class="px-2.5 py-1 rounded-md text-xs font-semibold border shadow-sm ${t.colorClass}">${t.display}</span></td>
                     <td class="py-3 px-4 text-right"><button onclick="deleteTeacher('${t.id}')" class="interactive-btn text-xs text-rose-500 hover:text-white hover:bg-rose-500 px-3 py-1.5 rounded-lg font-semibold transition-colors active:scale-95">Xóa</button></td>
                 </tr>`).join('');
@@ -1677,6 +2136,30 @@
                     <td class="py-3 px-4 font-semibold text-slate-700 cursor-pointer" ondblclick="editField('students', '${s.id}', 'lessons', this)" title="Nháy đúp để sửa số buổi ĐK">${s.lessons}</td>
                     <td class="py-3 px-4 font-semibold text-blue-600 cursor-pointer" ondblclick="editField('students', '${s.id}', 'completedLessons', this)" title="Nháy đúp để sửa số buổi đã học">${s.completedLessons}</td>
                     <td class="py-3 px-4">${statusHtml}</td>
+                    <td class="py-3 px-4 flex flex-wrap items-center gap-1">
+                        ${(s.subjects || (s.subject ? [s.subject] : ["Piano"])).map(sub => `
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-purple-50 border border-purple-200 text-purple-700 rounded-md text-xs font-semibold shadow-2xs">
+                                ${sub}
+                                <button onclick="removeStudentSubject('${s.id}', '${sub}'); event.stopPropagation();" type="button" class="hover:text-rose-600 font-bold ml-0.5" title="Xóa môn">×</button>
+                            </span>
+                        `).join('')}
+                        ${((JSON.parse(localStorage.getItem('mv_subjects')) || ["Piano", "Thanh nhạc", "Toán", "Guitar", "Violin", "Vẽ"]).filter(x => !(s.subjects || (s.subject ? [s.subject] : ["Piano"])).includes(x))).length > 0 ? `
+                            <select onchange="addStudentSubject('${s.id}', this.value); this.value='';" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded px-1.5 py-1 border-0 cursor-pointer focus:outline-none focus:ring-1 focus:ring-purple-500 transition inline-block">
+                                <option value="" disabled selected>+ Thêm</option>
+                                ${((JSON.parse(localStorage.getItem('mv_subjects')) || ["Piano", "Thanh nhạc", "Toán", "Guitar", "Violin", "Vẽ"]).filter(x => !(s.subjects || (s.subject ? [s.subject] : ["Piano"])).includes(x))).map(sub => `<option value="${sub}">${sub}</option>`).join('')}
+                            </select>
+                        ` : ''}
+                    </td>
+                    <td class="py-3 px-4">
+                        ${(() => {
+                            const selT = s.teacherId ? teachers.find(x => x.id === s.teacherId) : null;
+                            const selClass = selT ? selT.colorClass : 'bg-slate-50 border-slate-200 text-slate-500';
+                            return `<select onchange="changeStudentTeacher('${s.id}', this.value)" class="${selClass} border font-bold rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none cursor-pointer">
+                                <option value="">-- Chọn GV --</option>
+                                ${teachers.map(t => `<option value="${t.id}" ${(s.teacherId === t.id)?'selected':''}>${t.name}</option>`).join('')}
+                            </select>`;
+                        })()}
+                    </td>
                     <td class="py-3 px-4 text-right"><button onclick="deleteStudent('${s.id}')" class="interactive-btn text-xs text-rose-500 hover:text-white hover:bg-rose-500 px-3 py-1.5 rounded-lg font-semibold transition-colors active:scale-95">Xóa</button></td>
                 </tr>`;
             }).join('');
@@ -1698,7 +2181,7 @@
             teachers.push({
                 id: 'T'+Date.now(), name: name, display: name, 
                 phone: document.getElementById('new-teacher-phone').value, email: "", 
-                bank: document.getElementById('new-teacher-bank').value, 
+                bank: "", contractType: (document.getElementById("new-teacher-contract") ? document.getElementById("new-teacher-contract").value : "Chính thức"), rate: (document.getElementById("new-teacher-rate") && document.getElementById("new-teacher-rate").value ? parseInt(document.getElementById("new-teacher-rate").value, 10) : 0), 
                 colorClass: document.getElementById('new-teacher-color').value
             }); 
             saveData(); initApp(); e.target.reset(); 
@@ -1874,14 +2357,36 @@
 
         function populateDropdowns() {
             ['form-student', 'form-teacher', 'form-branch', 'filter-teacher-master', 'view-filter-teacher', 'view-filter-branch'].forEach(id => document.getElementById(id).innerHTML='');
-            document.getElementById('form-student').innerHTML = students.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
-            document.getElementById('form-teacher').innerHTML = teachers.map(t => `<option value="${t.id}">${t.display}</option>`).join('');
+            document.getElementById('form-student').innerHTML = '<option value="" disabled selected>-- Chọn học viên --</option>' + students.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+            document.getElementById('form-teacher').innerHTML = '<option value="" disabled selected>-- Chọn giáo viên --</option>' + teachers.map(t => `<option value="${t.id}">${t.display}</option>`).join('');
             const formSubSel = document.getElementById('form-sub-teacher-select');
             if (formSubSel) formSubSel.innerHTML = teachers.map(t => `<option value="${t.id}">${t.display}</option>`).join('');
-            document.getElementById('form-branch').innerHTML = branches.map(b => `<option value="${b.name}">${b.name}</option>`).join('');
+            document.getElementById('form-branch').innerHTML = '<option value="" disabled selected>-- Chọn cơ sở --</option>' + branches.map(b => `<option value="${b.name}">${b.name}</option>`).join('');
+            const typeSelect = document.getElementById('form-type');
+            if (typeSelect && !typeSelect.querySelector('option[value=""]')) {
+                typeSelect.insertAdjacentHTML('afterbegin', '<option value="" disabled selected>-- Chọn loại lịch --</option>');
+                typeSelect.value = "";
+            }
             document.getElementById('filter-teacher-master').innerHTML = '<option value="">Tất cả giáo viên</option>' + teachers.map(t => `<option value="${t.id}">${t.display}</option>`).join('');
             document.getElementById('view-filter-teacher').innerHTML = '<option value="">Tất cả giáo viên</option>' + teachers.map(t => `<option value="${t.id}">${t.display}</option>`).join('');
             document.getElementById('view-filter-branch').innerHTML = '<option value="">Tất cả cơ sở</option>' + branches.map(b => `<option value="${b.name}">${b.name}</option>`).join('');
+        }
+
+        function autoFillEndTime() {
+            const startEl = document.getElementById('form-start');
+            const endEl = document.getElementById('form-end');
+            if (!startEl || !endEl) return;
+            const startVal = startEl.value;
+            if (!startVal) return;
+            // Tự động set end = start + 1 giờ (chỉ khi end chưa được set hoặc <= start)
+            const [hh, mm] = startVal.split(':').map(Number);
+            if (isNaN(hh)) return;
+            const endHour = (hh + 1) % 24;
+            const endStr = String(endHour).padStart(2, '0') + ':' + String(mm).padStart(2, '0');
+            // Chỉ auto-fill nếu end hiện tại rỗng hoặc <= start
+            if (!endEl.value || endEl.value <= startVal) {
+                endEl.value = endStr;
+            }
         }
 
         function addScheduleEntry(e) {
@@ -1991,7 +2496,7 @@
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-50 transition-colors animate-slide-up" style="animation-delay: ${idx * 0.03}s; opacity: 0; animation-fill-mode: forwards;">
                         <td class="py-3 px-4 text-slate-400 text-xs font-medium">${index+1}</td>
-                        <td class="py-3 px-4 font-bold text-slate-800 cursor-pointer" ondblclick="editMasterStudent(${index}, this)">${student.name}</td>
+                        <td class="py-3 px-4 font-bold text-slate-800 cursor-pointer" ondblclick="editMasterStudent(${index}, this)">${formatStudentNameWithSubjects(student)}</td>
                         <td class="py-3 px-4 cursor-pointer" ondblclick="editMasterTeacher(${index}, this)"><span class="px-2.5 py-1 rounded-md text-xs font-semibold border shadow-sm ${tInfo.colorClass}">${tInfo.plainText}</span></td>
                         <td class="py-3 px-4 cursor-pointer" ondblclick="editMasterTime(${index}, this)"><span class="font-bold text-slate-700">${dayDisplay}</span> <span class="text-[11px] font-medium text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded-md ml-1 border border-slate-200 shadow-sm">${entry.start} - ${entry.end}</span></td>
                         <td class="py-3 px-4 cursor-pointer" ondblclick="editMasterBranch(${index}, this)"><span class="text-xs px-2.5 py-1 rounded-md border shadow-sm ${branchObj.colorClass} font-medium">${entry.branch}</span></td>
@@ -2009,33 +2514,86 @@
         }
 
         function markAttendance(scheduleId, dateString, status, studentId) {
-            saveStateToHistory(); 
+            saveStateToHistory();
             const key = `${scheduleId}_${dateString}`;
             const oldStatus = attendanceData[key];
-            const student = students.find(s => s.id === studentId);
+            // Tìm student - thử nhiều cách để chắc chắn tìm được
+            let student = students.find(s => s.id === studentId);
+            if (!student && typeof schedule !== 'undefined') {
+                // Fallback: tìm qua schedule
+                const sched = schedule.find(sc => sc.id === scheduleId);
+                if (sched) {
+                    student = students.find(s => s.id === sched.studentId);
+                }
+            }
 
             let msg = "";
             if (oldStatus === status) {
                 delete attendanceData[key];
                 if(status === 'present' && student) student.completedLessons = Math.max(0, student.completedLessons - 1);
+                    if (student.completedAtDate && student.completedAtDate[dateString] !== undefined) {
+                        delete student.completedAtDate[dateString];
+                    }
                 msg = "Đã bỏ chọn điểm danh";
             } else {
                 attendanceData[key] = status;
-                if(status === 'present' && oldStatus !== 'present' && student) student.completedLessons++;
-                if(oldStatus === 'present' && status !== 'present' && student) student.completedLessons = Math.max(0, student.completedLessons - 1);
-                msg = status === 'present' ? `Đã điểm danh "Lên lớp" cho ${student.name}` : `Đã báo "Nghỉ" cho ${student.name}`;
+                // Cộng/Trừ buổi cho student - LUÔN tìm được student trước khi cộng
+                if(status === 'present' && oldStatus !== 'present') {
+                    if (student) {
+                        student.completedLessons++;
+                        if (!student.completedAtDate) student.completedAtDate = {};
+                        student.completedAtDate[dateString] = student.completedLessons;
+                    } else {
+                        console.warn(`⚠️ markAttendance: Không tìm thấy học viên cho scheduleId=${scheduleId}, studentId=${studentId}`);
+                    }
+                }
+                if(oldStatus === 'present' && status !== 'present' && student) {
+                    student.completedLessons = Math.max(0, student.completedLessons - 1);
+                    if (student.completedAtDate && student.completedAtDate[dateString] !== undefined) {
+                        delete student.completedAtDate[dateString];
+                    }
+                }
+                msg = status === 'present' ? `Đã điểm danh "Lên lớp" cho ${student ? student.name : 'học viên'}` : `Đã báo "Nghỉ" cho ${student ? student.name : 'học viên'}`;
             }
-            
-            saveData(); 
-            renderWeeklySchedule(); 
-            renderStudents(); 
-            renderTeacherStats(); 
-            
+
+            saveData();
+            renderWeeklySchedule();
+            renderStudents();
+            renderTeacherStats();
+
             if (!document.getElementById('tab-sheet4').classList.contains('hidden') && typeof renderCharts === 'function') {
                 renderCharts();
             }
 
             showToast(msg, status === 'present' ? 'success' : 'info');
+        }
+
+                function getLessonSnapshot(student, dateKey, attStatus) {
+            if (!student) return "0";
+            if (!student.completedAtDate) student.completedAtDate = {};
+            if (attStatus === 'present' && student.completedAtDate[dateKey] !== undefined) {
+                return student.completedAtDate[dateKey];
+            }
+            const dates = Object.keys(student.completedAtDate).sort();
+            let latestVal = 0;
+            let found = false;
+            for (const d of dates) {
+                if (d <= dateKey) {
+                    latestVal = student.completedAtDate[d];
+                    found = true;
+                } else {
+                    break;
+                }
+            }
+            if (found) {
+                if (attStatus === 'present' && student.completedAtDate[dateKey] === undefined) {
+                    return latestVal;
+                }
+                return latestVal;
+            }
+            if (attStatus === 'present') return student.completedLessons || 1;
+            if (attStatus === 'off') return student.completedLessons || 0;
+            return student.completedLessons || 0;
         }
 
         function renderWeeklySchedule() {
@@ -2222,7 +2780,7 @@
                                                 <button onclick="markAttendance('${entry.id}', '${dateKey}', 'off', '${student.id}'); event.stopPropagation();" class="${btnO} w-4 h-4 rounded flex items-center justify-center font-bold text-[9px] transition-all active:scale-95 shadow-sm" title="Nghỉ">✗</button>
                                             </div>
                                         </div>
-                                        <p class="font-bold text-slate-800 text-[11px] leading-tight break-words pr-1">${student.name}</p>
+                                        <p class="font-bold text-slate-800 text-[11px] leading-tight break-words pr-1">${formatStudentNameWithSubjects(student)}</p>
                                         <div class="flex items-center gap-1 mt-1.5 flex-wrap">
                                             <span class="text-[8px] px-1.5 py-0.5 rounded border ${branchObj.colorClass} shadow-sm font-semibold">${entry.branch}</span>
                                             <span class="text-[8px] px-1.5 py-0.5 rounded border ${tInfo.colorClass} shadow-sm font-semibold">${tInfo.text}</span>
@@ -2240,15 +2798,16 @@
                                 html += `
                                     <div ondblclick="openQuickEditScheduleModal('${entry.id}', '${dateKey}')" class="bg-white border ${attStatus==='present'?'border-emerald-400 ring-2 ring-emerald-100':(attStatus==='off'?'border-rose-400 ring-2 ring-rose-100':'border-slate-100 hover:border-indigo-300')} p-3.5 rounded-xl shadow-[0_2px_10px_rgba(0,0,0,0.03)] relative transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(0,0,0,0.06)] animate-slide-up cursor-pointer group/item" style="animation-delay: ${idx * 0.05}s; opacity: 0; animation-fill-mode: forwards;">
                                         ${typeTag}
-                                        <div class="flex justify-between items-center mb-2">
+                                        <div class="flex justify-between items-center mb-2 gap-1">
                                             <span class="text-[10px] font-bold text-indigo-700 bg-indigo-50 px-2 py-1 rounded-lg border border-indigo-100 shadow-sm">${entry.start} - ${entry.end}</span>
+                                            <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-1 rounded-lg border border-emerald-100 shadow-sm" title="Tiến độ: ${getLessonSnapshot(student, dateKey, attStatus)}/${student.lessons || 24} buổi">${getLessonSnapshot(student, dateKey, attStatus)}/${student.lessons || 24}</span>
                                             <div class="flex items-center gap-1">
                                                 <button onclick="openQuickEditScheduleModal('${entry.id}', '${dateKey}'); event.stopPropagation();" class="text-slate-300 hover:text-indigo-600 px-1 text-xs" title="Sửa nhanh">✎</button>
                                                 <span class="text-[8px] font-bold border shadow-sm ${branchObj.colorClass} px-2 py-1 rounded-lg">${entry.branch}</span>
                                             </div>
                                         </div>
                                         <div class="mb-3.5">
-                                            <p class="font-bold text-slate-900 text-[13px] whitespace-normal leading-tight" title="${student.name}">${student.name}</p>
+                                            <p class="font-bold text-slate-900 text-[13px] whitespace-normal leading-tight" title="${student.name}">${formatStudentNameWithSubjects(student)}</p>
                                             <span class="px-2 py-1 rounded-lg text-[9px] font-bold border shadow-sm ${tInfo.colorClass} mt-1.5 inline-block">${tInfo.text}</span>
                                         </div>
                                         <div class="flex gap-2 pt-3 border-t border-slate-100/80 relative">
@@ -2282,27 +2841,12 @@
                 else descEl.textContent = 'Đang hiển thị: Cả tháng (Ngày 1 đến ngày cuối tháng) - Tổng kết toàn bộ';
             }
 
+            if (typeof cleanOrphanAttendanceData === 'function') cleanOrphanAttendanceData();
             let stats = {};
-            teachers.forEach(t => stats[t.id] = 0);
-            for (let key in attendanceData) {
-                if (attendanceData[key] === 'present') {
-                    let parts = key.split('_');
-                    let schedId = parts[0];
-                    let dateStr = parts[1];
-                    
-                    if (periodVal !== 'all' && dateStr) {
-                        const dayNum = parseInt(dateStr.split('-')[2], 10);
-                        if (periodVal === 'period1' && dayNum > 15) continue;
-                        if (periodVal === 'period2' && dayNum <= 15) continue;
-                    }
-
-                    let s = schedule.find(x => x.id === schedId);
-                    if (s) {
-                        const targetTid = (s.type === 'substitute' && s.subTeacherId) ? s.subTeacherId : s.teacherId;
-                        if (stats[targetTid] !== undefined) stats[targetTid]++;
-                    }
-                }
-            }
+            teachers.forEach(t => {
+                const res = typeof calculateTeacherAttendance === 'function' ? calculateTeacherAttendance(t, periodVal, currentMonth) : { shiftCount: 0 };
+                stats[t.id] = res.shiftCount;
+            });
 
             const sortedTeachers = [...teachers].sort((a, b) => stats[b.id] - stats[a.id]);
 
@@ -2498,5 +3042,1725 @@
             }
         }, 30000);
     </script>
+
+
+<!-- ==================== AUTH GATEWAY OVERLAY (ĐĂNG NHẬP / ĐĂNG KÝ / QUÊN MẬT KHẨU) ==================== -->
+<div id="auth-gateway-overlay" class="fixed inset-0 z-[1000] bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-4 transition-all duration-300">
+    <div class="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl border border-slate-100 relative overflow-hidden animate-slide-up">
+        <div class="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-rose-500"></div>
+        
+        <div class="text-center mb-6 mt-2">
+            <div class="w-14 h-14 rounded-2xl bg-indigo-600 text-white font-extrabold text-2xl flex items-center justify-center mx-auto mb-3 shadow-lg shadow-indigo-200">MV</div>
+            <h2 class="text-2xl font-extrabold text-slate-800 tracking-tight">Hệ Thống Quản Lý Mai Vy</h2>
+            <p class="text-xs text-slate-500 font-medium mt-1">Đăng nhập tài khoản Gmail để tiếp tục truy cập</p>
+        </div>
+
+        <div id="auth-error-msg" class="hidden mb-4 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold text-center animate-shake"></div>
+
+        <form id="auth-tab-login" onsubmit="handleLogin(event)" class="space-y-4">
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1.5">Tài khoản Gmail</label>
+                <input type="email" id="login-email" required placeholder="ví dụ: admin@gmail.com" class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium transition">
+            </div>
+            <div>
+                <div class="flex items-center justify-between mb-1.5">
+                    <label class="block text-xs font-bold text-slate-700">Mật khẩu</label>
+                    <a href="javascript:void(0)" onclick="switchAuthTab('forgot')" class="text-xs text-indigo-600 font-bold hover:underline">Quên mật khẩu?</a>
+                </div>
+                <input type="password" id="login-pwd" required placeholder="••••••••" class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium transition">
+            </div>
+            <button type="submit" class="w-full py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-lg shadow-indigo-200 transition transform active:scale-[0.98]">Đăng Nhập</button>
+
+            
+
+            <div class="text-center pt-2">
+                <span class="text-xs text-slate-500 font-medium">Chưa có tài khoản? </span>
+                <a href="javascript:void(0)" onclick="switchAuthTab('register')" class="text-xs text-indigo-600 font-bold hover:underline">Đăng ký ngay</a>
+            </div>
+        </form>
+
+        <form id="auth-tab-register" onsubmit="handleRegister(event)" class="space-y-3.5 hidden">
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Họ và Tên Giáo viên</label>
+                <input type="text" id="reg-name" required placeholder="Ví dụ: Mai Vy" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Tài khoản Gmail</label>
+                <input type="email" id="reg-email" required placeholder="maivy@gmail.com" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Mật khẩu đăng nhập</label>
+                <input type="password" id="reg-pwd" required placeholder="Ít nhất 4 ký tự" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Xác nhận lại Mật khẩu</label>
+                <input type="password" id="reg-confirm-pwd" required placeholder="Nhập lại mật khẩu" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium">
+            </div>
+            <button type="submit" class="w-full py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-lg shadow-indigo-200 transition transform active:scale-[0.98] mt-2">Đăng Ký Tài Khoản</button>
+            <div class="text-center pt-2">
+                <span class="text-xs text-slate-500 font-medium">Đã có tài khoản? </span>
+                <a href="javascript:void(0)" onclick="switchAuthTab('login')" class="text-xs text-indigo-600 font-bold hover:underline">Quay lại Đăng nhập</a>
+            </div>
+        </form>
+
+        <div id="auth-tab-forgot" class="hidden space-y-4">
+            <div id="forgot-step-1" class="space-y-4">
+                <p class="text-xs text-slate-600 font-medium text-center bg-slate-50 p-3 rounded-xl border border-slate-200">Nhập Gmail đã đăng ký của bạn. Hệ thống sẽ gửi mã xác nhận OTP khôi phục mật khẩu.</p>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Gmail của bạn</label>
+                    <input type="email" id="forgot-email" placeholder="maivy@gmail.com" class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium">
+                </div>
+                <button onclick="handleSendOtp(event)" class="w-full py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-lg shadow-indigo-200 transition">Gửi Mã Xác Nhận OTP</button>
+            </div>
+
+            <div id="forgot-step-2" class="space-y-4 hidden">
+                <div class="p-3 bg-indigo-50 rounded-xl border border-indigo-200 text-xs text-indigo-800 font-medium text-center">Đã gửi mã OTP xác thực! Vui lòng kiểm tra email của bạn và nhập vào bên dưới.</div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Mã xác nhận OTP (6 số)</label>
+                    <input type="text" id="forgot-otp" placeholder="123456" maxlength="6" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-center font-mono font-bold text-lg tracking-widest text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Mật khẩu mới</label>
+                    <input type="password" id="forgot-new-pwd" placeholder="Nhập mật khẩu mới" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium">
+                </div>
+                <button onclick="handleResetPassword(event)" class="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-lg shadow-emerald-200 transition">Đổi Mật Khẩu Mới</button>
+            </div>
+
+            <div class="text-center pt-2">
+                <a href="javascript:void(0)" onclick="switchAuthTab('login')" class="text-xs text-indigo-600 font-bold hover:underline">← Quay lại Đăng nhập</a>
+            </div>
+        </div>
+
+        <div id="auth-tab-pending" class="hidden text-center space-y-4 py-4">
+            <div class="w-16 h-16 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-3xl mx-auto animate-bounce">⏳</div>
+            <h3 class="text-lg font-bold text-slate-800">Tài Khoản Đang Chờ Duyệt</h3>
+            <p class="text-xs text-slate-600 leading-relaxed max-w-xs mx-auto">Tài khoản của bạn đã đăng ký thành công và đang được chờ Quản trị viên (Admin) phê duyệt cấp vai trò và mã giáo viên để truy cập.</p>
+            
+            <div class="flex items-center justify-center gap-3 pt-2">
+                <button onclick="location.reload()" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md transition">🔄 Làm mới</button>
+                <button onclick="logoutUser()" class="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition">Đăng xuất</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* === CHẾ ĐỘ READ-ONLY DÀNH CHO KẾ TOÁN (ACCOUNTANT READ-ONLY MODE) === */
+.role-accountant #tab-sheet1 button[onclick*="openAddModal"],
+.role-accountant #tab-sheet1 button[onclick*="delete"],
+.role-accountant #tab-sheet1 button[onclick*="edit"],
+.role-accountant #tab-sheet2 button[onclick*="add"],
+.role-accountant #tab-sheet2 button[onclick*="delete"],
+.role-accountant #tab-sheet2 input,
+.role-accountant #tab-sheet3 button[onclick*="openAdd"],
+.role-accountant #tab-sheet3 button[onclick*="edit"],
+.role-accountant #btn-history,
+.role-accountant #btn-clear-data {
+    display: none !important;
+    pointer-events: none !important;
+    opacity: 0.3 !important;
+}
+.role-accountant [ondblclick] {
+    cursor: default !important;
+}
+</style>
+<script>
+// === HỆ THỐNG QUẢN LÝ TÀI KHOẢN, PHÂN QUYỀN & PROFILE CÁ NHÂN ===
+let users = JSON.parse(localStorage.getItem('mv_users_data')) || [
+    { id: "U0", email: "coder@gmail.com", name: "ADMIN Coder", password: "123", role: "superadmin", status: "approved", teacherId: "", phone: "0999999999", bankName: "Vietcombank", bankOwner: "SYSTEM CODER", bankAccount: "888888888888" },
+    { id: "U1", email: "admin@gmail.com", name: "Admin Mai Vy", password: "admin123", role: "admin", status: "approved", teacherId: "", phone: "0901234567", bankName: "MB Bank", bankOwner: "ADMIN MAI VY", bankAccount: "999988887777" }
+];
+let currentAuthUser = JSON.parse(localStorage.getItem('mv_auth_session')) || null;
+let currentOtpSession = null;
+
+function saveUsersData() {
+    localStorage.setItem('mv_users_data', JSON.stringify(users));
+    if (typeof saveData === 'function') saveData();
+}
+
+function checkAuthStatus() {
+    const authOverlay = document.getElementById('auth-gateway-overlay');
+    const authBadge = document.getElementById('auth-profile-badge');
+    const authDisplay = document.getElementById('auth-user-display');
+    const navUsers = document.getElementById('nav-users');
+    const navAcc = document.getElementById('nav-accounting');
+    const menuAdminLink = document.getElementById('menu-admin-link');
+    const menuAccLink = document.getElementById('menu-acc-link');
+
+    if (!currentAuthUser) {
+        if (authOverlay) {
+            authOverlay.classList.remove('hidden');
+            switchAuthTab('login');
+        }
+        if (authBadge) authBadge.classList.add('hidden');
+        if (navUsers) navUsers.classList.add('hidden');
+        if (navAcc) navAcc.classList.add('hidden');
+        return false;
+    }
+
+    const latestUser = users.find(u => u.email.toLowerCase() === currentAuthUser.email.toLowerCase());
+    if (latestUser) {
+        currentAuthUser = latestUser;
+        localStorage.setItem('mv_auth_session', JSON.stringify(currentAuthUser));
+    }
+
+    if (currentAuthUser.status === 'pending') {
+        if (authOverlay) {
+            authOverlay.classList.remove('hidden');
+            switchAuthTab('pending');
+        }
+        if (authBadge) authBadge.classList.add('hidden');
+        if (navUsers) navUsers.classList.add('hidden');
+        if (navAcc) navAcc.classList.add('hidden');
+        return false;
+    }
+
+    if (currentAuthUser.status === 'rejected') {
+        alert("Tài khoản của bạn đã bị khóa hoặc từ chối truy cập.");
+        logoutUser();
+        return false;
+    }
+
+    if (authOverlay) authOverlay.classList.add('hidden');
+    if (authBadge) {
+        authBadge.classList.remove('hidden');
+        let roleIcon = '[Giáo Viên]';
+        if (currentAuthUser.role === 'superadmin') roleIcon = '[ADMIN Coder]';
+        else if (currentAuthUser.role === "admin") roleIcon = '[Admin Chủ TT]';
+        else if (currentAuthUser.role === 'manager') roleIcon = '[Quản Lý]';
+        else if (currentAuthUser.role === 'accountant') roleIcon = '[Kế Toán]';
+        else if (currentAuthUser.role === 'academic') roleIcon = '[Giáo Vụ]';
+        const teacherCode = currentAuthUser.teacherId ? ` (${currentAuthUser.teacherId})` : '';
+        if (authDisplay) authDisplay.textContent = `${roleIcon} ${currentAuthUser.name}${teacherCode}`;
+    }
+
+    // Role-based authorization & visibility
+    if (currentAuthUser.role === 'superadmin' || currentAuthUser.role === 'admin') {
+        if (navUsers) navUsers.classList.remove('hidden');
+        if (menuAdminLink) menuAdminLink.classList.remove('hidden');
+        if (navAcc) navAcc.classList.remove('hidden');
+        if (menuAccLink) menuAccLink.classList.remove('hidden');
+        document.body.classList.remove('role-accountant');
+    } else if (currentAuthUser.role === 'accountant') {
+        if (navUsers) navUsers.classList.add('hidden');
+        if (menuAdminLink) menuAdminLink.classList.add('hidden');
+        if (navAcc) navAcc.classList.remove('hidden');
+        if (menuAccLink) menuAccLink.classList.remove('hidden');
+        document.body.classList.add('role-accountant');
+        
+        // Redirect if on admin users tab
+        const tabUsers = document.getElementById('tab-users');
+        if (tabUsers && !tabUsers.classList.contains('hidden')) {
+            switchTab('accounting', 'Mục Kế Toán & Bảng Lương');
+        }
+    } else { // teacher
+        if (navUsers) navUsers.classList.add('hidden');
+        if (menuAdminLink) menuAdminLink.classList.add('hidden');
+        if (navAcc) navAcc.classList.add('hidden');
+        if (menuAccLink) menuAccLink.classList.add('hidden');
+        document.body.classList.remove('role-accountant');
+        
+        // Redirect if on admin users tab or accounting tab
+        const tabUsers = document.getElementById('tab-users');
+        const tabAcc = document.getElementById('tab-accounting');
+        if ((tabUsers && !tabUsers.classList.contains('hidden')) || (tabAcc && !tabAcc.classList.contains('hidden'))) {
+            switchTab('sheet1', 'Danh Sách Tổng Hợp');
+        }
+    }
+
+    if ((currentAuthUser.role === 'superadmin' || currentAuthUser.role === 'admin') && typeof renderUsersTable === 'function') {
+        renderUsersTable();
+    }
+    if ((currentAuthUser.role === 'superadmin' || currentAuthUser.role === 'admin' || currentAuthUser.role === 'accountant') && typeof renderAccountingTable === 'function') {
+        renderAccountingTable();
+    }
+    
+    if (typeof currentAuthUser !== 'undefined' && currentAuthUser) {
+        if (currentAuthUser.role === 'superadmin' || currentAuthUser.role === 'admin') {
+            const vt = document.getElementById('view-filter-teacher');
+            const vb = document.getElementById('view-filter-branch');
+            if (vt && vt.value !== '') { vt.value = ''; }
+            if (vb && vb.value !== '') { vb.value = ''; }
+        } else if (currentAuthUser.role === 'teacher' && currentAuthUser.teacherId) {
+            const vt = document.getElementById('view-filter-teacher');
+            if (vt && !window.hasTeacherFilteredInit) {
+                vt.value = currentAuthUser.teacherId;
+                window.hasTeacherFilteredInit = true;
+            }
+        }
+    }
+    
+    return true;
+}
+
+function switchAuthTab(tabId) {
+    ['login', 'register', 'forgot', 'pending'].forEach(id => {
+        const el = document.getElementById('auth-tab-' + id);
+        if (el) el.classList.add('hidden');
+    });
+    const target = document.getElementById('auth-tab-' + tabId);
+    if (target) target.classList.remove('hidden');
+    
+    const err = document.getElementById('auth-error-msg');
+    if (err) err.classList.add('hidden');
+}
+
+function handleLogin(e) {
+    if (e) e.preventDefault();
+    if (localStorage.getItem('mv_users_data')) {
+        try { users = JSON.parse(localStorage.getItem('mv_users_data')) || users; } catch(err){}
+    }
+    const email = document.getElementById('login-email').value.trim().toLowerCase();
+    const pwd = document.getElementById('login-pwd').value;
+
+    if (!email || !pwd) {
+        showAuthError("Vui lòng nhập đầy đủ Gmail và Mật khẩu!");
+        return;
+    }
+
+    const user = users.find(u => u.email.toLowerCase() === email && u.password === pwd);
+    if (!user) {
+        showAuthError("Gmail hoặc Mật khẩu không chính xác!");
+        return;
+    }
+
+    currentAuthUser = user;
+    localStorage.setItem('mv_auth_session', JSON.stringify(currentAuthUser));
+    if (typeof showToast === 'function') showToast(`Đăng nhập thành công! Xin chào ${user.name}`, 'success');
+    checkAuthStatus();
+}
+
+function handleRegister(e) {
+    if (e) e.preventDefault();
+    const name = document.getElementById('reg-name').value.trim();
+    const email = document.getElementById('reg-email').value.trim().toLowerCase();
+    const pwd = document.getElementById('reg-pwd').value;
+    const confirmPwd = document.getElementById('reg-confirm-pwd').value;
+
+    if (!name || !email || !pwd) {
+        showAuthError("Vui lòng điền đầy đủ Họ tên, Gmail và Mật khẩu!");
+        return;
+    }
+    if (pwd !== confirmPwd) {
+        showAuthError("Mật khẩu xác nhận không khớp!");
+        return;
+    }
+    if (users.some(u => u.email.toLowerCase() === email)) {
+        showAuthError("Gmail này đã được đăng ký trong hệ thống!");
+        return;
+    }
+
+    const newUser = {
+        id: "U" + (users.length + 1),
+        email: email,
+        name: name,
+        password: pwd,
+        role: "teacher",
+        status: "pending",
+        teacherId: "",
+        phone: "",
+        bankName: "",
+        bankOwner: name.toUpperCase(),
+        bankAccount: ""
+    };
+    users.push(newUser);
+    saveUsersData();
+
+    currentAuthUser = newUser;
+    localStorage.setItem('mv_auth_session', JSON.stringify(currentAuthUser));
+    if (typeof showToast === 'function') showToast("Đăng ký tài khoản thành công! Đang chờ Admin duyệt.", 'success');
+    checkAuthStatus();
+}
+
+function handleSendOtp(e) {
+    if (e) e.preventDefault();
+    const email = document.getElementById('forgot-email').value.trim().toLowerCase();
+    if (!email) {
+        showAuthError("Vui lòng nhập Gmail đã đăng ký!");
+        return;
+    }
+    const user = users.find(u => u.email.toLowerCase() === email);
+    if (!user) {
+        showAuthError("Gmail này chưa được đăng ký trong hệ thống!");
+        return;
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    currentOtpSession = { email: email, otpCode: otp, expiresAt: Date.now() + 15 * 60 * 1000 };
+
+    alert(`[Hệ thống Mai Vy Piano - Mã xác thực]:\nMã xác thực OTP của bạn là: ${otp}`);
+    
+    document.getElementById('forgot-step-1').classList.add('hidden');
+    document.getElementById('forgot-step-2').classList.remove('hidden');
+    if (typeof showToast === 'function') showToast("Đã gửi mã OTP xác nhận!", 'info');
+}
+
+function handleResetPassword(e) {
+    if (e) e.preventDefault();
+    const inputOtp = document.getElementById('forgot-otp').value.trim();
+    const newPwd = document.getElementById('forgot-new-pwd').value;
+
+    if (!currentOtpSession || Date.now() > currentOtpSession.expiresAt) {
+        showAuthError("Mã OTP đã hết hạn hoặc không hợp lệ. Vui lòng gửi lại!");
+        return;
+    }
+    if (inputOtp !== currentOtpSession.otpCode) {
+        showAuthError("Mã OTP không chính xác!");
+        return;
+    }
+    if (!newPwd || newPwd.length < 4) {
+        showAuthError("Mật khẩu mới phải có ít nhất 4 ký tự!");
+        return;
+    }
+
+    const userIndex = users.findIndex(u => u.email.toLowerCase() === currentOtpSession.email.toLowerCase());
+    if (userIndex !== -1) {
+        users[userIndex].password = newPwd;
+        saveUsersData();
+        if (typeof showToast === 'function') showToast("Đổi mật khẩu mới thành công! Vui lòng đăng nhập lại.", 'success');
+        currentOtpSession = null;
+        switchAuthTab('login');
+    }
+}
+
+function logoutUser() {
+    currentAuthUser = null;
+    localStorage.removeItem('mv_auth_session');
+    if (typeof showToast === 'function') showToast("Đã đăng xuất tài khoản.", 'info');
+    checkAuthStatus();
+}
+
+function showAuthError(msg) {
+    const err = document.getElementById('auth-error-msg');
+    if (err) {
+        err.textContent = msg;
+        err.classList.remove('hidden');
+    } else {
+        alert(msg);
+    }
+}
+
+function showUserProfileMenu() {
+    const menu = document.getElementById('auth-profile-menu');
+    if (menu) menu.classList.toggle('hidden');
+}
+
+document.addEventListener('click', function(e) {
+    const badge = document.getElementById('auth-profile-badge');
+    const menu = document.getElementById('auth-profile-menu');
+    if (badge && menu && !badge.contains(e.target) && !menu.contains(e.target)) {
+        menu.classList.add('hidden');
+    }
+});
+
+function openChangePasswordModal() {
+    const menu = document.getElementById('auth-profile-menu');
+    if (menu) menu.classList.add('hidden');
+    const modal = document.getElementById('change-password-modal');
+    if (!modal) return;
+    const oldEl = document.getElementById('cp-old');
+    const newEl = document.getElementById('cp-new');
+    const cfEl = document.getElementById('cp-confirm');
+    if (oldEl) oldEl.value = '';
+    if (newEl) newEl.value = '';
+    if (cfEl) cfEl.value = '';
+    const err = document.getElementById('cp-error');
+    if (err) { err.classList.add('hidden'); err.textContent = ''; }
+    modal.classList.remove('hidden');
+}
+
+function closeChangePasswordModal() {
+    const modal = document.getElementById('change-password-modal');
+    if (modal) modal.classList.add('hidden');
+}
+
+function submitChangePassword() {
+    if (!currentAuthUser) return;
+    const oldPwd = (document.getElementById('cp-old') || {}).value || '';
+    const newPwd = (document.getElementById('cp-new') || {}).value || '';
+    const cfPwd = (document.getElementById('cp-confirm') || {}).value || '';
+    const errEl = document.getElementById('cp-error');
+
+    function showError(msg) {
+        if (!errEl) { alert(msg); return; }
+        errEl.textContent = '⚠️ ' + msg;
+        errEl.classList.remove('hidden');
+    }
+
+    if (!oldPwd) { showError("Vui lòng nhập mật khẩu hiện tại!"); return; }
+    if (oldPwd !== currentAuthUser.password) { showError("Mật khẩu hiện tại không đúng!"); return; }
+    if (!newPwd || newPwd.length < 4) { showError("Mật khẩu mới phải có ít nhất 4 ký tự!"); return; }
+    if (newPwd !== cfPwd) { showError("Mật khẩu xác nhận không khớp!"); return; }
+
+    const userIndex = users.findIndex(u => u.id === currentAuthUser.id);
+    if (userIndex !== -1) {
+        users[userIndex].password = newPwd;
+        currentAuthUser.password = newPwd;
+        saveUsersData();
+        localStorage.setItem('mv_auth_session', JSON.stringify(currentAuthUser));
+        if (typeof showToast === 'function') showToast("✅ Đổi mật khẩu thành công!", "success");
+        closeChangePasswordModal();
+    }
+}
+
+// === PROFILE MODAL FUNCTIONS ===
+function openProfileModal(targetUserId) {
+    let targetId = targetUserId;
+    if (!targetId || typeof targetId === 'object') {
+        targetId = currentAuthUser ? currentAuthUser.id : null;
+    }
+    if (!targetId) return;
+
+    const user = users.find(u => u.id === targetId);
+    if (!user) return;
+
+    // Security check: Coder (superadmin) chỉ được sửa profile của chính mình
+    if (user.role === 'superadmin' && (!currentAuthUser || currentAuthUser.role !== 'superadmin' || currentAuthUser.id !== user.id)) {
+        if (typeof showToast === 'function') showToast("🔒 Tài khoản ADMIN (Coder) là cố định - chỉ chính Coder đó mới có thể sửa Hồ sơ!", "error");
+        return;
+    }
+
+    // Security check: only self or admin can view profile
+    if (currentAuthUser.role !== 'superadmin' && currentAuthUser.role !== 'admin' && currentAuthUser.id !== user.id) {
+        if (typeof showToast === 'function') showToast("⚠️ Bạn chỉ được xem và sửa Hồ sơ cá nhân của chính mình!", "error");
+        return;
+    }
+
+    document.getElementById('prof-user-id').value = user.id;
+    document.getElementById('prof-name').value = user.name || "";
+    document.getElementById('prof-email').value = user.email || "";
+    document.getElementById('prof-phone').value = user.phone || "";
+    document.getElementById('prof-bank-name').value = user.bankName || "";
+    document.getElementById('prof-bank-owner').value = user.bankOwner || "";
+    document.getElementById('prof-bank-acc').value = user.bankAccount || "";
+
+    const badge = document.getElementById('prof-avatar-badge');
+    if (badge) badge.textContent = (user.name || "U").charAt(0).toUpperCase();
+
+    const subtitle = document.getElementById('prof-role-subtitle');
+    if (subtitle) {
+        let roleName = user.role === 'superadmin' ? "ADMIN (System Coder)" : (user.role === 'admin' ? "Admin (Chủ Trung Tâm)" : (user.role === 'manager' ? "Quản Lý Đào Tạo" : (user.role === 'accountant' ? "Kế Toán (Read-Only Data)" : (user.role === 'academic' ? "Giáo Vụ" : `Giáo Viên (${user.teacherId || 'Chưa gán mã'})`))));
+        subtitle.textContent = `Quyền hạn: ${roleName}`;
+    }
+
+    const adminNotice = document.getElementById('prof-admin-badge-notice');
+    const emailInput = document.getElementById('prof-email');
+    if ((currentAuthUser.role === 'superadmin' || currentAuthUser.role === 'admin') && currentAuthUser.id !== user.id) {
+        if (adminNotice) adminNotice.classList.remove('hidden');
+        if (emailInput) { emailInput.removeAttribute('readonly'); emailInput.classList.remove('bg-slate-100', 'cursor-not-allowed'); }
+    } else {
+        if (adminNotice) adminNotice.classList.add('hidden');
+        if (emailInput) { emailInput.setAttribute('readonly', 'true'); emailInput.classList.add('bg-slate-100', 'cursor-not-allowed'); }
+    }
+
+    const modal = document.getElementById('profile-modal');
+    if (modal) modal.classList.remove('hidden');
+
+    const menu = document.getElementById('auth-profile-menu');
+    if (menu) menu.classList.add('hidden');
+}
+
+function closeProfileModal() {
+    const modal = document.getElementById('profile-modal');
+    if (modal) modal.classList.add('hidden');
+}
+
+function handleSaveProfile(e) {
+    if (e) e.preventDefault();
+    const targetId = document.getElementById('prof-user-id').value;
+    const user = users.find(u => u.id === targetId);
+    if (!user) return;
+
+    // Security check: Coder (superadmin) chỉ được sửa profile của chính mình
+    if (user.role === 'superadmin' && (!currentAuthUser || currentAuthUser.role !== 'superadmin' || currentAuthUser.id !== user.id)) {
+        if (typeof showToast === 'function') showToast("🔒 Tài khoản ADMIN (Coder) là cố định - không ai được sửa!", "error");
+        return;
+    }
+
+    user.name = document.getElementById('prof-name').value.trim();
+    user.phone = document.getElementById('prof-phone').value.trim();
+    user.bankName = document.getElementById('prof-bank-name').value.trim();
+    user.bankOwner = document.getElementById('prof-bank-owner').value.trim().toUpperCase();
+    user.bankAccount = document.getElementById('prof-bank-acc').value.trim();
+
+    if (currentAuthUser.role === 'superadmin' || currentAuthUser.role === 'admin') {
+        const newEmail = document.getElementById('prof-email').value.trim().toLowerCase();
+        if (newEmail && newEmail !== user.email && !users.some(u => u.email.toLowerCase() === newEmail && u.id !== user.id)) {
+            user.email = newEmail;
+        }
+    }
+
+    if (currentAuthUser && currentAuthUser.id === user.id) {
+        currentAuthUser = user;
+        localStorage.setItem('mv_auth_session', JSON.stringify(currentAuthUser));
+    }
+
+    saveUsersData();
+    closeProfileModal();
+    if (typeof renderUsersTable === 'function') renderUsersTable();
+    if (typeof renderAccountingTable === 'function') renderAccountingTable();
+    if (typeof checkAuthStatus === 'function') checkAuthStatus();
+    if (typeof showToast === 'function') showToast("💾 Đã lưu thông tin Profile & Ngân hàng thành công!", "success");
+    if (typeof logActivity === 'function') logActivity(`📝 Đã cập nhật Profile cho tài khoản ${user.name} (${user.email})`);
+}
+
+// === ACCOUNTING TABLE FUNCTIONS ===
+
+function filterScheduleByPeriod(scheduleArray, period, monthStr) {
+    if (!scheduleArray || !Array.isArray(scheduleArray)) return [];
+    if (!period || period === 'all') return scheduleArray;
+    
+    const targetMonth = monthStr || currentMonth || new Date().toISOString().slice(0, 7);
+    const parts = targetMonth.split('-');
+    const year = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10);
+    const daysInMonth = new Date(year, month, 0).getDate();
+    
+    const firstDateOfMonth = new Date(year, month - 1, 1);
+    const firstDayOfWeek = firstDateOfMonth.getDay();
+    const offset = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
+    const startDateOfCalendar = new Date(year, month - 1, 1 - offset);
+    
+    return scheduleArray.map(item => {
+        if (item.exactDates && Array.isArray(item.exactDates) && item.exactDates.length > 0) {
+            const filtered = item.exactDates.filter(d => {
+                const dayNum = parseInt(d.split('-')[2] || '0', 10);
+                if (period === 'p1') return dayNum <= 15;
+                if (period === 'p2') return dayNum >= 16;
+                return true;
+            });
+            if (filtered.length === 0) return null;
+            const ratio = filtered.length / item.exactDates.length;
+            return { ...item, exactDates: filtered, _periodRatio: ratio };
+        } else if (item.exactDate) {
+            const dayNum = parseInt(item.exactDate.split('-')[2] || '0', 10);
+            if (period === 'p1' && dayNum > 15) return null;
+            if (period === 'p2' && dayNum <= 15) return null;
+            return item;
+        } else {
+            let totalOccurrences = 0;
+            let periodOccurrences = 0;
+            const daysMap = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
+            
+            for (let d = 1; d <= daysInMonth; d++) {
+                const checkDate = new Date(year, month - 1, d);
+                const dName = daysMap[checkDate.getDay()];
+                if (item.day === dName) {
+                    const dateKey = `${year}-${String(month).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+                    if (item.excludedDates && item.excludedDates.includes(dateKey)) continue;
+                    
+                    const diffDays = Math.floor((checkDate - startDateOfCalendar) / (1000 * 60 * 60 * 24));
+                    let w = Math.floor(diffDays / 7) + 1;
+                    if (w > 5) w = 5;
+                    
+                    if (!item.weeks || item.weeks.includes(w)) {
+                        totalOccurrences++;
+                        if (period === 'p1' && d <= 15) periodOccurrences++;
+                        if (period === 'p2' && d >= 16) periodOccurrences++;
+                    }
+                }
+            }
+            
+            if (periodOccurrences === 0) return null;
+            const ratio = totalOccurrences > 0 ? (periodOccurrences / totalOccurrences) : 1;
+            return { ...item, _periodRatio: ratio };
+        }
+    }).filter(Boolean);
+}
+
+function isLessonVisibleOnCalendarForDate(item, dateStr, targetMonthStr) {
+    if (!item || !dateStr) return false;
+    if (item.status === 'off') return false;
+    if (item.excludedDates && Array.isArray(item.excludedDates) && item.excludedDates.includes(dateStr)) return false;
+    
+    const targetMonth = targetMonthStr || (typeof currentMonth !== 'undefined' ? currentMonth : dateStr.slice(0, 7));
+    if (targetMonth && !dateStr.startsWith(targetMonth)) return false;
+    
+    if (typeof students !== 'undefined' && Array.isArray(students)) {
+        if (!students.some(s => s.id === item.studentId)) return false;
+    }
+    if (typeof teachers !== 'undefined' && Array.isArray(teachers)) {
+        if (!teachers.some(t => t.id === item.teacherId)) return false;
+    }
+
+    if (item.exactDates && Array.isArray(item.exactDates) && item.exactDates.length > 0) {
+        return item.exactDates.includes(dateStr);
+    }
+    if (item.exactDate) {
+        return item.exactDate === dateStr;
+    }
+
+    if (!item.day || !item.weeks || !Array.isArray(item.weeks)) return false;
+
+    const parts = dateStr.split('-').map(Number);
+    if (parts.length !== 3 || isNaN(parts[0]) || isNaN(parts[1]) || isNaN(parts[2])) return false;
+    const year = parts[0];
+    const month = parts[1];
+    const day = parts[2];
+
+    const checkDate = new Date(year, month - 1, day);
+    if (isNaN(checkDate.getTime())) return false;
+
+    const daysMap = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
+    if (item.day !== daysMap[checkDate.getDay()]) return false;
+
+    const firstDateOfMonth = new Date(year, month - 1, 1);
+    const firstDayOfWeek = firstDateOfMonth.getDay();
+    const offset = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
+    let w = Math.ceil((day + offset) / 7);
+    if (w > 5) w = 5;
+
+    return item.weeks.includes(w);
+}
+
+function calculateTeacherAttendance(t, periodVal, monthStr) {
+    let shiftCount = 0;
+    let hoursCount = 0;
+    if (!t || !t.id) return { shiftCount, hoursCount };
+    
+    let baseSchedule = [];
+    if (typeof schedule !== 'undefined' && Array.isArray(schedule)) {
+        baseSchedule = schedule;
+    } else if (typeof monthlyData !== 'undefined' && typeof currentMonth !== 'undefined' && monthlyData[currentMonth] && Array.isArray(monthlyData[currentMonth].schedule)) {
+        baseSchedule = monthlyData[currentMonth].schedule;
+    }
+    
+    const targetMonth = monthStr || (typeof currentMonth !== 'undefined' ? currentMonth : '');
+
+    for (let key in attendanceData) {
+        if (attendanceData[key] === 'present') {
+            let parts = key.split('_');
+            if (parts.length < 2) continue;
+            let schedId = parts[0];
+            let dateStr = parts[1];
+            
+            if (periodVal && periodVal !== 'all' && dateStr) {
+                const dayNum = parseInt(dateStr.split('-')[2], 10);
+                if ((periodVal === 'period1' || periodVal === 'p1') && dayNum > 15) continue;
+                if ((periodVal === 'period2' || periodVal === 'p2') && dayNum <= 15) continue;
+            }
+
+            let s = baseSchedule.find(x => x.id === schedId);
+            if (s && isLessonVisibleOnCalendarForDate(s, dateStr, targetMonth)) {
+                const targetTid = (s.type === 'substitute' && s.subTeacherId) ? s.subTeacherId : s.teacherId;
+                let isMatch = (targetTid === t.id || targetTid === t.name || (s.type !== 'substitute' && s.teacher === t.name));
+                if (!isMatch && s.subTeacherId && s.subTeacherId === t.id) isMatch = true;
+                if (isMatch) {
+                    shiftCount += 1;
+                    if (s.start && s.end) {
+                        try {
+                            const [sh, sm] = s.start.split(':').map(Number);
+                            const [eh, em] = s.end.split(':').map(Number);
+                            const diff = (eh + em/60) - (sh + sm/60);
+                            if (diff > 0) hoursCount += diff;
+                            else hoursCount += 1.5;
+                        } catch(e) { hoursCount += 1.5; }
+                    } else {
+                        hoursCount += 1.5;
+                    }
+                }
+            }
+        }
+    }
+    return { shiftCount, hoursCount };
+}
+
+function cleanOrphanAttendanceData() {
+    if (typeof attendanceData !== 'object' || !attendanceData) return false;
+    let baseSchedule = [];
+    if (typeof schedule !== 'undefined' && Array.isArray(schedule)) {
+        baseSchedule = schedule;
+    } else if (typeof monthlyData !== 'undefined' && typeof currentMonth !== 'undefined' && monthlyData[currentMonth] && Array.isArray(monthlyData[currentMonth].schedule)) {
+        baseSchedule = monthlyData[currentMonth].schedule;
+    }
+    const targetMonth = typeof currentMonth !== 'undefined' ? currentMonth : '';
+    
+    let changed = false;
+    for (let key in attendanceData) {
+        let parts = key.split('_');
+        if (parts.length < 2) {
+            delete attendanceData[key];
+            changed = true;
+            continue;
+        }
+        let schedId = parts[0];
+        let dateStr = parts[1];
+        let s = baseSchedule.find(x => x.id === schedId);
+        if (!s || !isLessonVisibleOnCalendarForDate(s, dateStr, targetMonth)) {
+            delete attendanceData[key];
+            changed = true;
+        }
+    }
+    return changed;
+}
+
+function renderAccountingTable() {
+    if (localStorage.getItem('mv_users_data')) {
+        try { users = JSON.parse(localStorage.getItem('mv_users_data')) || users; } catch(e){}
+    }
+    const tbody = document.getElementById('accounting-table-body');
+    if (!tbody) return;
+
+    let totalEstimatedMoney = 0;
+    let totalTeachingHours = 0;
+    let html = '';
+    
+    let currentSchedule = [];
+    if (typeof schedule !== 'undefined' && Array.isArray(schedule)) {
+        currentSchedule = schedule;
+    } else if (typeof monthlyData !== 'undefined' && Array.isArray(monthlyData)) {
+        currentSchedule = monthlyData;
+    }
+    const periodEl = document.getElementById('acc-period-filter');
+    const selectedPeriod = periodEl ? periodEl.value : 'all';
+    if (typeof filterScheduleByPeriod === 'function') {
+        currentSchedule = filterScheduleByPeriod(currentSchedule, selectedPeriod, currentMonth);
+    }
+
+    if (typeof teachers !== 'undefined' && Array.isArray(teachers)) {
+        teachers.forEach((t) => {
+            const matchedUser = users.find(u => u.teacherId === t.id) || {};
+            
+            const teacherName = t.name || t.id;
+            const phone = matchedUser.phone || t.phone || '-';
+            const email = matchedUser.email || '-';
+            
+            let bankHtml = '';
+            if (matchedUser.bankAccount || t.bank) {
+                const owner = matchedUser.bankOwner || t.name;
+                const bName = matchedUser.bankName || 'Ngân hàng';
+                const bAcc = matchedUser.bankAccount || t.bank;
+                bankHtml = `
+                    <div class="font-bold text-slate-800 text-xs">${owner}</div>
+                    <div class="text-[11px] text-indigo-600 font-mono font-bold">${bName} - ${bAcc}</div>
+                `;
+            } else {
+                bankHtml = `
+                    <span class="text-amber-500 text-xs font-semibold italic">⚠️ Chưa điền TK</span>
+                    ${matchedUser.id ? `<button onclick="openProfileModal('${matchedUser.id}')" class="text-[11px] text-indigo-600 underline font-bold ml-1 hover:text-indigo-800">Bổ sung</button>` : ''}
+                `;
+            }
+
+            if (typeof cleanOrphanAttendanceData === 'function') cleanOrphanAttendanceData();
+            const res = typeof calculateTeacherAttendance === 'function' ? calculateTeacherAttendance(t, selectedPeriod, currentMonth) : { shiftCount: 0, hoursCount: 0 };
+            const shiftCount = res.shiftCount;
+            const hoursCount = res.hoursCount;
+
+            let rate = t.rate || 0;
+            let salaryMoney = Math.round(hoursCount * rate);
+
+            totalEstimatedMoney += salaryMoney;
+            totalTeachingHours += hoursCount;
+
+            // Payment status theo từng tháng + đợt (key = `${month}_${period}`)
+            if (!t.payments || typeof t.payments !== 'object') t.payments = {};
+            const monthKey = currentMonth || '';
+            const allKey = `${monthKey}_all`;
+            const p1Key = `${monthKey}_p1`;
+            const p2Key = `${monthKey}_p2`;
+            const allPaid = t.payments[allKey] === 'paid';
+            const p1Paid = t.payments[p1Key] === 'paid';
+            const p2Paid = t.payments[p2Key] === 'paid';
+            let isPaid;
+            if (selectedPeriod === 'all') {
+                isPaid = allPaid || (p1Paid && p2Paid);
+            } else if (selectedPeriod === 'p1') {
+                isPaid = p1Paid;
+            } else if (selectedPeriod === 'p2') {
+                isPaid = p2Paid;
+            } else {
+                isPaid = allPaid || (p1Paid && p2Paid);
+            }
+            let statusBtn = isPaid ?
+                `<button onclick="toggleTeacherPayment('${t.id}', false, '${selectedPeriod}')" class="px-3 py-1 rounded-xl bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold text-xs flex items-center justify-center gap-1 shadow-xs hover:bg-emerald-200 transition mx-auto"><span class="w-1.5 h-1.5 rounded-full bg-emerald-600 inline-block"></span> Đã thanh toán</button>` :
+                `<button onclick="toggleTeacherPayment('${t.id}', true, '${selectedPeriod}')" class="px-3 py-1 rounded-xl bg-amber-100 text-amber-800 border border-amber-300 font-bold text-xs flex items-center justify-center gap-1 shadow-xs hover:bg-amber-200 transition mx-auto animate-pulse"><span class="w-1.5 h-1.5 rounded-full bg-amber-600 inline-block"></span> Chưa thanh toán</button>`;
+            statusBtn += `<button onclick="openVietQRModal('${t.id}')" class="px-2.5 py-1 mt-1 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 font-bold text-[11px] transition flex items-center justify-center gap-1 shadow-xs mx-auto"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg> Quét VietQR</button>`;
+
+            html += `
+            <tr class="border-b border-slate-100 hover:bg-slate-50/70 transition">
+                <td class="p-4 font-bold text-slate-800 text-sm">
+                    <div class="flex items-center gap-2">
+                        <span class="w-8 h-8 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-700 font-extrabold text-xs">${t.id}</span>
+                        <div>
+                            <div>${teacherName}</div>
+                            ${matchedUser.name ? `<div class="text-[11px] text-slate-400 font-normal">TK: ${matchedUser.name}</div>` : ''}
+                        </div>
+                    </div>
+                </td>
+                <td class="p-4 text-xs">
+                    <div class="font-bold text-slate-700">📞 ${phone}</div>
+                    <div class="text-slate-400 font-normal">✉️ ${email}</div>
+                </td>
+                <td class="p-4">${bankHtml}</td>
+                <td class="p-4 text-center font-bold text-slate-700 text-sm">${Number.isInteger(shiftCount) ? shiftCount : shiftCount.toFixed(1)} ca</td>
+                <td class="p-4 text-center font-extrabold text-teal-700 text-sm bg-teal-50/40 rounded-xl">${hoursCount.toFixed(1)}h</td>
+                <td class="p-4 text-center">
+                            <select onchange="changeTeacherContract('${t.id}', this.value)" class="p-1 rounded-lg border border-slate-200 text-xs font-bold ${t.contractType==='Quản lý'?'bg-purple-100 text-purple-900':(t.contractType==='Thử việc'?'bg-amber-100 text-amber-900':(t.contractType==='Chủ TT'||t.contractType==='Chủ Trung Tâm'?'bg-rose-100 text-rose-900 font-extrabold':'bg-emerald-100 text-emerald-900'))} focus:outline-none cursor-pointer" ${(!currentAuthUser||(currentAuthUser.role!=='superadmin'&&currentAuthUser.role!=='admin'&&currentAuthUser.role!=='manager'&&currentAuthUser.role!=='accountant'))?'disabled title="Chỉ Admin được chỉnh sửa"':''}>
+                                <option value="Thử việc" ${t.contractType==='Thử việc'?'selected':''}>Thử việc</option>
+                                <option value="Chính thức" ${(!t.contractType||t.contractType==='Chính thức')?'selected':''}>Chính thức</option>
+                                <option value="Quản lý" ${t.contractType==='Quản lý'?'selected':''}>Quản lý</option>
+                            <option value="Chủ TT" ${t.contractType==='Chủ TT'||t.contractType==='Chủ Trung Tâm'?'selected':''}>Chủ TT</option>
+                            </select>
+                        </td>
+                        <td class="p-4 text-right font-bold text-indigo-700 cursor-pointer" ondblclick="editTeacherRate('${t.id}', this)" title="Nháy đúp để chỉnh mức lương cá nhân">${rate.toLocaleString('vi-VN')} đ/h</td>
+                <td class="p-4 text-right font-extrabold text-emerald-600 text-sm">${salaryMoney.toLocaleString('vi-VN')} VNĐ</td>
+                <td class="p-4 text-center">${statusBtn}</td>
+            </tr>`;
+        });
+    }
+
+    if (!html) {
+        html = `<tr><td colspan="9" class="p-8 text-center text-slate-400 font-medium">Chưa có dữ liệu giáo viên trong hệ thống</td></tr>`;
+    }
+    tbody.innerHTML = html;
+
+    const totalMoneyEl = document.getElementById('stat-acc-total-money');
+    const totalHoursEl = document.getElementById('stat-acc-total-hours');
+    if (totalMoneyEl) totalMoneyEl.textContent = `${totalEstimatedMoney.toLocaleString('vi-VN')} VNĐ`;
+    if (totalHoursEl) totalHoursEl.textContent = `${totalTeachingHours.toFixed(1)} Giờ`;
+}
+
+function toggleTeacherPayment(teacherId, newPaidStatus, period) {
+    if (currentAuthUser && currentAuthUser.role === 'teacher') {
+        if (typeof showToast === 'function') showToast("⚠️ Bạn không có quyền thay đổi trạng thái thanh toán lương!", "error");
+        return;
+    }
+    const t = teachers.find(x => x.id === teacherId);
+    if (!t) return;
+    if (!t.payments || typeof t.payments !== 'object') t.payments = {};
+    const usePeriod = period || 'all';
+    const monthKey = currentMonth || '';
+    const val = newPaidStatus ? 'paid' : 'unpaid';
+    if (usePeriod === 'all') {
+        t.payments[`${monthKey}_all`] = val;
+        t.payments[`${monthKey}_p1`] = val;
+        t.payments[`${monthKey}_p2`] = val;
+    } else {
+        t.payments[`${monthKey}_${usePeriod}`] = val;
+        if (val === 'unpaid') {
+            t.payments[`${monthKey}_all`] = 'unpaid';
+        } else if (t.payments[`${monthKey}_p1`] === 'paid' && t.payments[`${monthKey}_p2`] === 'paid') {
+            t.payments[`${monthKey}_all`] = 'paid';
+        }
+    }
+    // Xóa paymentStatus cũ để tránh xung đột
+    delete t.paymentStatus;
+    if (typeof saveData === 'function') saveData();
+    renderAccountingTable();
+    const periodLabel = usePeriod === 'all' ? 'Cả tháng' : (usePeriod === 'p1' ? 'Đợt 1' : 'Đợt 2');
+    if (typeof showToast === 'function') showToast(`Đã cập nhật ${periodLabel} của ${t.name} (${currentMonth}): ${newPaidStatus ? 'Đã thanh toán' : 'Chưa thanh toán'}`, newPaidStatus ? 'success' : 'info');
+    if (typeof logActivity === 'function') logActivity(`💰 ${currentAuthUser ? currentAuthUser.name : 'Kế toán'}: Chuyển ${periodLabel} lương ${currentMonth} của ${t.name} (${t.id}) -> ${newPaidStatus ? 'Đã thanh toán' : 'Chưa thanh toán'}`);
+}
+
+function changeUserRole(userId, newRole) {
+    const target = users.find(u => u.id === userId);
+    if (target && target.role === "superadmin" && currentAuthUser.role !== "superadmin") { if(typeof showToast==="function") showToast("⚠️ Không thể thay đổi vai trò của ADMIN Coder!", "error"); if(typeof renderUsersTable==="function") renderUsersTable(); return; }
+    if (!currentAuthUser || (currentAuthUser.role !== 'superadmin' && currentAuthUser.role !== 'admin')) {
+        if (typeof showToast === 'function') showToast("⚠️ Chỉ Admin mới có quyền phân vai trò tài khoản!", "error");
+        return;
+    }
+    const u = users.find(x => x.id === userId);
+    if (!u) return;
+    const oldRole = u.role;
+    u.role = newRole;
+    saveUsersData();
+    renderUsersTable();
+    let roleDisplay = newRole === "superadmin" ? "ADMIN (Coder)" : (newRole === "admin" ? "Admin Chủ TT" : (newRole === "manager" ? "Quản Lý" : (newRole === "accountant" ? "Kế toán" : (newRole === "academic" ? "Giáo Vụ" : "Giáo viên"))));
+    if (typeof showToast === 'function') showToast(`Đã đổi vai trò của "${u.name}" thành: ${roleDisplay}`, 'success');
+    if (typeof logActivity === 'function') logActivity(`🛡️ Admin: Đổi quyền tài khoản ${u.name} (${u.email}) từ [${oldRole}] -> [${newRole}]`);
+}
+
+
+// Sync storage across browser tabs & Demo user creation
+window.addEventListener('storage', function(e) {
+    if (e.key === 'mv_users_data' && e.newValue) {
+        try {
+            users = JSON.parse(e.newValue) || users;
+            if (typeof renderUsersTable === 'function') renderUsersTable();
+            if (typeof renderAccountingTable === 'function') renderAccountingTable();
+        } catch(err){}
+    }
+});
+
+// === ADMIN USERS TABLE WITH ROLE SELECT & PROFILE BTN ===
+function renderUsersTable() {
+    if (localStorage.getItem('mv_users_data')) {
+        try { users = JSON.parse(localStorage.getItem('mv_users_data')) || users; } catch(e){}
+    }
+    const tbody = document.getElementById('users-table-body');
+    if (!tbody) return;
+
+    // Remove old banner if exists
+    const oldBanner = document.getElementById('no-pending-alert');
+    if (oldBanner) oldBanner.remove();
+
+    // Check if there are any pending users
+    
+
+    let html = '';
+    users.forEach((u) => {
+        const isSelf = currentAuthUser && currentAuthUser.email.toLowerCase() === u.email.toLowerCase();
+        const isCoder = u.role === 'superadmin';
+
+        let statusBadge = '';
+        if (u.status === 'approved') statusBadge = '<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block mr-1"></span>Đã duyệt</span>';
+        else if (u.status === 'pending') statusBadge = '<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200 animate-pulse"><span class="w-1.5 h-1.5 rounded-full bg-amber-500 inline-block mr-1 animate-ping"></span>Chờ duyệt</span>';
+        else statusBadge = '<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800 border border-rose-200"><span class="w-1.5 h-1.5 rounded-full bg-rose-500 inline-block mr-1"></span>Đã khóa</span>';
+
+        // Coder (superadmin): cố định, không cho sửa vai trò, status, không Khóa/Xóa
+        let selectRole;
+        if (isCoder) {
+            statusBadge = '<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block mr-1"></span>Đã duyệt</span>';
+            selectRole = `<span class="px-2.5 py-1 rounded-xl bg-rose-100 text-rose-900 border border-rose-300 text-xs font-extrabold inline-flex items-center gap-1" title="Vai trò ADMIN (Coder) là cố định - chỉ chủ tài khoản Coder mới có thể sửa qua code"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> ADMIN (Coder)</span>`;
+        } else {
+            selectRole = `<select onchange="changeUserRole('${u.id}', this.value)" class="p-1.5 rounded-xl border border-purple-200 text-xs font-bold ${u.role==='admin'?'bg-purple-100 text-purple-900':(u.role==='accountant'?'bg-emerald-100 text-emerald-900':'bg-slate-100 text-slate-700')} hover:border-purple-400 focus:outline-none cursor-pointer" ${isSelf ? 'disabled title="Không thể tự đổi quyền chính mình"' : ''}>`;
+            selectRole += `<option value="teacher" ${u.role==='teacher'?'selected':''}>Giáo viên</option>`;
+            selectRole += `<option value="academic" ${u.role==='academic'?'selected':''}>Giáo vụ</option>`;
+            selectRole += `<option value="accountant" ${u.role==='accountant'?'selected':''}>Kế toán</option>`;
+            selectRole += `<option value="manager" ${u.role==='manager'?'selected':''}>Quản Lý</option>`;
+            selectRole += `<option value="admin" ${u.role==='admin'?'selected':''}>Admin (Chủ TT)</option>`;
+            selectRole += `</select>`;
+        }
+
+        let selectTeacher = `<select onchange="assignTeacherId('${u.id}', this.value)" class="p-1.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 bg-white hover:border-indigo-400 focus:outline-none cursor-pointer">`;
+        selectTeacher += `<option value="">-- Chưa gán mã --</option>`;
+        if (typeof teachers !== 'undefined' && Array.isArray(teachers)) {
+            teachers.forEach(t => {
+                const selected = u.teacherId === t.id ? 'selected' : '';
+                selectTeacher += `<option value="${t.id}" ${selected}>${t.id} - ${t.name}</option>`;
+            });
+        }
+        selectTeacher += `</select>`;
+
+        html += `
+        <tr class="border-b border-slate-100 hover:bg-slate-50/70 transition">
+            <td class="p-4 font-bold text-slate-800 text-sm flex items-center gap-3">
+                <div class="w-9 h-9 rounded-2xl bg-indigo-50 border border-indigo-200 flex items-center justify-center font-extrabold text-indigo-700 text-sm shadow-xs">${u.name.charAt(0).toUpperCase()}</div>
+                <div>
+                    <div>${u.name} ${isSelf ? '<span class="text-[11px] text-indigo-600 font-extrabold bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-200 ml-1">(Bạn)</span>' : ''}</div>
+                    <div class="text-xs text-slate-400 font-normal md:hidden mt-0.5">${u.email}</div>
+                </div>
+            </td>
+            <td class="p-4 text-xs text-slate-600 font-medium hidden md:table-cell">${u.email}</td>
+            <td class="p-4">${selectRole}</td>
+            <td class="p-4">${statusBadge}</td>
+            <td class="p-4">${selectTeacher}</td>
+            <td class="p-4 text-right">
+                <div class="flex items-center justify-end gap-1.5">
+                    <button onclick="openProfileModal('${u.id}')" class="px-2.5 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold text-xs shadow-xs transition flex items-center gap-1" title="Xem/Sửa thông tin Profile & Ngân hàng"><svg class="w-3.5 h-3.5 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg><span class="hidden lg:inline">Profile</span></button>
+                    ${!isCoder && u.status !== 'approved' ? `<button onclick="changeUserStatus('${u.id}', 'approved')" class="px-2.5 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold shadow-xs transition">Duyệt</button>` : ''}
+                    ${!isCoder && u.status !== 'rejected' && !isSelf ? `<button onclick="changeUserStatus('${u.id}', 'rejected')" class="px-2.5 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold transition">Khóa</button>` : ''}
+                    ${!isCoder && !isSelf ? `<button onclick="deleteUser(\'${u.id}\')" class="px-2.5 py-1 rounded-lg border border-rose-200 text-rose-600 font-bold text-xs hover:bg-rose-500 hover:text-white transition active:scale-95" title="Xóa tài khoản">Xóa</button>` : ''}
+                </div>
+            </td>
+        </tr>`;
+    });
+    tbody.innerHTML = html;
+
+    const totalEl = document.getElementById('stat-users-total');
+    const approvedEl = document.getElementById('stat-users-approved');
+    const pendingEl = document.getElementById('stat-users-pending');
+    if (totalEl) totalEl.textContent = users.length;
+    if (approvedEl) approvedEl.textContent = users.filter(u => u.status === 'approved').length;
+    if (pendingEl) pendingEl.textContent = users.filter(u => u.status === 'pending').length;
+}
+
+function changeUserStatus(userId, newStatus) {
+    const target = users.find(u => u.id === userId);
+    if (!target) return;
+    target.status = newStatus;
+    saveUsersData();
+    renderUsersTable();
+    if (typeof showToast === 'function') showToast(`Đã chuyển trạng thái của ${target.name} thành: ${newStatus === 'approved' ? 'Đã duyệt' : 'Đã khóa'}`);
+    if (newStatus === 'approved' && typeof logActivity === 'function') {
+        logActivity(`🛡️ Admin: Đã duyệt quyền cho tài khoản ${target.name} (${target.email})`);
+    }
+}
+
+function assignTeacherId(userId, teacherId) {
+    const target = users.find(u => u.id === userId);
+    if (!target) return;
+    target.teacherId = teacherId;
+    saveUsersData();
+    renderUsersTable();
+    if (typeof showToast === 'function') showToast(`Đã gán mã giáo viên ${teacherId || 'Trống'} cho ${target.name}`);
+    if (typeof logActivity === 'function') {
+        logActivity(`🛡️ Admin: Đã gán mã giáo viên "${teacherId}" cho tài khoản ${target.name}`);
+    }
+}
+
+// === CREATE USER MODAL ===
+function openCreateUserModal() {
+    const modal = document.getElementById('create-user-modal');
+    if (!modal) return;
+    // Reset form
+    const n = document.getElementById('cu-name');
+    const e = document.getElementById('cu-email');
+    const p = document.getElementById('cu-password');
+    const r = document.getElementById('cu-role');
+    const s = document.getElementById('cu-status');
+    if (n) n.value = '';
+    if (e) e.value = '';
+    if (p) p.value = '';
+    if (r) r.value = 'teacher';
+    if (s) s.value = 'approved';
+    modal.classList.remove('hidden');
+}
+
+function closeCreateUserModal() {
+    const modal = document.getElementById('create-user-modal');
+    if (modal) modal.classList.add('hidden');
+}
+
+function createNewUser() {
+    if (!currentAuthUser || (currentAuthUser.role !== 'superadmin' && currentAuthUser.role !== 'admin')) {
+        if (typeof showToast === 'function') showToast("⚠️ Chỉ Admin mới có quyền tạo tài khoản!", "error");
+        return;
+    }
+    const nameEl = document.getElementById('cu-name');
+    const emailEl = document.getElementById('cu-email');
+    const passEl = document.getElementById('cu-password');
+    const roleEl = document.getElementById('cu-role');
+    const statusEl = document.getElementById('cu-status');
+    if (!nameEl || !emailEl || !passEl || !roleEl || !statusEl) return;
+
+    const name = (nameEl.value || '').trim();
+    const email = (emailEl.value || '').trim().toLowerCase();
+    const password = (passEl.value || '').trim();
+    const role = roleEl.value;
+    const status = statusEl.value;
+
+    if (!name) { if (typeof showToast === 'function') showToast("⚠️ Vui lòng nhập họ và tên!", "error"); return; }
+    if (!email || !email.includes('@')) { if (typeof showToast === 'function') showToast("⚠️ Vui lòng nhập Gmail hợp lệ!", "error"); return; }
+    if (!password) { if (typeof showToast === 'function') showToast("⚠️ Vui lòng nhập mật khẩu!", "error"); return; }
+
+    // Check duplicate email
+    const exist = users.find(u => u.email && u.email.toLowerCase() === email);
+    if (exist) { if (typeof showToast === 'function') showToast("⚠️ Gmail này đã tồn tại trong hệ thống!", "error"); return; }
+
+    // Tạo user mới
+    const newUser = {
+        id: 'U' + Date.now(),
+        name: name,
+        email: email,
+        password: password,
+        role: role,
+        status: status,
+        createdAt: new Date().toISOString(),
+        createdBy: currentAuthUser.email
+    };
+
+    // Coder role cố định - chỉ superadmin hiện tại mới tạo được coder khác
+    if (role === 'superadmin' && currentAuthUser.role !== 'superadmin') {
+        if (typeof showToast === 'function') showToast("⚠️ Chỉ ADMIN (Coder) hiện tại mới có quyền tạo tài khoản Coder khác!", "error");
+        return;
+    }
+
+    users.push(newUser);
+    if (typeof saveUsersData === 'function') saveUsersData();
+    if (typeof renderUsersTable === 'function') renderUsersTable();
+
+    const roleLabel = role === 'superadmin' ? 'ADMIN (Coder)' : (role === 'admin' ? 'Admin (Chủ TT)' : (role === 'manager' ? 'Quản Lý' : (role === 'accountant' ? 'Kế toán' : (role === 'academic' ? 'Giáo vụ' : 'Giáo viên'))));
+    if (typeof showToast === 'function') showToast(`✅ Đã tạo tài khoản "${name}" - ${roleLabel} - ${status === 'approved' ? 'Đã duyệt' : 'Chờ duyệt'}`, 'success');
+    if (typeof logActivity === 'function') logActivity(`🛡️ ${currentAuthUser.name}: Đã tạo tài khoản mới "${name}" (${email}) - vai trò [${roleLabel}]`);
+
+    closeCreateUserModal();
+}
+
+function deleteUser(userId) {
+    const target = users.find(u => u.id === userId);
+    if (!target) return;
+    if (target.role === "superadmin" && currentAuthUser.role !== "superadmin") { if(typeof showToast==="function") showToast("⚠️ Bạn không có quyền xóa tài khoản ADMIN của Coder!", "error"); return; }
+    if (!confirm(`Bạn có chắc muốn xóa tài khoản "${target.name} (${target.email})"?`)) return;
+    users = users.filter(u => u.id !== userId);
+    saveUsersData();
+    renderUsersTable();
+    if (typeof showToast === 'function') showToast(`Đã xóa tài khoản ${target.name}`);
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    checkAuthStatus();
+});
+
+// === SAFETY WRAPPER FOR ACCOUNTANT READ-ONLY MODE ===
+window.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        if (typeof window.saveData === 'function' && !window._origSaveData) {
+            window._origSaveData = window.saveData;
+            window.saveData = function(...args) {
+                if (typeof currentAuthUser !== 'undefined' && currentAuthUser && currentAuthUser.role === 'accountant') {
+                    if (typeof showToast === 'function') showToast("⚠️ Tài khoản Kế toán chỉ có quyền XEM dữ liệu, không được phép lưu chỉnh sửa!", "error");
+                    return;
+                }
+                return window._origSaveData.apply(this, args);
+            };
+        }
+    }, 500);
+});
+</script>
+
+
+
+<script>
+// === CÁC HÀM XỬ LÝ TÍNH NĂNG MỚI (HỢP ĐỒNG, LƯƠNG, MÔN HỌC, ĐỒNG BỘ MASTER DATA) ===
+function changeTeacherContract(teacherId, newType) {
+    if (!currentAuthUser || (currentAuthUser.role !== 'superadmin' && currentAuthUser.role !== 'admin')) {
+        if (typeof showToast === 'function') showToast("⚠️ Chỉ Admin mới có quyền chỉnh sửa loại hợp đồng!", "error");
+        return;
+    }
+    const t = teachers.find(x => x.id === teacherId);
+    if (!t) return;
+    t.contractType = newType;
+    saveData();
+    if (typeof renderTeachers === 'function') renderTeachers();
+    if (typeof renderAccountingTable === 'function') renderAccountingTable();
+    if (typeof showToast === 'function') showToast(`Đã cập nhật hợp đồng của ${t.name} thành: ${newType}`, "success");
+}
+
+function editTeacherRate(teacherId, tdEl) {
+    if (!currentAuthUser || (currentAuthUser.role !== 'superadmin' && currentAuthUser.role !== 'admin')) {
+        if (typeof showToast === 'function') showToast("⚠️ Chỉ Admin mới có quyền chỉnh sửa mức lương!", "error");
+        return;
+    }
+    const t = teachers.find(x => x.id === teacherId);
+    if (!t) return;
+    const oldRate = t.rate || 0;
+    const newRateStr = prompt(`Nhập mức lương / giờ riêng cho "${t.name}" (VNĐ):`, oldRate);
+    if (newRateStr === null) return;
+    const newRate = parseInt(newRateStr.replace(/\D/g, ''), 10);
+    if (isNaN(newRate) || newRate < 0) {
+        if (typeof showToast === 'function') showToast("Mức lương không hợp lệ!", "error");
+        return;
+    }
+    t.rate = newRate;
+    saveData();
+    if (typeof renderTeachers === 'function') renderTeachers();
+    if (typeof renderAccountingTable === 'function') renderAccountingTable();
+    if (typeof showToast === 'function') showToast(`Đã chỉnh mức lương của ${t.name} thành: ${newRate.toLocaleString('vi-VN')} đ/h`, "success");
+}
+
+function manageSubjects() {
+    let subList = JSON.parse(localStorage.getItem('mv_subjects')) || ["Piano", "Thanh nhạc", "Toán", "Guitar", "Violin", "Vẽ"];
+    const action = prompt(`Danh sách môn học hiện tại trong hệ thống:\n- ${subList.join('\n- ')}\n\n👉 Nhập TÊN MÔN HỌC MỚI muốn thêm (hoặc nhập tên môn hiện có để xóa):`, "");
+    if (!action || !action.trim()) return;
+    const newSub = action.trim();
+    if (subList.includes(newSub)) {
+        if (confirm(`Môn "${newSub}" đã có trong hệ thống. Bạn có muốn XÓA môn này khỏi danh sách chọn không?`)) {
+            subList = subList.filter(x => x !== newSub);
+            localStorage.setItem('mv_subjects', JSON.stringify(subList));
+            if (typeof renderStudents === 'function') renderStudents();
+            if (typeof showToast === 'function') showToast(`Đã xóa môn: ${newSub}`, "info");
+        }
+    } else {
+        subList.push(newSub);
+        localStorage.setItem('mv_subjects', JSON.stringify(subList));
+        if (typeof renderStudents === 'function') renderStudents();
+        if (typeof showToast === 'function') showToast(`Đã thêm môn mới: ${newSub}`, "success");
+    }
+}
+
+function changeStudentSubject(studentId, newSub) {
+    const s = students.find(x => x.id === studentId);
+    if (!s) return;
+    s.subject = newSub;
+    saveData();
+    if (typeof showToast === 'function') showToast(`Đã gán môn "${newSub}" cho học viên ${s.name}`, "success");
+}
+
+function changeStudentTeacher(studentId, newTeacherId) {
+    const s = students.find(x => x.id === studentId);
+    if (!s) return;
+    s.teacherId = newTeacherId;
+    
+    // ĐỒNG BỘ 2 CHIỀU SANG MASTER DATA
+    let syncCount = 0;
+    schedule.forEach(entry => {
+        if (entry.studentId === studentId && (!entry.type || entry.type === 'main')) {
+            if (entry.teacherId !== newTeacherId && newTeacherId) {
+                entry.teacherId = newTeacherId;
+                syncCount++;
+            }
+        }
+    });
+    
+    saveData();
+    if (typeof renderMasterTable === 'function') renderMasterTable();
+    if (typeof renderSchedule === 'function') renderSchedule();
+    if (typeof renderTeacherStats === 'function') renderTeacherStats();
+    if (typeof renderStudents === 'function') renderStudents();
+    
+    const tName = teachers.find(t => t.id === newTeacherId)?.name || "Chưa gán";
+    if (typeof showToast === 'function') {
+        showToast(`Đã gán GV phụ trách "${tName}" cho ${s.name}${syncCount > 0 ? ` (Đồng bộ ${syncCount} buổi bên Master Data)` : ''}`, "success");
+    }
+}
+
+function formatStudentNameWithSubjects(s) {
+    if (!s) return '';
+    const sSubs = s.subjects || (s.subject ? [s.subject] : []);
+    if (sSubs.length === 0) return s.name;
+    const badges = sSubs.map(sub => `<span class="inline-block px-1.5 py-0.2 bg-purple-100 border border-purple-200 text-purple-700 rounded text-[9px] font-extrabold ml-1 shadow-2xs">${sub}</span>`).join('');
+    return `${s.name} ${badges}`;
+}
+
+function renderSubjectsTable() {
+    const tbody = document.getElementById('subjects-table-body');
+    const countEl = document.getElementById('subject-count');
+    let subList = JSON.parse(localStorage.getItem('mv_subjects')) || ["Piano", "Thanh nhạc", "Toán", "Guitar", "Violin", "Vẽ"];
+    if (countEl) countEl.innerText = subList.length + ' môn';
+    if (!tbody) return;
+    tbody.innerHTML = subList.map(sub => `
+        <tr class="hover:bg-slate-50/80 transition-colors">
+            <td class="py-3 px-4 font-bold text-slate-800 flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-purple-500 inline-block"></span>
+                ${sub}
+            </td>
+            <td class="py-3 px-4 text-right">
+                <button onclick="deleteSubject('${sub}')" class="text-rose-500 hover:text-rose-700 font-bold text-xs px-2 py-1 rounded hover:bg-rose-50 transition">Xóa</button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function addSubjectForm(e) {
+    e.preventDefault();
+    const input = document.getElementById('new-subject-name');
+    if (!input || !input.value.trim()) return;
+    const newSub = input.value.trim();
+    let subList = JSON.parse(localStorage.getItem('mv_subjects')) || ["Piano", "Thanh nhạc", "Toán", "Guitar", "Violin", "Vẽ"];
+    if (!subList.includes(newSub)) {
+        subList.push(newSub);
+        localStorage.setItem('mv_subjects', JSON.stringify(subList));
+        input.value = '';
+        renderSubjectsTable();
+        if (typeof renderStudents === 'function') renderStudents();
+        if (typeof showToast === 'function') showToast(`Đã thêm môn mới: ${newSub}`, "success");
+    } else {
+        if (typeof showToast === 'function') showToast("Môn học này đã tồn tại!", "error");
+    }
+}
+
+function deleteSubject(sub) {
+    if (!confirm(`Bạn có chắc muốn xóa môn "${sub}" khỏi hệ thống không?`)) return;
+    let subList = JSON.parse(localStorage.getItem('mv_subjects')) || ["Piano", "Thanh nhạc", "Toán", "Guitar", "Violin", "Vẽ"];
+    subList = subList.filter(x => x !== sub);
+    localStorage.setItem('mv_subjects', JSON.stringify(subList));
+    renderSubjectsTable();
+    if (typeof renderStudents === 'function') renderStudents();
+    if (typeof showToast === 'function') showToast(`Đã xóa môn: ${sub}`, "info");
+}
+
+function addStudentSubject(studentId, sub) {
+    if (!sub) return;
+    const s = students.find(x => x.id === studentId);
+    if (!s) return;
+    s.subjects = s.subjects || (s.subject ? [s.subject] : ["Piano"]);
+    if (!s.subjects.includes(sub)) s.subjects.push(sub);
+    s.subject = s.subjects[0];
+    saveData();
+    if (typeof renderStudents === 'function') renderStudents();
+    if (typeof renderMasterTable === 'function') renderMasterTable();
+    if (typeof renderWeeklySchedule === 'function') renderWeeklySchedule();
+    if (typeof showToast === 'function') showToast(`Đã thêm môn "${sub}" cho ${s.name}`, "success");
+}
+
+function removeStudentSubject(studentId, sub) {
+    const s = students.find(x => x.id === studentId);
+    if (!s) return;
+    s.subjects = s.subjects || (s.subject ? [s.subject] : ["Piano"]);
+    s.subjects = s.subjects.filter(x => x !== sub);
+    if (s.subjects.length === 0) s.subjects = ["Piano"];
+    s.subject = s.subjects[0];
+    saveData();
+    if (typeof renderStudents === 'function') renderStudents();
+    if (typeof renderMasterTable === 'function') renderMasterTable();
+    if (typeof renderWeeklySchedule === 'function') renderWeeklySchedule();
+    if (typeof showToast === 'function') showToast(`Đã gỡ môn "${sub}" khỏi ${s.name}`, "info");
+}
+
+function handleMasterTypeChange() {
+    const studentSelect = document.getElementById('form-student');
+    if (studentSelect && studentSelect.value) {
+        autoSelectTeacherInMaster(studentSelect.value);
+    }
+}
+
+function formatStudentNameWithSubjects(s) {
+    if (!s) return '';
+    const sSubs = s.subjects || (s.subject ? [s.subject] : []);
+    if (sSubs.length === 0) return s.name;
+    const badges = sSubs.map(sub => `<span class="inline-block px-1.5 py-0.2 bg-purple-100 border border-purple-200 text-purple-700 rounded text-[9px] font-extrabold ml-1 shadow-2xs">${sub}</span>`).join('');
+    return `${s.name} ${badges}`;
+}
+
+function renderSubjectsTable() {
+    const tbody = document.getElementById('subjects-table-body');
+    const countEl = document.getElementById('subject-count');
+    let subList = JSON.parse(localStorage.getItem('mv_subjects')) || ["Piano", "Thanh nhạc", "Toán", "Guitar", "Violin", "Vẽ"];
+    if (countEl) countEl.innerText = subList.length + ' môn';
+    if (!tbody) return;
+    tbody.innerHTML = subList.map(sub => `
+        <tr class="hover:bg-slate-50/80 transition-colors">
+            <td class="py-3 px-4 font-bold text-slate-800 flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-purple-500 inline-block"></span>
+                ${sub}
+            </td>
+            <td class="py-3 px-4 text-right">
+                <button onclick="deleteSubject('${sub}')" class="text-rose-500 hover:text-rose-700 font-bold text-xs px-2 py-1 rounded hover:bg-rose-50 transition">Xóa</button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function addSubjectForm(e) {
+    e.preventDefault();
+    const input = document.getElementById('new-subject-name');
+    if (!input || !input.value.trim()) return;
+    const newSub = input.value.trim();
+    let subList = JSON.parse(localStorage.getItem('mv_subjects')) || ["Piano", "Thanh nhạc", "Toán", "Guitar", "Violin", "Vẽ"];
+    if (!subList.includes(newSub)) {
+        subList.push(newSub);
+        localStorage.setItem('mv_subjects', JSON.stringify(subList));
+        input.value = '';
+        renderSubjectsTable();
+        if (typeof renderStudents === 'function') renderStudents();
+        if (typeof showToast === 'function') showToast(`Đã thêm môn mới: ${newSub}`, "success");
+    } else {
+        if (typeof showToast === 'function') showToast("Môn học này đã tồn tại!", "error");
+    }
+}
+
+function deleteSubject(sub) {
+    if (!confirm(`Bạn có chắc muốn xóa môn "${sub}" khỏi hệ thống không?`)) return;
+    let subList = JSON.parse(localStorage.getItem('mv_subjects')) || ["Piano", "Thanh nhạc", "Toán", "Guitar", "Violin", "Vẽ"];
+    subList = subList.filter(x => x !== sub);
+    localStorage.setItem('mv_subjects', JSON.stringify(subList));
+    renderSubjectsTable();
+    if (typeof renderStudents === 'function') renderStudents();
+    if (typeof showToast === 'function') showToast(`Đã xóa môn: ${sub}`, "info");
+}
+
+function addStudentSubject(studentId, sub) {
+    if (!sub) return;
+    const s = students.find(x => x.id === studentId);
+    if (!s) return;
+    s.subjects = s.subjects || (s.subject ? [s.subject] : ["Piano"]);
+    if (!s.subjects.includes(sub)) s.subjects.push(sub);
+    s.subject = s.subjects[0];
+    saveData();
+    if (typeof renderStudents === 'function') renderStudents();
+    if (typeof renderMasterTable === 'function') renderMasterTable();
+    if (typeof renderWeeklySchedule === 'function') renderWeeklySchedule();
+    if (typeof showToast === 'function') showToast(`Đã thêm môn "${sub}" cho ${s.name}`, "success");
+}
+
+function removeStudentSubject(studentId, sub) {
+    const s = students.find(x => x.id === studentId);
+    if (!s) return;
+    s.subjects = s.subjects || (s.subject ? [s.subject] : ["Piano"]);
+    s.subjects = s.subjects.filter(x => x !== sub);
+    if (s.subjects.length === 0) s.subjects = ["Piano"];
+    s.subject = s.subjects[0];
+    saveData();
+    if (typeof renderStudents === 'function') renderStudents();
+    if (typeof renderMasterTable === 'function') renderMasterTable();
+    if (typeof renderWeeklySchedule === 'function') renderWeeklySchedule();
+    if (typeof showToast === 'function') showToast(`Đã gỡ môn "${sub}" khỏi ${s.name}`, "info");
+}
+
+function handleMasterTypeChange() {
+    const studentSelect = document.getElementById('form-student');
+    if (studentSelect && studentSelect.value) {
+        autoSelectTeacherInMaster(studentSelect.value);
+    }
+}
+
+function autoSelectTeacherInMaster(studentId) {
+    const s = students.find(x => x.id === studentId);
+    const teacherSelect = document.getElementById('form-teacher');
+    const typeSelect = document.getElementById('form-type');
+    const scheduleType = typeSelect ? typeSelect.value : 'main';
+
+    if (!teacherSelect) return;
+    
+    if (scheduleType === 'substitute') {
+        // Lịch thế: Hiện những giáo viên khác, TRỪ giáo viên phụ trách
+        const assignedTeacherId = s ? s.teacherId : null;
+        teacherSelect.innerHTML = '<option value="" disabled selected>-- Chọn giáo viên dạy thế --</option>' + 
+            teachers.filter(t => t.id !== assignedTeacherId).map(t => `<option value="${t.id}">${t.display}</option>`).join('');
+    } else {
+        // Lịch chính/bù: LỌC TUYỆT ĐỐI chỉ hiển thị GV phụ trách của học viên này
+        if (s && s.teacherId) {
+            const assignedTeacher = teachers.find(t => t.id === s.teacherId);
+            if (assignedTeacher) {
+                teacherSelect.innerHTML = `<option value="${assignedTeacher.id}" selected>${assignedTeacher.display} (GV Phụ Trách)</option>`;
+                return;
+            }
+        }
+        teacherSelect.innerHTML = '<option value="" disabled selected>-- Chọn giáo viên --</option>' + 
+            teachers.map(t => `<option value="${t.id}">${t.display}</option>`).join('');
+    }
+}
+
+function autoSelectStudentByTeacher(teacherId) {
+    const studentSelect = document.getElementById('form-student');
+    const typeSelect = document.getElementById('form-type');
+    const scheduleType = typeSelect ? typeSelect.value : 'main';
+    if (!studentSelect || !teacherId) return;
+    
+    if (scheduleType !== 'substitute') {
+        // Khi chọn GV trước -> CHỈ hiển thị danh sách học viên do GV đó phụ trách
+        const assignedStudents = students.filter(s => s.teacherId === teacherId);
+        if (assignedStudents.length > 0) {
+            studentSelect.innerHTML = '<option value="" disabled selected>-- Chọn học viên phụ trách --</option>' +
+                assignedStudents.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+        } else {
+            studentSelect.innerHTML = '<option value="" disabled selected>-- GV này chưa phụ trách học viên nào --</option>' +
+                students.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+        }
+    }
+}
+
+// === VIETQR PAYMENT & GMAIL AUTOMATION FUNCTIONS ===
+function openVietQRModal(teacherId) {
+    const t = teachers.find(x => x.id === teacherId);
+    if (!t) return;
+    // Chỉ hiện hướng dẫn cấu hình Gmail cho ADMIN (Coder)
+    const guideEl = document.getElementById('email-guide-section');
+    if (guideEl) {
+        if (typeof currentAuthUser !== 'undefined' && currentAuthUser && currentAuthUser.role === 'superadmin') {
+            guideEl.classList.remove('hidden');
+        } else {
+            guideEl.classList.add('hidden');
+        }
+    }
+    const matchedUser = typeof users !== 'undefined' ? (users.find(u => u.teacherId === t.id || (u.email && t.email && u.email.toLowerCase() === t.email.toLowerCase())) || {}) : {};
+    const bAcc = matchedUser.bankAccount || t.bank || '';
+    const bName = matchedUser.bankName || 'MB';
+    const owner = matchedUser.bankOwner || t.name;
+
+    // Calculate money
+    const periodEl = document.getElementById('acc-period-filter');
+    const selectedPeriod = periodEl ? periodEl.value : 'all';
+    const res = typeof calculateTeacherAttendance === 'function' ? calculateTeacherAttendance(t, selectedPeriod, currentMonth) : { hoursCount: 0 };
+    const hoursCount = res.hoursCount;
+    const rate = t.rate || 0;
+    const salaryMoney = Math.round(hoursCount * rate);
+
+    const infoBox = document.getElementById('vietqr-info-box');
+    if (infoBox) {
+        infoBox.innerHTML = `
+            <div class="flex justify-between border-b pb-2"><b>Giáo viên:</b> <span class="text-indigo-600 font-bold">${t.name} (${t.id})</span></div>
+            <div class="flex justify-between border-b pb-2"><b>Ngân hàng:</b> <span class="font-bold">${bName} - ${bAcc || '<span class="text-rose-500 font-normal">Chưa điền TK</span>'}</span></div>
+            <div class="flex justify-between border-b pb-2"><b>Chủ tài khoản:</b> <span class="font-bold uppercase">${owner}</span></div>
+            <div class="flex justify-between text-sm font-extrabold text-emerald-700"><b>Thành tiền lương:</b> <span>${salaryMoney.toLocaleString('vi-VN')} VNĐ</span></div>
+        `;
+    }
+
+    const imgEl = document.getElementById('vietqr-img');
+    const loadingEl = document.getElementById('vietqr-loading');
+    const btnEl = document.getElementById('vietqr-confirm-btn');
+    const webhookInput = document.getElementById('gmail-webhook-input');
+    if (webhookInput) webhookInput.value = localStorage.getItem('mv_gmail_webhook_url') || 'https://script.google.com/macros/s/AKfycbwH4O8UJkFIQYShQLmDqB2JWDyFSv135JkRFyOyk6CsIdKY4Ae31tDpb6PPOV-WLP8/exec';
+
+    if (btnEl) btnEl.setAttribute('onclick', `confirmPaidAndSendEmail('${t.id}', ${salaryMoney}, '${bName} - ${bAcc}')`);
+
+    if (imgEl && loadingEl) {
+        if (!bAcc) {
+            loadingEl.textContent = '⚠️ Giáo viên chưa cập nhật Số Tài Khoản trong Profile!';
+            loadingEl.classList.remove('hidden');
+            imgEl.classList.add('hidden');
+        } else {
+            loadingEl.classList.remove('hidden');
+            imgEl.classList.add('hidden');
+            const cleanBank = bName.replace(/\s+/g, '').replace(/Bank/i, '');
+            const qrUrl = `https://img.vietqr.io/image/${encodeURIComponent(cleanBank)}-${encodeURIComponent(bAcc)}-compact2.png?amount=${salaryMoney}&addInfo=${encodeURIComponent('Thanh toan luong ' + t.name)}&accountName=${encodeURIComponent(owner)}`;
+            imgEl.onload = () => { loadingEl.classList.add('hidden'); imgEl.classList.remove('hidden'); };
+            imgEl.onerror = () => { loadingEl.textContent = 'Mã ngân hàng hoặc số TK chưa chuẩn khớp VietQR.'; loadingEl.classList.remove('hidden'); imgEl.classList.add('hidden'); };
+            imgEl.src = qrUrl;
+        }
+    }
+
+    const modal = document.getElementById('vietqr-modal');
+    if (modal) modal.classList.remove('hidden');
+}
+
+function closeVietQRModal() {
+    const modal = document.getElementById('vietqr-modal');
+    if (modal) modal.classList.add('hidden');
+}
+
+function confirmPaidAndSendEmail(teacherId, salaryMoney, bankInfo) {
+    const t = teachers.find(x => x.id === teacherId);
+    if (!t) return;
+        const periodEl = document.getElementById('acc-period-filter');
+    const usePeriod = periodEl ? periodEl.value : 'all';
+    const monthKey = typeof currentMonth !== 'undefined' ? currentMonth : '';
+    if (!t.payments || typeof t.payments !== 'object') t.payments = {};
+    if (usePeriod === 'all') {
+        t.payments[`${monthKey}_all`] = 'paid';
+        t.payments[`${monthKey}_p1`] = 'paid';
+        t.payments[`${monthKey}_p2`] = 'paid';
+    } else {
+        t.payments[`${monthKey}_${usePeriod}`] = 'paid';
+        if (t.payments[`${monthKey}_p1`] === 'paid' && t.payments[`${monthKey}_p2`] === 'paid') {
+            t.payments[`${monthKey}_all`] = 'paid';
+        }
+    }
+    delete t.paymentStatus;
+    saveData();
+    if (typeof logActivity === 'function') logActivity(`💰 Đã chuyển khoản & thanh toán lương cho ${t.name} (${salaryMoney.toLocaleString('vi-VN')} VNĐ)`);
+    if (typeof renderAccountingTable === 'function') renderAccountingTable();
+
+    // Trigger Gmail API Webhook if configured
+    const webhookInput = document.getElementById('gmail-webhook-input');
+    const webhookUrl = (webhookInput && webhookInput.value.trim()) ? webhookInput.value.trim() : 'https://script.google.com/macros/s/AKfycbwH4O8UJkFIQYShQLmDqB2JWDyFSv135JkRFyOyk6CsIdKY4Ae31tDpb6PPOV-WLP8/exec';
+    if (webhookUrl) {
+        localStorage.setItem('mv_gmail_webhook_url', webhookUrl);
+        const payload = {
+            name: t.name,
+            email: t.email || (typeof users !== 'undefined' ? (users.find(u => u.teacherId === t.id) || {}).email : '') || '',
+            amount: salaryMoney.toLocaleString('vi-VN'),
+            bank: bankInfo,
+            date: new Date().toLocaleDateString('vi-VN')
+        };
+        fetch(webhookUrl, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        }).catch(() => {});
+        if (typeof showToast === 'function') showToast(`✅ Đã xác nhận thanh toán & Gửi Email thông báo lương tới ${t.name}!`, "success");
+    } else {
+        if (typeof showToast === 'function') showToast(`✅ Đã chuyển trạng thái Đã Thanh Toán cho ${t.name}!`, "success");
+    }
+    closeVietQRModal();
+}
+
+</script>
+
+    <!-- ==================== MODAL: VIETQR & GMAIL API ==================== -->
+    <div id="vietqr-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 animate-fade-in">
+        <div class="bg-white rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl border border-slate-100 flex flex-col max-h-[90vh]">
+            <div class="p-5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center font-extrabold text-lg">QR</div>
+                    <div>
+                        <h3 class="font-extrabold text-base">Cổng Thanh Toán VietQR Tự Động</h3>
+                        <p class="text-xs text-indigo-100">Quét mã chuyển khoản & Tự động gửi Email báo lương</p>
+                    </div>
+                </div>
+                <button onclick="closeVietQRModal()" class="text-white/80 hover:text-white font-bold text-lg px-2">✕</button>
+            </div>
+            <div class="p-6 overflow-y-auto custom-scrollbar space-y-5">
+                <div id="vietqr-info-box" class="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-xs space-y-2"></div>
+                <div class="flex flex-col items-center justify-center p-4 bg-white rounded-2xl border-2 border-dashed border-indigo-200">
+                    <img id="vietqr-img" src="" alt="VietQR Code" class="w-56 h-56 object-contain rounded-xl shadow-md mx-auto hidden">
+                    <div id="vietqr-loading" class="py-12 text-center text-slate-400 font-medium text-xs">Đang khởi tạo mã VietQR...</div>
+                </div>
+                <div id="email-guide-section" class="p-4 bg-amber-50 rounded-2xl border border-amber-200 text-[11px] text-amber-900 space-y-1.5 hidden">
+                    <div class="font-extrabold flex items-center gap-1.5 text-amber-800 text-xs">
+                        <svg class="w-4 h-4 text-amber-600 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Hướng Dẫn Cấu Hình Gửi Email Tự Động (Gmail API / Google Apps Script)
+                    </div>
+                    <p><b>Bước 1:</b> Vào <a href="https://script.google.com" target="_blank" class="underline font-bold text-indigo-600">script.google.com</a>, tạo dự án mới và dán mã hàm <code class="bg-amber-100 px-1 rounded font-mono">doPost(e)</code> gửi MailApp.</p>
+                    <p><b>Bước 2:</b> Chọn <i>Triển khai > Ứng dụng web</i> > Quyền truy cập: <b>Bất kỳ ai (Anyone)</b>.</p>
+                    <p><b>Bước 3:</b> Dán URL Webhook vào ô bên dưới. Bấm Xác Nhận để hệ thống tự động gửi chi tiết bảng lương về Gmail cho giáo viên!</p>
+                    <div class="pt-2">
+                        <input type="text" id="gmail-webhook-input" value="https://script.google.com/macros/s/AKfycbwH4O8UJkFIQYShQLmDqB2JWDyFSv135JkRFyOyk6CsIdKY4Ae31tDpb6PPOV-WLP8/exec" placeholder="URL Webhook Google Apps Script..." class="w-full bg-white border border-amber-300 rounded-xl px-3 py-2 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-amber-500">
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-3">
+                <button onclick="closeVietQRModal()" class="px-4 py-2.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs transition">Đóng</button>
+                <button id="vietqr-confirm-btn" onclick="" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-extrabold text-xs shadow-md transition active:scale-95 flex items-center gap-1.5"><svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Xác Nhận Đã Chuyển Khoản & Gửi Email</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create User Modal -->
+    <div id="create-user-modal" class="fixed inset-0 z-[1200] bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-slide-up">
+            <div class="p-5 bg-gradient-to-r from-indigo-600 to-violet-600 text-white flex items-center justify-between">
+                <h3 class="font-extrabold text-base flex items-center gap-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg> Tạo tài khoản mới</h3>
+                <button onclick="closeCreateUserModal()" class="text-white/80 hover:text-white transition"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+            </div>
+            <div class="p-5 space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Họ và tên <span class="text-rose-500">*</span></label>
+                    <input id="cu-name" type="text" placeholder="VD: Nguyễn Văn A" class="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Gmail đăng nhập <span class="text-rose-500">*</span></label>
+                    <input id="cu-email" type="email" placeholder="VD: user@gmail.com" class="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Mật khẩu <span class="text-rose-500">*</span></label>
+                    <input id="cu-password" type="text" placeholder="Mật khẩu đăng nhập" class="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Vai trò <span class="text-rose-500">*</span></label>
+                    <select id="cu-role" class="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+                        <option value="teacher">Giáo viên</option>
+                        <option value="academic">Giáo vụ</option>
+                        <option value="accountant">Kế toán</option>
+                        <option value="manager">Quản Lý</option>
+                        <option value="admin">Admin (Chủ TT)</option>
+                        <option value="superadmin">ADMIN (Coder)</option>
+                    </select>
+                    <p class="text-[11px] text-slate-400 mt-1.5 italic">⚠️ Vai trò ADMIN (Coder) là cố định, không ai sửa được.</p>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Trạng thái</label>
+                    <select id="cu-status" class="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+                        <option value="approved">Đã duyệt (dùng được ngay)</option>
+                        <option value="pending">Chờ duyệt (gửi yêu cầu)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-3">
+                <button onclick="closeCreateUserModal()" class="px-4 py-2.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs transition">Hủy</button>
+                <button onclick="createNewUser()" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-extrabold text-xs shadow-md transition active:scale-95 flex items-center gap-1.5"><svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg> Tạo tài khoản</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div id="change-password-modal" class="fixed inset-0 z-[1300] bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-slide-up">
+            <div class="p-5 bg-gradient-to-r from-amber-500 to-orange-500 text-white flex items-center justify-between">
+                <h3 class="font-extrabold text-base flex items-center gap-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg> Đổi mật khẩu</h3>
+                <button onclick="closeChangePasswordModal()" class="text-white/80 hover:text-white transition"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+            </div>
+            <div class="p-5 space-y-4">
+                <div id="cp-error" class="hidden px-3 py-2.5 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-xs font-bold"></div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Mật khẩu hiện tại <span class="text-rose-500">*</span></label>
+                    <input id="cp-old" type="password" placeholder="Nhập mật khẩu hiện tại..." class="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500" autocomplete="current-password">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Mật khẩu mới <span class="text-rose-500">*</span></label>
+                    <input id="cp-new" type="password" placeholder="Mật khẩu mới (ít nhất 4 ký tự)" class="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500" autocomplete="new-password">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Xác nhận mật khẩu mới <span class="text-rose-500">*</span></label>
+                    <input id="cp-confirm" type="password" placeholder="Nhập lại mật khẩu mới" class="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500" autocomplete="new-password">
+                </div>
+                <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] text-amber-900">
+                    <p class="font-bold flex items-center gap-1 mb-1"><svg class="w-3.5 h-3.5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Lưu ý:</p>
+                    <ul class="list-disc list-inside space-y-0.5 text-[10px]">
+                        <li>Mật khẩu phải có ít nhất 4 ký tự</li>
+                        <li>Sau khi đổi, bạn sẽ cần đăng nhập lại ở thiết bị khác</li>
+                        <li>ADMIN (Coder) chỉ có thể đổi mật khẩu của chính mình</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-3">
+                <button onclick="closeChangePasswordModal()" class="px-4 py-2.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs transition">Hủy</button>
+                <button onclick="submitChangePassword()" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-extrabold text-xs shadow-md transition active:scale-95 flex items-center gap-1.5"><svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg> Xác nhận đổi</button>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>
