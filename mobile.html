@@ -15,7 +15,7 @@
         }
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -30,13 +30,37 @@
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         .table-cell-nowrap th, .table-cell-nowrap td { white-space: nowrap; }
         .week-checkbox:checked + div, .day-checkbox:checked + div { background-color: #4f46e5; color: white; border-color: #4f46e5; box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3), 0 2px 4px -1px rgba(79, 70, 229, 0.2); transform: scale(1.05); }
+
+        /* Hiệu ứng Rainbow Animation chạy đuổi xung quanh viền (Clean White & Smooth Slow Rainbow Border) */
+        @property --border-angle {
+            syntax: "<angle>";
+            inherits: true;
+            initial-value: 0turn;
+        }
+        @keyframes borderRotate {
+            0% { --border-angle: 0turn; }
+            100% { --border-angle: 1turn; }
+        }
+        .rainbow-border-animate {
+            border: 2px solid transparent !important;
+            background-image: linear-gradient(#ffffff, #ffffff), 
+                              conic-gradient(from var(--border-angle), #ff0000, #ff8000, #ffff00, #00ff00, #00ffff, #0000ff, #8000ff, #ff0080, #ff0000) !important;
+            background-origin: padding-box, border-box !important;
+            background-clip: padding-box, border-box !important;
+            -webkit-background-clip: padding-box, border-box !important;
+            animation: borderRotate 5s linear infinite !important;
+            color: #1e293b !important;
+            font-weight: 700 !important;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+            text-shadow: none !important;
+        }
         
         /* Hiệu ứng chuyển động mượt mà cho sidebar và tab */
         @keyframes slideUpFade {
             from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .animate-slide-up { animation: slideUpFade 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; will-change: transform, opacity; }
+        .animate-slide-up { animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
         /* Hiệu ứng lấp lánh (Shimmer) cho nút chính */
         @keyframes shimmer {
@@ -208,34 +232,6 @@
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 h-screen flex overflow-hidden relative">
-    <!-- App Loading Screen -->
-    <div id="app-loading-screen" class="fixed inset-0 bg-slate-900/90 backdrop-blur-md z-[9999] flex flex-col items-center justify-center transition-all duration-500">
-        <div class="bg-white p-8 rounded-3xl shadow-2xl flex flex-col items-center max-w-sm w-full mx-4 border border-slate-100">
-            <div class="relative w-16 h-16 mb-6 flex items-center justify-center">
-                <div class="absolute inset-0 border-4 border-indigo-100 rounded-full"></div>
-                <div class="absolute inset-0 border-4 border-indigo-600 rounded-full border-t-transparent animate-spin"></div>
-                <span class="text-xl font-black text-indigo-600">MV</span>
-            </div>
-            <h3 class="text-lg font-extrabold text-slate-800 mb-1">Hệ Thống MaiVy</h3>
-            <p class="text-xs font-medium text-slate-500 mb-5 text-center">Đang đồng bộ dữ liệu và chuẩn bị lịch học điểm danh...</p>
-            <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden p-0.5">
-                <div id="loading-bar-fill" class="bg-gradient-to-r from-indigo-600 via-purple-500 to-amber-400 h-full w-1/3 transition-all duration-500 rounded-full"></div>
-            </div>
-            <p id="loading-status-text" class="text-[11px] font-bold text-slate-400 mt-3">Đang tải 35%...</p>
-        </div>
-    </div>
-    <script>
-        // Watchdog tự cứu nguy cho điện thoại: Bất kể mạng hay trình duyệt di động (Safari/Zalo/Chrome) tải chậm đến đâu,
-        // sau đúng 1 giây kể từ khi dựng giao diện, chắc chắn 100% tự động ẩn và xóa màn hình loading!
-        setTimeout(function() {
-            var screen = document.getElementById('app-loading-screen');
-            if (screen && screen.parentNode) {
-                screen.style.opacity = '0';
-                screen.style.pointerEvents = 'none';
-                setTimeout(function() { if(screen && screen.parentNode) screen.remove(); }, 500);
-            }
-        }, 1000);
-    </script>
 
     <!-- Overlay for mobile sidebar -->
     <div id="sidebar-overlay" class="fixed inset-0 bg-slate-900/50 z-20 hidden opacity-0 transition-opacity duration-300" onclick="toggleSidebar()"></div>
@@ -308,7 +304,7 @@
         
         <div class="p-8 space-y-6">
             
-            <div id="tab-sheet1" class="tab-content hidden animate-slide-up space-y-6">
+            <div id="tab-sheet1" class="tab-content animate-slide-up space-y-6">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div class="bg-white rounded-2xl border border-slate-200 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_30px_-4px_rgba(0,0,0,0.08)] transition-shadow duration-500 overflow-hidden flex flex-col min-h-[300px]">
                         <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-white">
@@ -1081,7 +1077,7 @@
                 }
                 
                 const newEntry = {
-                    id: "C" + Date.now() + Math.floor(Math.random() * 100),
+                    id: "sched_" + Date.now() + Math.floor(Math.random() * 100),
                     studentId: entry.studentId,
                     teacherId: newTeacherId,
                     subTeacherId: newSubTeacherId,
@@ -1268,6 +1264,7 @@
 
         // === HỆ THỐNG MÀU ===
         const TAILWIND_COLORS = [
+            // === 16 MÀU CƠ BẢN (HIỆN CÓ) ===
             { label: "Mặc định (Slate)", class: "bg-slate-100 text-slate-800 border-slate-300" },
             { label: "Đỏ (Red)", class: "bg-red-100 text-red-800 border-red-300" },
             { label: "Cam (Orange)", class: "bg-orange-100 text-orange-800 border-orange-300" },
@@ -1283,7 +1280,46 @@
             { label: "Chàm (Indigo)", class: "bg-indigo-100 text-indigo-800 border-indigo-300" },
             { label: "Tím (Violet)", class: "bg-violet-100 text-violet-800 border-violet-300" },
             { label: "Cánh sen (Fuchsia)", class: "bg-fuchsia-100 text-fuchsia-800 border-fuchsia-300" },
-            { label: "Hồng (Rose)", class: "bg-rose-100 text-rose-800 border-rose-300" }
+            { label: "Hồng (Rose)", class: "bg-rose-100 text-rose-800 border-rose-300" },
+
+            // === 16 MÀU CƠ BẢN (BỔ SUNG) ===
+            { label: "Đen xám (Dark Slate)", class: "bg-slate-800 text-white border-slate-700" },
+            { label: "Đỏ tươi (Vivid Red)", class: "bg-red-600 text-white border-red-700" },
+            { label: "Đỏ đô (Dark Red)", class: "bg-red-900 text-white border-red-950" },
+            { label: "Cam rực rỡ (Vivid Orange)", class: "bg-orange-500 text-white border-orange-600" },
+            { label: "Vàng kim đậm (Dark Amber)", class: "bg-amber-600 text-white border-amber-700" },
+            { label: "Xanh chanh đậm (Vivid Lime)", class: "bg-lime-600 text-white border-lime-700" },
+            { label: "Xanh lá đậm (Vivid Green)", class: "bg-green-600 text-white border-green-700" },
+            { label: "Lục bảo sâu (Dark Emerald)", class: "bg-emerald-700 text-white border-emerald-800" },
+            { label: "Xanh ngọc đậm (Dark Teal)", class: "bg-teal-700 text-white border-teal-800" },
+            { label: "Xanh biển lơ (Vivid Cyan)", class: "bg-cyan-600 text-white border-cyan-700" },
+            { label: "Xanh da trời đậm (Vivid Sky)", class: "bg-sky-600 text-white border-sky-700" },
+            { label: "Xanh dương đậm (Vivid Blue)", class: "bg-blue-600 text-white border-blue-700" },
+            { label: "Xanh hải quân (Navy Blue)", class: "bg-blue-900 text-white border-blue-950" },
+            { label: "Chàm đậm (Vivid Indigo)", class: "bg-indigo-600 text-white border-indigo-700" },
+            { label: "Tím hoàng gia (Vivid Violet)", class: "bg-violet-600 text-white border-violet-700" },
+            { label: "Hồng rực rỡ (Vivid Rose)", class: "bg-rose-600 text-white border-rose-700" },
+
+            // === 1 MÀU RAINBOW ANIMATION CHẠY ĐUỔI XUNG QUANH ===
+            { label: "🌈 Rainbow Viền Đuổi (Khung trắng tinh tế)", class: "rainbow-border-animate border-2" },
+
+            // === 16 MÀU GRADIENT ===
+            { label: "Gradient: Hoàng hôn (Sunset)", class: "bg-gradient-to-r from-orange-500 to-rose-500 text-white border-rose-600 font-bold shadow-sm" },
+            { label: "Gradient: Đại dương (Ocean)", class: "bg-gradient-to-r from-blue-600 to-cyan-500 text-white border-blue-600 font-bold shadow-sm" },
+            { label: "Gradient: Rừng sâu (Forest)", class: "bg-gradient-to-r from-emerald-600 to-teal-800 text-white border-emerald-700 font-bold shadow-sm" },
+            { label: "Gradient: Cực quang (Aurora)", class: "bg-gradient-to-r from-green-400 via-cyan-500 to-blue-500 text-slate-900 border-cyan-400 font-bold shadow-sm" },
+            { label: "Gradient: Tím hoàng gia (Royal Purple)", class: "bg-gradient-to-r from-purple-600 to-indigo-600 text-white border-purple-700 font-bold shadow-sm" },
+            { label: "Gradient: Lửa hồng (Fire & Rose)", class: "bg-gradient-to-r from-red-500 via-orange-500 to-amber-500 text-white border-orange-600 font-bold shadow-sm" },
+            { label: "Gradient: Kẹo ngọt (Candy)", class: "bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white border-pink-600 font-bold shadow-sm" },
+            { label: "Gradient: Nắng vàng (Sunny Day)", class: "bg-gradient-to-r from-amber-400 to-yellow-300 text-slate-900 border-amber-500 font-bold shadow-sm" },
+            { label: "Gradient: Đêm lạnh (Midnight Blue)", class: "bg-gradient-to-r from-slate-900 via-indigo-950 to-blue-900 text-white border-indigo-800 font-bold shadow-sm" },
+            { label: "Gradient: Ngọc lục bảo (Emerald Glow)", class: "bg-gradient-to-r from-teal-500 via-emerald-500 to-green-500 text-white border-emerald-600 font-bold shadow-sm" },
+            { label: "Gradient: Cánh sen tím (Fuchsia Violet)", class: "bg-gradient-to-r from-fuchsia-600 to-pink-600 text-white border-fuchsia-700 font-bold shadow-sm" },
+            { label: "Gradient: Bầu trời (Skyline)", class: "bg-gradient-to-r from-sky-400 via-blue-500 to-indigo-600 text-white border-blue-500 font-bold shadow-sm" },
+            { label: "Gradient: Vàng hồng (Rose Gold)", class: "bg-gradient-to-r from-rose-400 via-fuchsia-500 to-indigo-500 text-white border-rose-500 font-bold shadow-sm" },
+            { label: "Gradient: Xanh chanh (Lime Green)", class: "bg-gradient-to-r from-lime-500 to-emerald-600 text-white border-lime-600 font-bold shadow-sm" },
+            { label: "Gradient: Than đá (Charcoal)", class: "bg-gradient-to-r from-gray-800 via-slate-700 to-zinc-900 text-white border-gray-700 font-bold shadow-sm" },
+            { label: "Gradient: Nhiệt đới (Tropical)", class: "bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 text-slate-900 border-orange-500 font-bold shadow-sm" }
         ];
 
         // === KHỞI TẠO DỮ LIỆU ===
@@ -1329,16 +1365,8 @@
         });
 
         // BẢN VÁ LỖI LOAD TRANG & FETCH DỮ LIỆU
-        function startApp() {
-            if (window.appStarted) return;
-            window.appStarted = true;
-
-            const loadingFill = document.getElementById('loading-bar-fill');
-            const loadingText = document.getElementById('loading-status-text');
-            if (loadingFill) loadingFill.style.width = '50%';
-            if (loadingText) loadingText.textContent = 'Đang tải dữ liệu 50%...';
-
-            if (typeof populateColors === 'function') try { populateColors(); } catch(e){}
+        window.onload = async function() {
+            if (typeof populateColors === 'function') populateColors();
             
             const now = new Date();
             const realCurrentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
@@ -1358,81 +1386,44 @@
                     if (data.monthlyData && Object.keys(data.monthlyData).length > 0) {
                         monthlyData = data.monthlyData;
                     }
+                    if (!monthlyData[currentMonth]) {
+                        monthlyData[currentMonth] = { schedule: [], attendanceData: {} };
+                    }
+                    syncCurrentMonthPointers();
+                    initApp();
                 }
             } catch(e) { console.log("Lỗi đọc cache mobile:", e); }
 
+            // 2. BACKGROUND SYNC: Đồng bộ ngầm từ server về
+            try {
+                // Fetch API với cơ chế an toàn hơn
+                const response = await fetch(API_URL + "?t=" + new Date().getTime());
+                const data = await response.json();
+                
+                if (data && typeof data === 'object') {
+                    if (data.teachers?.length > 0) teachers = data.teachers;
+                    if (data.students?.length > 0) students = data.students;
+                    if (data.branches?.length > 0) branches = data.branches;
+                    if (data.monthlyData && Object.keys(data.monthlyData).length > 0) {
+                        monthlyData = data.monthlyData;
+                    }
+                    localStorage.setItem('mv_cache_data', JSON.stringify({ teachers, students, branches, monthlyData }));
+                }
+            } catch (error) { 
+                console.error("Lỗi tải dữ liệu:", error);
+                showToast("Lỗi kết nối máy chủ, đang dùng dữ liệu nội bộ", "error"); 
+            }
+            
             if (!monthlyData[currentMonth]) {
                 monthlyData[currentMonth] = { schedule: [], attendanceData: {} };
             }
             
-            try { syncCurrentMonthPointers(); } catch(e){}
-            try { initApp(); } catch(e){}
-            try { updateUndoRedoUI(); } catch(e){}
+            syncCurrentMonthPointers();
+            initApp();
+            updateUndoRedoUI();
             
-            if (loadingFill) loadingFill.style.width = '100%';
-            if (loadingText) loadingText.textContent = 'Hoàn tất 100%';
-
-            // Tuyệt đối không chờ mạng (tránh treo trên điện thoại): Tắt loading screen và vào Lịch học ngay lập tức
-            setTimeout(() => {
-                try { switchTab('sheet3', 'Lịch Học & Điểm Danh'); } catch(e) {}
-                const screen = document.getElementById('app-loading-screen');
-                if (screen) {
-                    screen.style.opacity = '0';
-                    screen.style.pointerEvents = 'none';
-                    setTimeout(() => { if(screen && screen.parentNode) screen.remove(); }, 500);
-                }
-            }, 200);
-
-            // 2. BACKGROUND SYNC: Đồng bộ ngầm từ server về (Không block UI, tự động hủy nếu quá 10s)
-            setTimeout(async () => {
-                try {
-                    const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 10000);
-                    const response = await fetch(API_URL + "?t=" + new Date().getTime(), { signal: controller.signal });
-                    clearTimeout(timeoutId);
-                    const data = await response.json();
-                    
-                    if (data && typeof data === 'object') {
-                        let updated = false;
-                        if (data.teachers?.length > 0) { teachers = data.teachers; updated = true; }
-                        if (data.students?.length > 0) { students = data.students; updated = true; }
-                        if (data.branches?.length > 0) { branches = data.branches; updated = true; }
-                        if (data.monthlyData && Object.keys(data.monthlyData).length > 0) {
-                            monthlyData = data.monthlyData;
-                            updated = true;
-                        }
-                        if (updated) {
-                            localStorage.setItem('mv_cache_data', JSON.stringify({ teachers, students, branches, monthlyData }));
-                            if (!monthlyData[currentMonth]) {
-                                monthlyData[currentMonth] = { schedule: [], attendanceData: {} };
-                            }
-                            syncCurrentMonthPointers();
-                            initApp();
-                            updateUndoRedoUI();
-                            
-                            const activeTabBtn = document.querySelector('.nav-btn.bg-indigo-50');
-                            if (activeTabBtn) {
-                                const tabId = activeTabBtn.id.replace('nav-', '');
-                                if (tabId === 'sheet1') { renderStudents(); renderTeachers(); renderBranches(); }
-                                else if (tabId === 'sheet2') { populateDropdowns(); renderDateSelector(); renderMasterTable(); }
-                                else if (tabId === 'sheet3') { renderWeeklySchedule(); }
-                                else if (tabId === 'sheet4') { renderTeacherStats(); if (typeof renderCharts === 'function') renderCharts(); }
-                            }
-                        }
-                    }
-                } catch (error) { 
-                    console.log("Đồng bộ ngầm kết thúc hoặc sử dụng cache."); 
-                }
-            }, 500);
-        }
-
-        if (document.readyState === 'complete' || document.readyState === 'interactive') {
-            setTimeout(startApp, 1);
-        } else {
-            document.addEventListener('DOMContentLoaded', startApp);
-            window.addEventListener('load', startApp);
-        }
-        setTimeout(startApp, 1000); // Failsafe dự phòng khởi chạy sau 1s
+            switchTab('sheet3', 'Lịch Học & Điểm Danh');
+        };
 
         function captureState() {
             return {
@@ -1715,7 +1706,8 @@
         function initMobileDaySelector() {
             if (!currentSelectedMobileDay) {
                 const daysMap = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
-                currentSelectedMobileDay = daysMap[new Date().getDay()];
+                const todayDayName = daysMap[new Date().getDay()];
+                currentSelectedMobileDay = todayDayName;
             }
             applyMobileDaySelection();
         }
@@ -1732,23 +1724,13 @@
         function applyMobileDaySelection() {
             const daysMap = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
             const todayDayName = daysMap[new Date().getDay()];
-            if (!currentSelectedMobileDay) {
-                currentSelectedMobileDay = todayDayName;
-            }
             const btns = document.querySelectorAll('#mobile-day-selector-bar .day-pill-btn');
             
             btns.forEach(b => {
                 const txt = b.textContent.trim();
                 const isTodayBtn = (txt === todayDayName);
                 
-                // Khử triệt để toàn bộ class active màu xanh và class cũ trước khi gán mới
-                b.classList.remove(
-                    'bg-indigo-600', 'text-white', 'shadow-md', 'scale-105', 'border-indigo-600',
-                    'bg-white', 'text-slate-700', 'border-slate-200',
-                    'border-2', 'border-amber-500', 'border-amber-400',
-                    'ring-2', 'ring-amber-400/50', 'ring-amber-300',
-                    'font-extrabold', 'text-amber-900', 'text-rose-600'
-                );
+                b.classList.remove('bg-white', 'text-slate-700', 'border-slate-200', 'border-2', 'border-amber-500', 'ring-2', 'ring-amber-400/50', 'font-extrabold', 'text-amber-900', 'border-amber-400', 'ring-amber-300');
                 
                 if (txt === currentSelectedMobileDay || (currentSelectedMobileDay === 'all' && txt === 'Tất cả')) {
                     b.classList.add('bg-indigo-600', 'text-white', 'shadow-md', 'scale-105');
@@ -1827,13 +1809,7 @@
                 activeBtn.classList.add('bg-indigo-50', 'text-indigo-700', 'font-bold', 'shadow-md');
             }
 
-            if(tabId === 'sheet1') {
-                renderStudents(); renderTeachers(); renderBranches();
-            } else if(tabId === 'sheet2') {
-                populateDropdowns(); renderDateSelector(); renderMasterTable();
-            } else if(tabId === 'sheet3') {
-                renderWeeklySchedule();
-            } else if(tabId === 'sheet4') {
+            if(tabId === 'sheet4') {
                 renderTeacherStats();
                 if (typeof renderCharts === 'function') renderCharts(); 
             }
@@ -2344,11 +2320,7 @@
             if(confirm("Xóa lịch này khỏi hệ thống?")) { saveStateToHistory(); schedule.splice(index, 1); saveData(); initApp(); showToast("Đã xóa ca học");}
         }
 
-        let filterMasterTimeout = null;
-        function filterMasterTable() {
-            clearTimeout(filterMasterTimeout);
-            filterMasterTimeout = setTimeout(() => renderMasterTable(), 150);
-        }
+        function filterMasterTable() { renderMasterTable(); }
 
         function renderMasterTable() {
             const tbody = document.getElementById('master-table-body');
@@ -2374,8 +2346,6 @@
                 return a.start.localeCompare(b.start);
             });
 
-            let tableRowsHtml = [];
-            let cardRowsHtml = [];
             displaySchedule.forEach((entry, idx) => {
                 const index = schedule.indexOf(entry); 
                 const student = students.find(s => s.id === entry.studentId);
@@ -2410,8 +2380,8 @@
 
                 const tInfo = getTeacherDisplayHtml(entry);
 
-                tableRowsHtml.push(`
-                    <tr class="hover:bg-slate-50 transition-colors ${idx < 15 ? 'animate-slide-up' : ''}" ${idx < 15 ? `style="animation-delay: ${idx * 0.02}s; opacity: 0; animation-fill-mode: forwards;"` : ''}>
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 transition-colors animate-slide-up" style="animation-delay: ${idx * 0.03}s; opacity: 0; animation-fill-mode: forwards;">
                         <td class="py-3 px-4 text-slate-400 text-xs font-medium">${index+1}</td>
                         <td class="py-3 px-4 font-bold text-slate-800 cursor-pointer" ondblclick="editMasterStudent(${index}, this)">${student.name}</td>
                         <td class="py-3 px-4 cursor-pointer" ondblclick="editMasterTeacher(${index}, this)"><span class="px-2.5 py-1 rounded-md text-xs font-semibold border shadow-sm ${tInfo.colorClass}">${tInfo.plainText}</span></td>
@@ -2421,11 +2391,11 @@
                         <td class="py-3 px-4 cursor-pointer" ondblclick="editMasterType(${index}, this)">${typeBadge}</td>
                         <td class="py-3 px-4 text-right"><button onclick="deleteScheduleEntry(${index})" class="interactive-btn text-xs text-rose-500 hover:text-white hover:bg-rose-500 px-3 py-1.5 rounded-lg font-semibold transition-colors active:scale-95">Xóa</button></td>
                     </tr>
-                `);
+                `;
 
                 if (cardContainer) {
-                    cardRowsHtml.push(`
-                        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs hover:border-indigo-300 transition-all space-y-2.5 ${idx < 15 ? 'animate-slide-up' : ''}" ${idx < 15 ? `style="animation-delay: ${idx * 0.02}s; opacity: 0; animation-fill-mode: forwards;"` : ''}>
+                    cardContainer.innerHTML += `
+                        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs hover:border-indigo-300 transition-all space-y-2.5 animate-slide-up" style="animation-delay: ${idx * 0.02}s; opacity: 0; animation-fill-mode: forwards;">
                             <div class="flex justify-between items-center pb-2 border-b border-slate-100">
                                 <div class="flex items-center gap-1.5 flex-wrap">
                                     <span class="bg-slate-100 text-slate-700 font-bold text-xs px-2.5 py-1 rounded-lg border border-slate-200 cursor-pointer" ondblclick="editMasterTime(${index}, this)">${entry.start} - ${entry.end}</span>
@@ -2450,11 +2420,9 @@
                                 <button onclick="deleteScheduleEntry(${index})" class="text-rose-500 hover:text-white hover:bg-rose-500 px-3 py-1.5 rounded-lg font-bold text-xs transition-colors shrink-0">Xóa</button>
                             </div>
                         </div>
-                    `);
+                    `;
                 }
             });
-            tbody.innerHTML = tableRowsHtml.join('');
-            if (cardContainer) cardContainer.innerHTML = cardRowsHtml.join('');
         }
 
         function formatDate(date) {
@@ -2748,9 +2716,9 @@
             teachers.forEach(t => stats[t.id] = 0);
             for (let key in attendanceData) {
                 if (attendanceData[key] === 'present') {
-                    let lastIdx = key.lastIndexOf('_');
-                    let schedId = key.substring(0, lastIdx);
-                    let dateStr = key.substring(lastIdx + 1);
+                    let parts = key.split('_');
+                    let schedId = parts[0];
+                    let dateStr = parts[1];
                     
                     if (periodVal !== 'all' && dateStr) {
                         const dayNum = parseInt(dateStr.split('-')[2], 10);
@@ -2768,13 +2736,15 @@
 
             const sortedTeachers = [...teachers].sort((a, b) => stats[b.id] - stats[a.id]);
 
-            tbody.innerHTML = sortedTeachers.map((t, index) => `
-                    <tr class="hover:bg-indigo-50/30 transition-colors ${index < 15 ? 'animate-slide-up' : ''}" ${index < 15 ? `style="animation-delay: ${index * 0.05}s; opacity: 0; animation-fill-mode: forwards;"` : ''}>
+            sortedTeachers.forEach((t, index) => {
+                tbody.innerHTML += `
+                    <tr class="hover:bg-indigo-50/30 transition-colors animate-slide-up" style="animation-delay: ${index * 0.1}s; opacity: 0; animation-fill-mode: forwards;">
                         <td class="py-4 px-6 font-bold text-slate-500">${t.id}</td>
                         <td class="py-4 px-6"><span class="px-3 py-1.5 rounded-lg text-xs font-bold border shadow-sm ${t.colorClass}">${t.display}</span></td>
                         <td class="py-4 px-6 font-black text-indigo-600 text-2xl text-right">${stats[t.id]} <span class="text-xs font-semibold text-slate-400">ca</span></td>
                     </tr>
-                `).join('');
+                `;
+            });
         }
 
         function toggleCharts() {
