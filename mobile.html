@@ -2549,9 +2549,10 @@
             const isMobilePortraitAll = (typeof currentSelectedMobileDay !== 'undefined' && currentSelectedMobileDay === 'all' && window.innerWidth <= 1024 && window.innerHeight > window.innerWidth);
             const compactMode = isSummary || isMobilePortraitAll;
 
+            const daysMapOfWeek = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
             days.forEach((dayName, dayIndex) => {
                 const col = document.getElementById(`day-col-${dayName}`);
-                const isTodayCol = (dayName === days[now.getDay()]);
+                const isTodayCol = (dayName === daysMapOfWeek[now.getDay()]);
                 const dayBadgeClass = isTodayCol 
                     ? 'border-2 border-amber-500 bg-amber-50 text-amber-900 shadow-md ring-2 ring-amber-400/40 font-extrabold' 
                     : (dayName==='Chủ Nhật' ? 'text-rose-600 bg-rose-50 border-rose-200 font-bold' : 'text-slate-700 bg-white border-slate-200/60 shadow-sm font-bold');
