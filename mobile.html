@@ -15,7 +15,7 @@
         }
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -36,7 +36,7 @@
             from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .animate-slide-up { animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .animate-slide-up { animation: slideUpFade 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; will-change: transform, opacity; }
 
         /* Hiệu ứng lấp lánh (Shimmer) cho nút chính */
         @keyframes shimmer {
@@ -2344,7 +2344,11 @@
             if(confirm("Xóa lịch này khỏi hệ thống?")) { saveStateToHistory(); schedule.splice(index, 1); saveData(); initApp(); showToast("Đã xóa ca học");}
         }
 
-        function filterMasterTable() { renderMasterTable(); }
+        let filterMasterTimeout = null;
+        function filterMasterTable() {
+            clearTimeout(filterMasterTimeout);
+            filterMasterTimeout = setTimeout(() => renderMasterTable(), 150);
+        }
 
         function renderMasterTable() {
             const tbody = document.getElementById('master-table-body');
@@ -2370,6 +2374,8 @@
                 return a.start.localeCompare(b.start);
             });
 
+            let tableRowsHtml = [];
+            let cardRowsHtml = [];
             displaySchedule.forEach((entry, idx) => {
                 const index = schedule.indexOf(entry); 
                 const student = students.find(s => s.id === entry.studentId);
@@ -2404,8 +2410,8 @@
 
                 const tInfo = getTeacherDisplayHtml(entry);
 
-                tbody.innerHTML += `
-                    <tr class="hover:bg-slate-50 transition-colors animate-slide-up" style="animation-delay: ${idx * 0.03}s; opacity: 0; animation-fill-mode: forwards;">
+                tableRowsHtml.push(`
+                    <tr class="hover:bg-slate-50 transition-colors ${idx < 15 ? 'animate-slide-up' : ''}" ${idx < 15 ? `style="animation-delay: ${idx * 0.02}s; opacity: 0; animation-fill-mode: forwards;"` : ''}>
                         <td class="py-3 px-4 text-slate-400 text-xs font-medium">${index+1}</td>
                         <td class="py-3 px-4 font-bold text-slate-800 cursor-pointer" ondblclick="editMasterStudent(${index}, this)">${student.name}</td>
                         <td class="py-3 px-4 cursor-pointer" ondblclick="editMasterTeacher(${index}, this)"><span class="px-2.5 py-1 rounded-md text-xs font-semibold border shadow-sm ${tInfo.colorClass}">${tInfo.plainText}</span></td>
@@ -2415,11 +2421,11 @@
                         <td class="py-3 px-4 cursor-pointer" ondblclick="editMasterType(${index}, this)">${typeBadge}</td>
                         <td class="py-3 px-4 text-right"><button onclick="deleteScheduleEntry(${index})" class="interactive-btn text-xs text-rose-500 hover:text-white hover:bg-rose-500 px-3 py-1.5 rounded-lg font-semibold transition-colors active:scale-95">Xóa</button></td>
                     </tr>
-                `;
+                `);
 
                 if (cardContainer) {
-                    cardContainer.innerHTML += `
-                        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs hover:border-indigo-300 transition-all space-y-2.5 animate-slide-up" style="animation-delay: ${idx * 0.02}s; opacity: 0; animation-fill-mode: forwards;">
+                    cardRowsHtml.push(`
+                        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs hover:border-indigo-300 transition-all space-y-2.5 ${idx < 15 ? 'animate-slide-up' : ''}" ${idx < 15 ? `style="animation-delay: ${idx * 0.02}s; opacity: 0; animation-fill-mode: forwards;"` : ''}>
                             <div class="flex justify-between items-center pb-2 border-b border-slate-100">
                                 <div class="flex items-center gap-1.5 flex-wrap">
                                     <span class="bg-slate-100 text-slate-700 font-bold text-xs px-2.5 py-1 rounded-lg border border-slate-200 cursor-pointer" ondblclick="editMasterTime(${index}, this)">${entry.start} - ${entry.end}</span>
@@ -2444,9 +2450,11 @@
                                 <button onclick="deleteScheduleEntry(${index})" class="text-rose-500 hover:text-white hover:bg-rose-500 px-3 py-1.5 rounded-lg font-bold text-xs transition-colors shrink-0">Xóa</button>
                             </div>
                         </div>
-                    `;
+                    `);
                 }
             });
+            tbody.innerHTML = tableRowsHtml.join('');
+            if (cardContainer) cardContainer.innerHTML = cardRowsHtml.join('');
         }
 
         function formatDate(date) {
@@ -2760,15 +2768,13 @@
 
             const sortedTeachers = [...teachers].sort((a, b) => stats[b.id] - stats[a.id]);
 
-            sortedTeachers.forEach((t, index) => {
-                tbody.innerHTML += `
-                    <tr class="hover:bg-indigo-50/30 transition-colors animate-slide-up" style="animation-delay: ${index * 0.1}s; opacity: 0; animation-fill-mode: forwards;">
+            tbody.innerHTML = sortedTeachers.map((t, index) => `
+                    <tr class="hover:bg-indigo-50/30 transition-colors ${index < 15 ? 'animate-slide-up' : ''}" ${index < 15 ? `style="animation-delay: ${index * 0.05}s; opacity: 0; animation-fill-mode: forwards;"` : ''}>
                         <td class="py-4 px-6 font-bold text-slate-500">${t.id}</td>
                         <td class="py-4 px-6"><span class="px-3 py-1.5 rounded-lg text-xs font-bold border shadow-sm ${t.colorClass}">${t.display}</span></td>
                         <td class="py-4 px-6 font-black text-indigo-600 text-2xl text-right">${stats[t.id]} <span class="text-xs font-semibold text-slate-400">ca</span></td>
                     </tr>
-                `;
-            });
+                `).join('');
         }
 
         function toggleCharts() {
