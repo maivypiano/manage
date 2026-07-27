@@ -1647,16 +1647,9 @@
         ];
 
         // === KHỞI TẠO DỮ LIỆU ===
-        const DEFAULT_TEACHERS = [
-            { id: "T1", name: "Minh Phạm", display: "Minh", phone: "0339901506", email: "", bank: "", colorClass: "bg-yellow-100 text-yellow-800 border-yellow-300" }
-        ];
-        const DEFAULT_STUDENTS = [
-            { id: "HV01", name: "Chị Hằng", phone: "", lessons: 24, completedLessons: 0 },
-            { id: "HV02", name: "Phúc An", phone: "", lessons: 24, completedLessons: 10 }
-        ];
-        const DEFAULT_BRANCHES = [
-            { id: "B1", name: "Cơ sở 1", colorClass: "bg-slate-100 text-slate-800 border-slate-300" }
-        ];
+        const DEFAULT_TEACHERS = [];
+        const DEFAULT_STUDENTS = [];
+        const DEFAULT_BRANCHES = [];
         
         const API_URL = "https://script.google.com/macros/s/AKfycbxBFAdraeIdy2LostAxGXMR9RIICdeFH52ETbPJjTIiagre63SPRhPV9amcJluAI1EcmQ/exec";
 
@@ -1751,8 +1744,8 @@
                 window._mvCleanupDone = true;
                 const cleanupResult = cleanupAndMergeData();
                 if (cleanupResult.cleanupCount > 0 || cleanupResult.mergeCount > 0) {
-                    console.log(`🧹 [Cleanup Mobile] Đã sửa ${cleanupResult.cleanupCount} lỗi nhỏ + gộp ${cleanupResult.mergeCount} lịch trùng`);
-                    if (typeof showToast === 'function') showToast(`🧹 Đã dọn dẹp: ${cleanupResult.cleanupCount} lỗi + gộp ${cleanupResult.mergeCount} lịch trùng`, 'success');
+                    console.log(`🧹 [Cleanup] Đã dọn dẹp và tối ưu ${cleanupResult.cleanupCount} lỗi dữ liệu`);
+                    if (typeof showToast === 'function') showToast(`🧹 Đã dọn dẹp và chuẩn hóa: ${cleanupResult.cleanupCount} lỗi dữ liệu`, "success");
                 }
             }
 
@@ -2082,57 +2075,12 @@ setTimeout(() => {
                 });
             }
 
-            if (typeof monthlyData !== 'undefined' && typeof monthlyData === 'object') {
-                Object.keys(monthlyData).forEach(monthKey => {
-                    const monthData = monthlyData[monthKey];
-                    if (!monthData || !Array.isArray(monthData.schedule)) return;
-
-                    const groups = {};
-                    monthData.schedule.forEach((entry, idx) => {
-                        const sig = `${entry.studentId || ''}|${entry.teacherId || ''}|${entry.start || ''}|${entry.end || ''}|${entry.branch || ''}`;
-                        if (!groups[sig]) groups[sig] = [];
-                        groups[sig].push({ entry, idx });
-                    });
-
-                    const newSchedule = [];
-                    const toRemoveIdx = new Set();
-                    Object.keys(groups).forEach(sig => {
-                        const items = groups[sig];
-                        if (items.length === 1) {
-                            newSchedule.push(items[0].entry);
-                        } else {
-                            const merged = { ...items[0].entry };
-                            const allDates = new Set();
-                            const allExcluded = new Set();
-                            items.forEach(({entry}) => {
-                                if (Array.isArray(entry.exactDates)) {
-                                    entry.exactDates.forEach(d => allDates.add(d));
-                                }
-                                if (Array.isArray(entry.excludedDates)) {
-                                    entry.excludedDates.forEach(d => allExcluded.add(d));
-                                }
-                            });
-                            merged.exactDates = Array.from(allDates).sort();
-                            if (allExcluded.size > 0) {
-                                merged.excludedDates = Array.from(allExcluded).sort();
-                            }
-                            newSchedule.push(merged);
-                            items.slice(1).forEach(({idx}) => toRemoveIdx.add(idx));
-                            mergeCount += items.length - 1;
-                        }
-                    });
-
-                    if (toRemoveIdx.size > 0) {
-                        monthData.schedule = newSchedule;
-                    }
-                });
-            }
-
-            if (cleanupCount > 0 || mergeCount > 0) {
+            // (Đã tắt tính năng gộp lịch trùng theo yêu cầu)
+            if (cleanupCount > 0) {
                 if (typeof saveData === 'function') saveData();
             }
 
-            return { cleanupCount, mergeCount };
+            return { cleanupCount, mergeCount: 0 };
         }
 
         let currentSelectedMobileDay = null;
