@@ -1810,7 +1810,149 @@
                     }
                 } catch (error) { console.log("Loi mang, su dung du lieu cuc bo."); }
             })();
+
+            // 5. REALTIME SYNC: Polling thông minh 8s/lần + BroadcastChannel giữa các tab
+            startRealtimeSync();
         };
+
+        // ===== HỆ THỐNG ĐỒNG BỘ REALTIME =====
+        let _realtimeHash = null;          // Hash của data hiện tại, dùng để so sánh
+        let _realtimeChannel = null;       // BroadcastChannel giữa các tab cùng browser
+        let _realtimeInProgress = false;   // Tránh polling chồng nhau
+        let _realtimePollingId = null;     // ID của interval polling
+
+        function computeDataHash() {
+            // Hash đầy đủ: bao gồm số ca + số attendance records thực tế
+            const sched = (typeof schedule !== 'undefined' && schedule) ? schedule.length : 0;
+            const att = (typeof attendanceData !== 'undefined' && attendanceData) ? Object.keys(attendanceData).filter(k => attendanceData[k] === 'present').length : 0;
+            // Đếm tổng attendance toàn bộ monthlyData để phát hiện thay đổi chéo tháng
+            let totalAtt = 0;
+            if (typeof monthlyData !== 'undefined') {
+                Object.values(monthlyData).forEach(md => {
+                    if (md && md.attendanceData) totalAtt += Object.keys(md.attendanceData).filter(k => md.attendanceData[k] === 'present').length;
+                });
+            }
+            return [
+                (typeof teachers !== 'undefined') ? teachers.length : 0,
+                (typeof students !== 'undefined') ? students.length : 0,
+                (typeof branches !== 'undefined') ? branches.length : 0,
+                (typeof monthlyData !== 'undefined') ? Object.keys(monthlyData).length : 0,
+                sched, att, totalAtt,
+                (typeof users !== 'undefined') ? users.length : 0,
+                (typeof currentAuthUser !== 'undefined' && currentAuthUser) ? currentAuthUser.role : 'guest'
+            ].join('|');
+        }
+
+        function applyRealtimeData(data) {
+            if (!data || typeof data !== 'object') return false;
+            let changed = false;
+            if (Array.isArray(data.teachers) && data.teachers.length) { teachers = data.teachers; changed = true; }
+            if (Array.isArray(data.students) && data.students.length) { students = data.students; changed = true; }
+            if (Array.isArray(data.branches) && data.branches.length) { branches = data.branches; changed = true; }
+            if (Array.isArray(data.users) && data.users.length) { users = data.users; try { localStorage.setItem('mv_users_data', JSON.stringify(users)); } catch(e){} changed = true; }
+            if (data.monthlyData && typeof data.monthlyData === 'object' && Object.keys(data.monthlyData).length) {
+                monthlyData = data.monthlyData; changed = true;
+            }
+            if (typeof currentMonth === 'string' && !monthlyData[currentMonth]) {
+                monthlyData[currentMonth] = { schedule: [], attendanceData: {} };
+            }
+            if (changed) {
+                try {
+                    localStorage.setItem('mv_cache_data', JSON.stringify({ teachers, students, branches, monthlyData, users }));
+                } catch(e){}
+                syncCurrentMonthPointers();
+            }
+            return changed;
+        }
+
+        function startRealtimeSync() {
+            // Khởi tạo hash ban đầu
+            _realtimeHash = computeDataHash();
+
+            // BroadcastChannel: đồng bộ giữa các tab/window cùng browser (cùng gốc)
+            try {
+                if (typeof BroadcastChannel !== 'undefined') {
+                    _realtimeChannel = new BroadcastChannel('mv_realtime_sync');
+                    _realtimeChannel.onmessage = (ev) => {
+                        if (!ev.data) return;
+                        if (ev.data.type === 'data_changed') {
+                            // Tab khác vừa thay đổi - reload từ localStorage (đã được cập nhật)
+                            try {
+                                const cached = localStorage.getItem('mv_cache_data');
+                                if (cached) {
+                                    const data = JSON.parse(cached);
+                                    if (applyRealtimeData(data)) {
+                                        if (typeof initApp === 'function') initApp();
+                                        if (typeof checkAuthStatus === 'function') checkAuthStatus();
+                                    }
+                                }
+                            } catch(e){}
+                        }
+                    };
+                }
+            } catch(e){}
+
+            // Polling server mỗi 8s - chỉ render nếu hash thay đổi
+            if (_realtimePollingId) clearInterval(_realtimePollingId);
+            _realtimePollingId = setInterval(async () => {
+                if (_realtimeInProgress) return;
+                if (document.hidden) return; // Tab ẩn thì không polling
+                _realtimeInProgress = true;
+                try {
+                    const res = await fetch(API_URL + "?t=" + new Date().getTime());
+                    const data = await res.json();
+                    if (data) {
+                        // So sánh hash nhanh trước khi áp dụng
+                        // Hash bao gồm attendance để phát hiện thay đổi điểm danh
+                        let _pollTotalAtt = 0;
+                        if (data.monthlyData) {
+                            Object.values(data.monthlyData).forEach(md => {
+                                if (md && md.attendanceData) _pollTotalAtt += Object.keys(md.attendanceData).filter(k => md.attendanceData[k] === 'present').length;
+                            });
+                        }
+                        const newHash = [
+                            data.teachers?.length || 0,
+                            data.students?.length || 0,
+                            data.branches?.length || 0,
+                            data.users?.length || 0,
+                            data.monthlyData ? Object.keys(data.monthlyData).length : 0,
+                            _pollTotalAtt
+                        ].join('|');
+                        if (newHash !== _realtimeHash) {
+                            _realtimeHash = newHash;
+                            if (applyRealtimeData(data)) {
+                                // Chỉ render tab đang hiển thị để tiết kiệm CPU
+                                if (typeof requestAnimationFrame === 'function') {
+                                    requestAnimationFrame(() => {
+                                        if (typeof initApp === 'function') initApp();
+                                    });
+                                } else {
+                                    if (typeof initApp === 'function') initApp();
+                                }
+                                if (typeof checkAuthStatus === 'function') checkAuthStatus();
+                            }
+                        }
+                    }
+                } catch(e) { /* im lặng nếu mất mạng */ }
+                _realtimeInProgress = false;
+            }, 8000);
+
+            // Hook vào saveData để broadcast khi tab hiện tại thay đổi
+            const _origSaveData = window.saveData;
+            if (_origSaveData && !window._saveDataPatched) {
+                window._saveDataPatched = true;
+                window.saveData = function() {
+                    const r = _origSaveData.apply(this, arguments);
+                    // Sau khi lưu local, broadcast sang tab khác
+                    setTimeout(() => {
+                        if (_realtimeChannel) {
+                            try { _realtimeChannel.postMessage({ type: 'data_changed', t: Date.now() }); } catch(e){}
+                        }
+                    }, 50);
+                    return r;
+                };
+            }
+        }
 
         function captureState() {
             return {
@@ -1997,12 +2139,55 @@
             });
             if(migrated && typeof saveData === 'function') { saveData(); }
             // cleanOrphanAttendanceData bypassed
+
+            // RECONCILE: đồng bộ completedLessons từ attendanceData thực tế
+            // (mỗi ca tick 'present' = +1 buổi cho học viên đó)
+            try {
+                if (typeof reconcileStudentAttendance === 'function') {
+                    const changed = reconcileStudentAttendance();
+                    if (changed && typeof saveData === 'function') saveData();
+                }
+            } catch(e){}
             
             document.querySelectorAll('.current-month-display').forEach(el => {
                 const parts = currentMonth.split('-');
                 el.textContent = `${parts[1]}/${parts[0]}`;
             });
             renderDateSelector();
+        }
+
+        // ===== RECONCILE: Đồng bộ completedLessons từ attendanceData thực tế =====
+        function reconcileStudentAttendance() {
+            if (typeof students === 'undefined' || !Array.isArray(students) ||
+                typeof attendanceData === 'undefined' || !attendanceData ||
+                typeof schedule === 'undefined' || !schedule) return false;
+
+            let changed = false;
+            const oldSnapshot = {};
+            students.forEach(s => { oldSnapshot[s.id] = s.completedLessons || 0; });
+
+            // Reset và đếm lại từ attendanceData
+            students.forEach(s => { s.completedLessons = 0; s.completedAtDate = {}; });
+
+            for (let key in attendanceData) {
+                if (attendanceData[key] !== 'present') continue;
+                const parts = key.split('_');
+                if (parts.length < 2) continue;
+                const schedId = parts[0];
+                const dateStr = parts[1];
+                const s = schedule.find(x => x.id === schedId);
+                if (!s) continue;
+                const stu = students.find(x => x.id === s.studentId);
+                if (!stu) continue;
+                stu.completedLessons = (stu.completedLessons || 0) + 1;
+                if (!stu.completedAtDate) stu.completedAtDate = {};
+                stu.completedAtDate[dateStr] = stu.completedLessons;
+            }
+
+            students.forEach(s => {
+                if (oldSnapshot[s.id] !== s.completedLessons) changed = true;
+            });
+            return changed;
         }
 
         function updateDatePickerText() {
