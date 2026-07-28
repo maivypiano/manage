@@ -3714,31 +3714,30 @@ function isLessonVisibleOnCalendarForDate(item, dateStr, targetMonthStr) {
 }
 
 function calculateTeacherAttendance(t, periodVal, monthStr) {
-    // V3: Chi tinh thang hien tai (currentMonth hoac monthStr)
-    // Dua tren dau tick present - bao nhieu tick tinh bay nhieu
+    // V4: Chi tinh thang hien tai, dua tren tick present
+    // Neu teacherId === t.id: tinh (ke ca ca co GV the)
+    // Neu subTeacherId === t.id: tinh (GV nay dang the cho nguoi khac)
+    // Neu schedule khong ton tai: bo qua (khong xac dinh duoc GV)
     let shiftCount = 0;
     let hoursCount = 0;
     if (!t || !t.id) return { shiftCount, hoursCount };
 
-    // Lay schedule va attendanceData cua thang can tinh
     const targetMonth = monthStr || (typeof currentMonth !== 'undefined' ? currentMonth : '');
-    let baseSchedule = [];
-    let baseAttendance = {};
 
-    if (targetMonth && typeof monthlyData !== 'undefined' && monthlyData[targetMonth]) {
-        baseSchedule = monthlyData[targetMonth].schedule || [];
-        baseAttendance = monthlyData[targetMonth].attendanceData || {};
-    }
-    // Fallback: neu schedule/attendanceData hien tai la cua thang nay
-    if (typeof schedule !== 'undefined' && Array.isArray(schedule) && schedule.length > 0) {
-        baseSchedule = schedule;
-    }
-    if (typeof attendanceData !== 'undefined' && Object.keys(attendanceData).length > 0) {
-        baseAttendance = attendanceData;
-    }
+    // Lay schedule va attendanceData cua thang can tinh
+    let baseSchedule = (typeof schedule !== 'undefined' && Array.isArray(schedule) && schedule.length > 0)
+        ? schedule
+        : (targetMonth && typeof monthlyData !== 'undefined' && monthlyData[targetMonth]
+            ? monthlyData[targetMonth].schedule || []
+            : []);
+
+    let baseAttendance = (typeof attendanceData !== 'undefined' && Object.keys(attendanceData).length > 0)
+        ? attendanceData
+        : (targetMonth && typeof monthlyData !== 'undefined' && monthlyData[targetMonth]
+            ? monthlyData[targetMonth].attendanceData || {}
+            : {});
 
     for (let key in baseAttendance) {
-        // Chi dem tick "present" (co mat / len lop)
         if (baseAttendance[key] !== 'present') continue;
 
         let parts = key.split('_');
@@ -3746,22 +3745,25 @@ function calculateTeacherAttendance(t, periodVal, monthStr) {
         let schedId = parts[0];
         let dateStr = parts[1];
 
-        // Loc theo dot thanh toan (p1: ngay 1-15, p2: ngay 16-cuoi)
+        // Loc theo dot thanh toan
         if (periodVal && periodVal !== 'all' && dateStr) {
             const dayNum = parseInt(dateStr.split('-')[2], 10);
             if ((periodVal === 'period1' || periodVal === 'p1') && dayNum > 15) continue;
             if ((periodVal === 'period2' || periodVal === 'p2') && dayNum <= 15) continue;
         }
 
-        // Tim lich tuong ung
+        // Tim lich tuong ung - neu khong tim thay thi bo qua
         let s = baseSchedule.find(x => x.id === schedId);
         if (!s) continue;
 
-        // Xac dinh giao vien cua ca nay
-        const targetTid = (s.type === 'substitute' && s.subTeacherId) ? s.subTeacherId : s.teacherId;
-        let isMatch = (targetTid === t.id || targetTid === t.name);
-        if (!isMatch && s.type !== 'substitute' && s.teacher === t.name) isMatch = true;
-        if (!isMatch && s.subTeacherId && s.subTeacherId === t.id) isMatch = true;
+        // Kiem tra GV: tinh ca neu:
+        // 1. GV goc (teacherId) la GV can tinh → ke ca ca co GV the
+        // 2. GV nay dang the cho nguoi khac (subTeacherId)
+        // 3. Fallback: truong teacher (ten) khop
+        const isOriginal  = (s.teacherId === t.id || s.teacherId === t.name);
+        const isSub       = (s.subTeacherId === t.id || s.subTeacherId === t.name);
+        const isNameMatch = (!s.teacherId && s.teacher === t.name);
+        const isMatch     = isOriginal || isSub || isNameMatch;
 
         if (isMatch) {
             shiftCount += 1;
@@ -3779,6 +3781,7 @@ function calculateTeacherAttendance(t, periodVal, monthStr) {
     }
     return { shiftCount, hoursCount };
 }
+
 
 function cleanOrphanAttendanceData() {
     return false;
