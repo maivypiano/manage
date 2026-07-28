@@ -1461,16 +1461,9 @@
         ];
 
         // === KHỞI TẠO DỮ LIỆU ===
-        const DEFAULT_TEACHERS = [
-            { id: "T1", name: "Minh Phạm", display: "Minh", phone: "0339901506", email: "", bank: "", colorClass: "bg-yellow-100 text-yellow-800 border-yellow-300" }
-        ];
-        const DEFAULT_STUDENTS = [
-            { id: "HV01", name: "Chị Hằng", phone: "", lessons: 24, completedLessons: 0 },
-            { id: "HV02", name: "Phúc An", phone: "", lessons: 24, completedLessons: 10 }
-        ];
-        const DEFAULT_BRANCHES = [
-            { id: "B1", name: "Cơ sở 1", colorClass: "bg-slate-100 text-slate-800 border-slate-300" }
-        ];
+        const DEFAULT_TEACHERS = [];
+        const DEFAULT_STUDENTS = [];
+        const DEFAULT_BRANCHES = [];
         
         const API_URL = "https://script.google.com/macros/s/AKfycbxBFAdraeIdy2LostAxGXMR9RIICdeFH52ETbPJjTIiagre63SPRhPV9amcJluAI1EcmQ/exec";
 
@@ -1560,8 +1553,8 @@
                 window._mvCleanupDone = true;
                 const cleanupResult = cleanupAndMergeData();
                 if (cleanupResult.cleanupCount > 0 || cleanupResult.mergeCount > 0) {
-                    console.log(`🧹 [Cleanup] Đã sửa ${cleanupResult.cleanupCount} lỗi nhỏ + gộp ${cleanupResult.mergeCount} lịch trùng`);
-                    if (typeof showToast === 'function') showToast(`🧹 Đã dọn dẹp: ${cleanupResult.cleanupCount} lỗi + gộp ${cleanupResult.mergeCount} lịch trùng`, 'success');
+                    console.log(`🧹 [Cleanup] Đã dọn dẹp và tối ưu ${cleanupResult.cleanupCount} lỗi dữ liệu`);
+                    if (typeof showToast === 'function') showToast(`🧹 Đã dọn dẹp và chuẩn hóa: ${cleanupResult.cleanupCount} lỗi dữ liệu`, "success");
                 }
             }
 
@@ -1825,63 +1818,13 @@ setTimeout(() => {
                 });
             }
 
-            // 3. Gộp lịch trùng trong monthlyData
-            if (typeof monthlyData !== 'undefined' && typeof monthlyData === 'object') {
-                Object.keys(monthlyData).forEach(monthKey => {
-                    const monthData = monthlyData[monthKey];
-                    if (!monthData || !Array.isArray(monthData.schedule)) return;
-
-                    // Group by signature: studentId|teacherId|start|end|branch
-                    const groups = {};
-                    monthData.schedule.forEach((entry, idx) => {
-                        const sig = `${entry.studentId || ''}|${entry.teacherId || ''}|${entry.start || ''}|${entry.end || ''}|${entry.branch || ''}`;
-                        if (!groups[sig]) groups[sig] = [];
-                        groups[sig].push({ entry, idx });
-                    });
-
-                    // Merge các group có > 1 entries
-                    const newSchedule = [];
-                    const toRemoveIdx = new Set();
-                    Object.keys(groups).forEach(sig => {
-                        const items = groups[sig];
-                        if (items.length === 1) {
-                            newSchedule.push(items[0].entry);
-                        } else {
-                            // Merge: combine exactDates và excludedDates
-                            const merged = { ...items[0].entry };
-                            const allDates = new Set();
-                            const allExcluded = new Set();
-                            items.forEach(({entry}) => {
-                                if (Array.isArray(entry.exactDates)) {
-                                    entry.exactDates.forEach(d => allDates.add(d));
-                                }
-                                if (Array.isArray(entry.excludedDates)) {
-                                    entry.excludedDates.forEach(d => allExcluded.add(d));
-                                }
-                            });
-                            merged.exactDates = Array.from(allDates).sort();
-                            if (allExcluded.size > 0) {
-                                merged.excludedDates = Array.from(allExcluded).sort();
-                            }
-                            newSchedule.push(merged);
-                            // Đánh dấu các entries cũ để loại bỏ
-                            items.slice(1).forEach(({idx}) => toRemoveIdx.add(idx));
-                            mergeCount += items.length - 1;
-                        }
-                    });
-
-                    if (toRemoveIdx.size > 0) {
-                        monthData.schedule = newSchedule;
-                    }
-                });
-            }
-
+            // 3. (Đã tắt tính năng gộp lịch trùng theo yêu cầu)
             // 4. Lưu nếu có thay đổi
-            if (cleanupCount > 0 || mergeCount > 0) {
+            if (cleanupCount > 0) {
                 if (typeof saveData === 'function') saveData();
             }
 
-            return { cleanupCount, mergeCount };
+            return { cleanupCount, mergeCount: 0 };
         }
 
         function switchTab(tabId, title) {
@@ -3307,11 +3250,8 @@ function switchAuthTab(tabId) {
     if (err) err.classList.add('hidden');
 }
 
-function handleLogin(e) {
+async function handleLogin(e) {
     if (e) e.preventDefault();
-    if (localStorage.getItem('mv_users_data')) {
-        try { users = JSON.parse(localStorage.getItem('mv_users_data')) || users; } catch(err){}
-    }
     const email = document.getElementById('login-email').value.trim().toLowerCase();
     const pwd = document.getElementById('login-pwd').value;
 
@@ -3320,15 +3260,36 @@ function handleLogin(e) {
         return;
     }
 
+    // Luôn tải danh sách users mới nhất từ server trước khi đăng nhập
+    // Đảm bảo tài khoản đăng ký trên thiết bị khác vẫn đăng nhập được
+    try {
+        if (typeof showToast === 'function') showToast('⏳ Đang xác thực tài khoản...', 'info');
+        const res = await fetch(API_URL + '?t=' + new Date().getTime());
+        const data = await res.json();
+        if (data && data.users && Array.isArray(data.users) && data.users.length > 0) {
+            users = data.users;
+            try { localStorage.setItem('mv_users_data', JSON.stringify(users)); } catch(e) {}
+        }
+    } catch(err) {
+        // Nếu không có mạng, dùng cache cục bộ
+        if (localStorage.getItem('mv_users_data')) {
+            try { users = JSON.parse(localStorage.getItem('mv_users_data')) || users; } catch(err2){}
+        }
+    }
+
     const user = users.find(u => u.email.toLowerCase() === email && u.password === pwd);
     if (!user) {
-        showAuthError("Gmail hoặc Mật khẩu không chính xác!");
+        showAuthError("Gmail hoặc Mật khẩu không chính xác! (Tài khoản chưa được tạo hoặc chưa duyệt)");
+        return;
+    }
+    if (user.status === 'pending') {
+        showAuthError('Tài khoản của bạn đang chờ Admin phê duyệt. Vui lòng liên hệ để được duyệt sớm!');
         return;
     }
 
     currentAuthUser = user;
     localStorage.setItem('mv_auth_session', JSON.stringify(currentAuthUser));
-    if (typeof showToast === 'function') showToast(`Đăng nhập thành công! Xin chào ${user.name}`, 'success');
+    if (typeof showToast === 'function') showToast(`✅ Đăng nhập thành công! Xin chào ${user.name}`, 'success');
     checkAuthStatus();
 }
 
