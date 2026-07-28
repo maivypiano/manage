@@ -230,6 +230,10 @@
             /* Tune font size cho các card buổi học trên portrait */
             #schedule-grid-container .text-xs { font-size: var(--font-xs) !important; }
             #schedule-grid-container .text-sm { font-size: var(--font-sm) !important; }
+
+            /* Users (Phân quyền) — chuyển sang giao diện thẻ trên portrait */
+            .users-table-view { display: none !important; }
+            .users-card-view  { display: flex !important; flex-direction: column; gap: 0.625rem; }
         }
 
         /* ========== LANDSCAPE (chế độ ngang) ========== */
@@ -251,6 +255,10 @@
             }
             #schedule-grid-container > div[id^="day-col-"] { display:flex !important; }
             .sticky.top-0.z-20 { padding-top:0.3rem!important; padding-bottom:0.3rem!important; }
+
+            /* Users — landscape/tablet: dùng lại bảng ngang */
+            .users-table-view { display: block !important; }
+            .users-card-view  { display: none !important; }
         }
 
         /* ========== HISTORY PANEL ========== */
@@ -638,28 +646,43 @@
                 </div>
             </div>
 
-            <div id="tab-sheet3" class="tab-content hidden animate-slide-up space-y-6">
-                <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                    <div>
-                        <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">Bảng Lịch & Điểm Danh</h3>
-                        <p class="text-sm text-slate-500 mt-1">Tháng làm việc hiện tại: <span class="font-bold text-indigo-600 current-month-display"></span></p>
+            <div id="tab-sheet3" class="tab-content hidden animate-slide-up space-y-3">
+                <div class="bg-white rounded-2xl border border-slate-200 p-3 sm:p-4 shadow-sm flex flex-row justify-between items-center gap-2">
+                    <div class="min-w-0 flex-1">
+                        <h3 class="font-bold text-slate-800 text-sm sm:text-base flex items-center gap-1.5 truncate">
+                            <span>📅</span> Lịch & Điểm Danh
+                        </h3>
+                        <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5 truncate">Tháng: <span class="font-bold text-indigo-600 current-month-display"></span></p>
                     </div>
-                    <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto bg-slate-50 p-1.5 rounded-2xl border border-slate-200">
-                        <div class="flex items-center gap-2 px-2">
-                            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
-                        </div>
-                        <select id="view-filter-week" onchange="renderWeeklySchedule()" class="bg-white font-bold border-transparent rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm text-indigo-700 transition-all cursor-pointer">
-                            <option value="all">Cả Tháng</option>
-                            <option value="summary">Xem Tổng Quát</option>
-                            <option value="1">Tuần 1</option>
-                            <option value="2">Tuần 2</option>
-                            <option value="3">Tuần 3</option>
-                            <option value="4">Tuần 4</option>
-                            <option value="5">Tuần 5</option>
-                        </select>
-                        <select id="view-filter-teacher" onchange="renderWeeklySchedule()" class="bg-white border-transparent rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm transition-all cursor-pointer"></select>
-                        <select id="view-filter-branch" onchange="renderWeeklySchedule()" class="bg-white border-transparent rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm transition-all cursor-pointer"></select>
+                    <div class="flex items-center gap-1.5 flex-shrink-0">
+                        <!-- Compact filter summary (visible on portrait) -->
+                        <button id="btn-open-schedule-filter" onclick="toggleScheduleFilterPanel()" class="relative flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-indigo-50 border border-indigo-200 text-indigo-700 font-bold text-xs hover:bg-indigo-100 transition-all shadow-sm active:scale-95" title="Mở bộ lọc lịch">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
+                            <span>Lọc</span>
+                            <span id="filter-active-badge" class="hidden absolute -top-1 -right-1 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-white"></span>
+                        </button>
                     </div>
+                </div>
+
+                <!-- Bộ lọc mở rộng (mặc định ẩn trên mobile) -->
+                <div id="schedule-filter-panel" class="hidden sm:flex bg-white rounded-2xl border border-slate-200 p-3 shadow-sm flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-2 sm:gap-3">
+                    <div class="flex items-center gap-2 px-2 text-slate-500">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
+                        <span class="text-xs font-bold uppercase">Bộ lọc:</span>
+                    </div>
+                    <select id="view-filter-week" onchange="renderWeeklySchedule()" class="bg-white font-bold border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm text-indigo-700 transition-all cursor-pointer flex-1 sm:flex-initial">
+                        <option value="all">Cả Tháng</option>
+                        <option value="summary">Xem Tổng Quát</option>
+                        <option value="1">Tuần 1</option>
+                        <option value="2">Tuần 2</option>
+                        <option value="3">Tuần 3</option>
+                        <option value="4">Tuần 4</option>
+                        <option value="5">Tuần 5</option>
+                    </select>
+                    <select id="view-filter-teacher" onchange="renderWeeklySchedule()" class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm transition-all cursor-pointer flex-1 sm:flex-initial"></select>
+                    <select id="view-filter-branch" onchange="renderWeeklySchedule()" class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm transition-all cursor-pointer flex-1 sm:flex-initial"></select>
+                    <button onclick="resetScheduleFilter()" class="text-[11px] font-bold text-slate-500 hover:text-rose-600 bg-slate-50 border border-slate-200 px-2.5 py-1.5 rounded-xl transition-all">↺ Xóa lọc</button>
+                    <button onclick="toggleScheduleFilterPanel()" class="sm:hidden text-[11px] font-bold text-white bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 rounded-xl transition-all">Áp dụng</button>
                 </div>
 
                 <!-- Thanh chọn thứ trong tuần cho giao diện di động (Portrait) -->
@@ -797,13 +820,13 @@
     <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
         <div class="p-5 bg-slate-50/80 border-b border-slate-200/80 flex items-center justify-between">
             <h3 class="font-extrabold text-slate-800 text-sm flex items-center gap-2"><span>📋</span> Danh sách Người dùng & Phân vai trò hệ thống</h3>
-            
+
                 <div class="flex items-center gap-2">
-                <button onclick="openCreateUserModal()" class="text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-indigo-700 shadow-xs transition"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg> Tạo tài khoản mới</button>
-                <button onclick="if(typeof refreshUsersListFromServer === 'function') refreshUsersListFromServer(); else renderUsersTable();" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-xs hover:border-indigo-300 transition">🔄 Làm mới từ máy chủ</button>
+                <button onclick="openCreateUserModal()" class="text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-indigo-700 shadow-xs transition"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg> <span class="hidden sm:inline">Tạo tài khoản mới</span><span class="sm:hidden">Tạo</span></button>
+                <button onclick="if(typeof refreshUsersListFromServer === 'function') refreshUsersListFromServer(); else renderUsersTable();" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-xs hover:border-indigo-300 transition">🔄 <span class="hidden sm:inline">Làm mới từ máy chủ</span><span class="sm:hidden">Làm mới</span></button>
             </div>
         </div>
-        <div class="overflow-x-auto custom-scrollbar">
+        <div class="users-table-view overflow-x-auto custom-scrollbar">
             <table class="w-full text-left border-collapse min-w-[750px]">
                 <thead>
                     <tr class="bg-slate-100/70 border-b border-slate-200 text-[11px] font-extrabold text-slate-500 uppercase tracking-wider">
@@ -819,6 +842,9 @@
                     <!-- Rendered dynamically -->
                 </tbody>
             </table>
+        </div>
+        <div id="users-cards-container" class="users-card-view hidden p-3 space-y-3 max-h-[70vh] overflow-y-auto custom-scrollbar">
+            <!-- Rendered dynamically (card view cho mobile portrait) -->
         </div>
     </div>
 </div>
@@ -2113,13 +2139,71 @@
         }
 
         let currentSelectedMobileDay = null;
+        // Biến nhớ role để áp dụng chế độ xem mặc định
+        let scheduleDefaultMode = 'day'; // 'day' | 'week'
         function initMobileDaySelector() {
             if (!currentSelectedMobileDay) {
-                const daysMap = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
-                const todayDayName = daysMap[new Date().getDay()];
-                currentSelectedMobileDay = todayDayName;
+                // Admin (Chủ TT) / superadmin -> mặc định xem cả tuần hiện tại (chọn 'all' và để filter tuần chạy)
+                // Giáo viên / các role khác -> mặc định mở thứ hôm nay
+                const isAdminLike = (typeof currentAuthUser !== 'undefined' && currentAuthUser && (currentAuthUser.role === 'admin' || currentAuthUser.role === 'superadmin'));
+                if (isAdminLike) {
+                    currentSelectedMobileDay = 'all';
+                    scheduleDefaultMode = 'week';
+                } else {
+                    const daysMap = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
+                    currentSelectedMobileDay = daysMap[new Date().getDay()];
+                    scheduleDefaultMode = 'day';
+                }
             }
             applyMobileDaySelection();
+        }
+
+        // === BỘ LỌC LỊCH: Mở/đóng panel ===
+        function toggleScheduleFilterPanel() {
+            const panel = document.getElementById('schedule-filter-panel');
+            if (!panel) return;
+            panel.classList.toggle('hidden');
+            // Cập nhật badge khi đang lọc
+            updateFilterBadge();
+        }
+
+        function resetScheduleFilter() {
+            const wt = document.getElementById('view-filter-week');
+            const ft = document.getElementById('view-filter-teacher');
+            const fb = document.getElementById('view-filter-branch');
+            if (wt) {
+                // Về tuần hiện tại nếu là Admin, ngược lại 'all'
+                if (scheduleDefaultMode === 'week') {
+                    const now = new Date();
+                    const year = now.getFullYear();
+                    const month = now.getMonth() + 1;
+                    const firstDateOfMonth = new Date(year, month - 1, 1);
+                    const firstDayOfWeek = firstDateOfMonth.getDay();
+                    const offset = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
+                    const startDateOfCalendar = new Date(year, month - 1, 1 - offset);
+                    const todayOffset = Math.floor((now - startDateOfCalendar) / 86400000);
+                    const wk = Math.floor(todayOffset / 7) + 1;
+                    wt.value = String(wk);
+                } else {
+                    wt.value = 'all';
+                }
+            }
+            if (ft) ft.value = '';
+            if (fb) fb.value = '';
+            if (typeof renderWeeklySchedule === 'function') renderWeeklySchedule();
+            updateFilterBadge();
+            if (typeof showToast === 'function') showToast('Đã đặt lại bộ lọc');
+        }
+
+        function updateFilterBadge() {
+            const badge = document.getElementById('filter-active-badge');
+            if (!badge) return;
+            const wt = document.getElementById('view-filter-week');
+            const ft = document.getElementById('view-filter-teacher');
+            const fb = document.getElementById('view-filter-branch');
+            const hasFilter = (wt && wt.value && wt.value !== 'all') || (ft && ft.value) || (fb && fb.value);
+            if (hasFilter) badge.classList.remove('hidden');
+            else badge.classList.add('hidden');
         }
 
         function selectMobileDay(day, btnElem) {
@@ -2135,13 +2219,13 @@
             const daysMap = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
             const todayDayName = daysMap[new Date().getDay()];
             const btns = document.querySelectorAll('#mobile-day-selector-bar .day-pill-btn');
-            
+
             btns.forEach(b => {
                 const txt = b.textContent.trim();
                 const isTodayBtn = (txt === todayDayName);
-                
+
                 b.classList.remove('bg-white', 'text-slate-700', 'border-slate-200', 'border-2', 'border-amber-500', 'ring-2', 'ring-amber-400/50', 'font-extrabold', 'text-amber-900', 'border-amber-400', 'ring-amber-300');
-                
+
                 if (txt === currentSelectedMobileDay || (currentSelectedMobileDay === 'all' && txt === 'Tất cả')) {
                     b.classList.add('bg-indigo-600', 'text-white', 'shadow-md', 'scale-105');
                     if (isTodayBtn) {
@@ -2163,13 +2247,25 @@
 
             const isLandscape = window.innerWidth > window.innerHeight && window.innerWidth > 640;
             const daysList = ["Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy", "Chủ Nhật"];
-            
+
             const gridContainer = document.getElementById('schedule-grid-container');
             if (gridContainer) {
                 if (!isLandscape && currentSelectedMobileDay === 'all') {
                     gridContainer.classList.add('mobile-compact-all');
                 } else {
                     gridContainer.classList.remove('mobile-compact-all');
+                }
+            }
+
+            // Nếu đang ở chế độ tuần (Admin) trên portrait -> ẩn thanh chọn thứ để tiết kiệm diện tích
+            const dayBar = document.getElementById('mobile-day-selector-bar');
+            if (dayBar) {
+                if (!isLandscape && scheduleDefaultMode === 'week' && currentSelectedMobileDay === 'all') {
+                    dayBar.classList.add('hidden');
+                } else {
+                    // Chỉ hiển thị day-pill ở portrait (mobile) chứ không hiện ở desktop/landscape
+                    if (!isLandscape) dayBar.classList.remove('hidden');
+                    else dayBar.classList.add('hidden');
                 }
             }
 
@@ -3020,11 +3116,11 @@
                     weekStart.setDate(startDateOfCalendar.getDate() + (w - 1) * 7);
                     const weekEnd = new Date(weekStart);
                     weekEnd.setDate(weekStart.getDate() + 6);
-                    
+
                     const startStr = `${weekStart.getDate()}/${weekStart.getMonth()+1}`;
                     const endStr = `${weekEnd.getDate()}/${weekEnd.getMonth()+1}`;
                     let label = `Tuần ${w} (${startStr} - ${endStr})`;
-                    
+
                     const weekStartCheck = new Date(weekStart);
                     weekStartCheck.setHours(0,0,0,0);
                     const weekEndCheck = new Date(weekEnd);
@@ -3036,19 +3132,34 @@
                     }
                     weekSelect.add(new Option(label, w.toString()));
                 }
-                
+
+                // ====== LOGIC MẶC ĐỊNH THEO ROLE ======
+                // - Admin (Chủ TT) / superadmin: mở lần đầu trong tháng -> tuần hiện tại
+                // - Role khác: mở lần đầu trong tháng -> 'all' (Cả tháng)
+                const isAdminLike = (typeof currentAuthUser !== 'undefined' && currentAuthUser && (currentAuthUser.role === 'admin' || currentAuthUser.role === 'superadmin'));
                 if (forceAutoSelect) {
-                    currentWeekVal = autoSelectWeek ? autoSelectWeek : '1';
+                    if (isAdminLike) {
+                        currentWeekVal = autoSelectWeek ? autoSelectWeek : '1';
+                        // Đảm bảo mobile day selector ở 'all' để hiện đủ 7 cột
+                        if (typeof currentSelectedMobileDay !== 'undefined' && currentSelectedMobileDay !== 'all') {
+                            currentSelectedMobileDay = 'all';
+                        }
+                    } else {
+                        currentWeekVal = 'all';
+                    }
                 }
                 weekSelect.value = currentWeekVal;
             }
             
-            const selectedWeek = document.getElementById('view-filter-week').value; 
+            const selectedWeek = document.getElementById('view-filter-week').value;
             const filterTeacher = document.getElementById('view-filter-teacher').value;
             const filterBranch = document.getElementById('view-filter-branch').value;
             const isSummary = selectedWeek === 'summary';
             const isMobilePortraitAll = (typeof currentSelectedMobileDay !== 'undefined' && currentSelectedMobileDay === 'all' && window.innerWidth <= 1024 && window.innerHeight > window.innerWidth);
-            const compactMode = isSummary || isMobilePortraitAll;
+            // compactMode: chỉ bật khi (a) chế độ Tổng Quát, hoặc (b) đang xem cả tháng trên mobile portrait
+            // Khi chọn 1 tuần cụ thể -> hiện đầy đủ thông tin ca học (không compact)
+            const isSpecificWeek = selectedWeek !== 'all' && !isSummary;
+            const compactMode = isSummary || (isMobilePortraitAll && !isSpecificWeek);
 
             const daysMapOfWeek = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
             days.forEach((dayName, dayIndex) => {
@@ -3222,6 +3333,7 @@
                 col.innerHTML = html;
             });
             if (typeof applyMobileDaySelection === 'function') applyMobileDaySelection();
+            if (typeof updateFilterBadge === 'function') updateFilterBadge();
         }
         
         function renderTeacherStats() {
@@ -3629,6 +3741,17 @@ function checkAuthStatus() {
         else if (currentAuthUser.role === 'academic') roleIcon = '[Giáo Vụ]';
         const teacherCode = currentAuthUser.teacherId ? ` (${currentAuthUser.teacherId})` : '';
         if (authDisplay) authDisplay.textContent = `${roleIcon} ${currentAuthUser.name}${teacherCode}`;
+    }
+
+    // Reset mobile day selector để áp dụng chế độ mặc định theo role hiện tại
+    // (Admin -> xem tuần, các role khác -> xem ngày hôm nay)
+    currentSelectedMobileDay = null;
+    if (typeof scheduleDefaultMode !== 'undefined') {
+        scheduleDefaultMode = (currentAuthUser.role === 'admin' || currentAuthUser.role === 'superadmin') ? 'week' : 'day';
+    }
+    // Reset lastAutoSelectedMonth để lần renderWeeklySchedule tiếp theo ép chọn tuần hiện tại (theo role)
+    if (typeof window !== 'undefined') {
+        window.lastAutoSelectedMonth = null;
     }
 
     // Role-based authorization & visibility
@@ -4421,6 +4544,7 @@ function renderUsersTable() {
         try { users = JSON.parse(localStorage.getItem('mv_users_data')) || users; } catch(e){}
     }
     const tbody = document.getElementById('users-table-body');
+    const cardsContainer = document.getElementById('users-cards-container');
     if (!tbody) return;
 
     // Remove old banner if exists
@@ -4431,6 +4555,7 @@ function renderUsersTable() {
     
 
     let html = '';
+    let cardsHtml = '';
     users.forEach((u) => {
         const isSelf = currentAuthUser && currentAuthUser.email.toLowerCase() === u.email.toLowerCase();
         const isCoder = u.role === 'superadmin';
@@ -4465,6 +4590,45 @@ function renderUsersTable() {
         }
         selectTeacher += `</select>`;
 
+        // === CARD VIEW cho mobile portrait ===
+        const cardSelectRole = isCoder
+            ? `<span class="px-2.5 py-1.5 rounded-xl bg-rose-100 text-rose-900 border border-rose-300 text-xs font-extrabold inline-flex items-center gap-1 w-full justify-center"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> ADMIN (Coder)</span>`
+            : selectRole.replace('class="p-1.5', 'class="p-2 w-full ');
+
+        cardsHtml += `
+        <div class="bg-white border border-slate-200 rounded-2xl p-3 shadow-sm hover:shadow-md transition-shadow">
+            <div class="flex items-start gap-3 mb-3">
+                <div class="w-11 h-11 rounded-2xl bg-indigo-50 border border-indigo-200 flex items-center justify-center font-extrabold text-indigo-700 text-base shadow-xs flex-shrink-0">${u.name.charAt(0).toUpperCase()}</div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-1.5 flex-wrap">
+                        <span class="font-extrabold text-slate-800 text-sm truncate">${u.name}</span>
+                        ${isSelf ? '<span class="text-[10px] text-indigo-600 font-extrabold bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-200">(Bạn)</span>' : ''}
+                    </div>
+                    <div class="text-[11px] text-slate-400 font-medium truncate mt-0.5">${u.email}</div>
+                    <div class="mt-1.5">${statusBadge}</div>
+                </div>
+            </div>
+            <div class="space-y-2.5">
+                <div>
+                    <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Phân Vai Trò</div>
+                    ${cardSelectRole}
+                </div>
+                <div>
+                    <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Gán Mã Giáo Viên</div>
+                    ${selectTeacher.replace('class="p-1.5', 'class="p-2 w-full ')}
+                </div>
+                <div class="flex items-center gap-1.5 pt-2.5 mt-1 border-t border-slate-100 flex-wrap">
+                    <button onclick="openProfileModal('${u.id}')" class="px-2.5 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold text-xs shadow-xs transition flex items-center gap-1" title="Xem/Sửa thông tin Profile & Ngân hàng">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                        Profile
+                    </button>
+                    ${!isCoder && u.status !== 'approved' ? `<button onclick="changeUserStatus('${u.id}', 'approved')" class="px-2.5 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold shadow-xs transition">Duyệt</button>` : ''}
+                    ${!isCoder && u.status !== 'rejected' && !isSelf ? `<button onclick="changeUserStatus('${u.id}', 'rejected')" class="px-2.5 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold transition">Khóa</button>` : ''}
+                    ${!isCoder && !isSelf ? `<button onclick="deleteUser('${u.id}')" class="px-2.5 py-1.5 rounded-lg border border-rose-200 text-rose-600 font-bold text-xs hover:bg-rose-500 hover:text-white transition active:scale-95" title="Xóa tài khoản">Xóa</button>` : ''}
+                </div>
+            </div>
+        </div>`;
+
         html += `
         <tr class="border-b border-slate-100 hover:bg-slate-50/70 transition">
             <td class="p-4 font-bold text-slate-800 text-sm flex items-center gap-3">
@@ -4489,6 +4653,7 @@ function renderUsersTable() {
         </tr>`;
     });
     tbody.innerHTML = html;
+    if (cardsContainer) cardsContainer.innerHTML = cardsHtml;
 
     const totalEl = document.getElementById('stat-users-total');
     const approvedEl = document.getElementById('stat-users-approved');
