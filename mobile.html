@@ -1682,17 +1682,14 @@
         });
 
         // BẢN VÁ LỖI LOAD TRANG & FETCH DỮ LIỆU
-        window.onload = async function() {
+        window.onload = function() {
             if (typeof populateColors === 'function') populateColors();
             
             const now = new Date();
             const realCurrentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-            currentMonth = realCurrentMonth; 
-            
-            const monthInput = document.getElementById('month-input');
-            if(monthInput) monthInput.value = currentMonth;
+            currentMonth = realCurrentMonth;
 
-            // 1. OFFLINE-FIRST: Tải trước từ cache cục bộ (Tốc độ mở trang 0ms)
+            // 1. OFFLINE-FIRST: Tải ngay từ cache cục bộ (0ms delay)
             try {
                 const cached = localStorage.getItem('mv_cache_data');
                 if (cached) {
@@ -1701,72 +1698,55 @@
                     if (data.students?.length > 0) students = data.students;
                     if (data.branches?.length > 0) branches = data.branches;
                     if (data.users?.length > 0) { users = data.users; try { localStorage.setItem('mv_users_data', JSON.stringify(users)); } catch(e){} }
-                    if (data.monthlyData && Object.keys(data.monthlyData).length > 0) {
-                        monthlyData = data.monthlyData;
-                    }
-                    if (!monthlyData[currentMonth]) {
-                        monthlyData[currentMonth] = { schedule: [], attendanceData: {} };
-                    }
-                    syncCurrentMonthPointers();
-                    initApp();
+                    if (data.monthlyData && Object.keys(data.monthlyData).length > 0) monthlyData = data.monthlyData;
                 }
-            } catch(e) { console.log("Lỗi đọc cache mobile:", e); }
+            } catch(e) { console.log("Loi doc cache:", e); }
 
-            // 2. BACKGROUND SYNC: Đồng bộ ngầm từ server về
-            try {
-                // Fetch API với cơ chế an toàn hơn
-                const response = await fetch(API_URL + "?t=" + new Date().getTime());
-                const data = await response.json();
-                
-                if (data && typeof data === 'object') {
-                    if (data.teachers?.length > 0) teachers = data.teachers;
-                    if (data.students?.length > 0) students = data.students;
-                    if (data.branches?.length > 0) branches = data.branches;
-                    if (data.users?.length > 0) { users = data.users; try { localStorage.setItem('mv_users_data', JSON.stringify(users)); } catch(e){} }
-                    if (data.monthlyData && Object.keys(data.monthlyData).length > 0) {
-                        monthlyData = data.monthlyData;
-                    }
-                    localStorage.setItem('mv_cache_data', JSON.stringify({ teachers, students, branches, monthlyData, users }));
-                }
-            } catch (error) { 
-                console.error("Lỗi tải dữ liệu:", error);
-                showToast("Lỗi kết nối máy chủ, đang dùng dữ liệu nội bộ", "error"); 
-            }
-            
-            if (!monthlyData[currentMonth]) {
-                monthlyData[currentMonth] = { schedule: [], attendanceData: {} };
-            }
-            
+            if (!monthlyData[currentMonth]) monthlyData[currentMonth] = { schedule: [], attendanceData: {} };
+            const monthInputEl = document.getElementById('month-input');
+            if (monthInputEl) monthInputEl.value = currentMonth;
             syncCurrentMonthPointers();
 
-            // 3. CLEANUP & MERGE DATA (chỉ chạy 1 lần)
+            // 2. Cleanup (không gộp lịch)
             if (!window._mvCleanupDone) {
                 window._mvCleanupDone = true;
-                const cleanupResult = cleanupAndMergeData();
-                if (cleanupResult.cleanupCount > 0 || cleanupResult.mergeCount > 0) {
-                    console.log(`🧹 [Cleanup] Đã dọn dẹp và tối ưu ${cleanupResult.cleanupCount} lỗi dữ liệu`);
-                    if (typeof showToast === 'function') showToast(`🧹 Đã dọn dẹp và chuẩn hóa: ${cleanupResult.cleanupCount} lỗi dữ liệu`, "success");
-                }
+                cleanupAndMergeData();
             }
 
+            // 3. RENDER NGAY từ cache — không chờ server
             initApp();
             updateUndoRedoUI();
-            
-            switchTab('sheet3', 'Lịch Học & Điểm Danh');
-setTimeout(() => {
-        const loader = document.getElementById('initial-loading-screen');
-        if (loader) {
-            loader.classList.add('opacity-0');
-            setTimeout(() => loader.remove(), 500);
-        }
-    }, 350);
-setTimeout(() => {
-        const loader = document.getElementById('initial-loading-screen');
-        if (loader) {
-            loader.classList.add('opacity-0');
-            setTimeout(() => loader.remove(), 500);
-        }
-    }, 350);
+            switchTab('sheet3', 'Lich Hoc & Diem Danh');
+
+            // Xóa loading screen ngay lập tức
+            setTimeout(() => {
+                const loader = document.getElementById('initial-loading-screen');
+                if (loader) { loader.classList.add('opacity-0'); setTimeout(() => loader.remove(), 500); }
+            }, 300);
+
+            // 4. BACKGROUND SYNC: Cập nhật ngầm từ server (KHÔNG block UI)
+            (async () => {
+                try {
+                    const response = await fetch(API_URL + "?t=" + new Date().getTime());
+                    const data = await response.json();
+                    if (data && typeof data === 'object') {
+                        let changed = false;
+                        if (data.teachers?.length > 0) { teachers = data.teachers; changed = true; }
+                        if (data.students?.length > 0) { students = data.students; changed = true; }
+                        if (data.branches?.length > 0) { branches = data.branches; changed = true; }
+                        if (data.users?.length > 0) { users = data.users; try { localStorage.setItem('mv_users_data', JSON.stringify(users)); } catch(e){} changed = true; }
+                        if (data.monthlyData && Object.keys(data.monthlyData).length > 0) { monthlyData = data.monthlyData; changed = true; }
+                        if (!monthlyData[currentMonth]) monthlyData[currentMonth] = { schedule: [], attendanceData: {} };
+                        if (changed) {
+                            localStorage.setItem('mv_cache_data', JSON.stringify({ teachers, students, branches, monthlyData, users }));
+                            syncCurrentMonthPointers();
+                            initApp();
+                            updateUndoRedoUI();
+                            if (typeof checkAuthStatus === 'function') checkAuthStatus();
+                        }
+                    }
+                } catch (error) { console.log("Loi mang, su dung du lieu cuc bo."); }
+            })();
         };
 
         function captureState() {
@@ -3683,30 +3663,39 @@ async function handleLogin(e) {
         return;
     }
 
-    // Luôn tải danh sách users mới nhất từ server trước khi đăng nhập
-    // Đảm bảo tài khoản đăng ký trên thiết bị khác vẫn đăng nhập được
-    try {
-        if (typeof showToast === 'function') showToast('⏳ Đang xác thực tài khoản...', 'info');
-        const res = await fetch(API_URL + '?t=' + new Date().getTime());
-        const data = await res.json();
-        if (data && data.users && Array.isArray(data.users) && data.users.length > 0) {
-            users = data.users;
-            try { localStorage.setItem('mv_users_data', JSON.stringify(users)); } catch(e) {}
+    // Bước 1: Tìm trong cache cục bộ trước (nhanh, không delay)
+    if (localStorage.getItem('mv_users_data')) {
+        try { users = JSON.parse(localStorage.getItem('mv_users_data')) || users; } catch(err){}
+    }
+    let user = users.find(u => u.email.toLowerCase() === email && u.password === pwd);
+
+    // Bước 2: Nếu không tìm thấy trong cache, thử đồng bộ từ server (chỉ khi cần)
+    if (!user) {
+        try {
+            if (typeof showToast === 'function') showToast('⏳ Không tìm thấy tài khoản, đang đồng bộ từ máy chủ...', 'info');
+            const res = await fetch(API_URL + '?t=' + new Date().getTime());
+            const data = await res.json();
+            if (data && data.users && Array.isArray(data.users) && data.users.length > 0) {
+                users = data.users;
+                try { localStorage.setItem('mv_users_data', JSON.stringify(users)); } catch(e) {}
+                if (data.teachers?.length > 0) teachers = data.teachers;
+                if (data.students?.length > 0) students = data.students;
+                if (data.branches?.length > 0) branches = data.branches;
+                if (data.monthlyData && Object.keys(data.monthlyData).length > 0) monthlyData = data.monthlyData;
+                localStorage.setItem('mv_cache_data', JSON.stringify({ teachers, students, branches, monthlyData, users }));
+            }
+        } catch(err) {
+            // Không có mạng — giữ nguyên cache cục bộ
         }
-    } catch(err) {
-        // Nếu không có mạng, dùng cache cục bộ
-        if (localStorage.getItem('mv_users_data')) {
-            try { users = JSON.parse(localStorage.getItem('mv_users_data')) || users; } catch(err2){}
-        }
+        user = users.find(u => u.email.toLowerCase() === email && u.password === pwd);
     }
 
-    const user = users.find(u => u.email.toLowerCase() === email && u.password === pwd);
     if (!user) {
-        showAuthError("Gmail hoặc Mật khẩu không chính xác! (Tài khoản chưa được tạo hoặc chưa duyệt)");
+        showAuthError("Gmail hoặc Mật khẩu không chính xác! (Kiểm tra lại hoặc liên hệ Admin)");
         return;
     }
     if (user.status === 'pending') {
-        showAuthError('Tài khoản của bạn đang chờ Admin phê duyệt. Vui lòng liên hệ để được duyệt sớm!');
+        showAuthError('Tài khoản đang chờ Admin phê duyệt. Vui lòng liên hệ để được duyệt sớm!');
         return;
     }
 
