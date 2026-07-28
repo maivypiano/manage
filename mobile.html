@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Mai Vy Piano - Quản Lý Lịch Học & Giảng Dạy v3.5 (Animated)</title>
     <script>
         // KIỂM TRA CHUYỂN HƯỚNG AN TOÀN
@@ -21,215 +21,265 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; overflow-x: hidden; -webkit-tap-highlight-color: transparent; zoom: 0.8; }
-        button, a { -webkit-tap-highlight-color: transparent; outline: none !important; }
-        button:focus, a:focus, button:active, a:active { outline: none !important; border: none !important; box-shadow: none !important; }
+        /* =====================================================
+           RESPONSIVE SYSTEM - Chuẩn iPhone 14 (390px) & 14 Pro Max (430px)
+           Loại bỏ zoom hack, dùng fluid CSS đúng chuẩn
+        ===================================================== */
+
+        /* CSS Variables - bộ biến căn bản */
+        :root {
+            --font-xs:   0.72rem;   /* 11.5px */
+            --font-sm:   0.8125rem; /* 13px   */
+            --font-base: 0.9375rem; /* 15px   */
+            --font-md:   1rem;      /* 16px   */
+            --font-lg:   1.125rem;  /* 18px   */
+            --font-xl:   1.25rem;   /* 20px   */
+            --space-1:   0.25rem;
+            --space-2:   0.5rem;
+            --space-3:   0.75rem;
+            --space-4:   1rem;
+            --space-5:   1.25rem;
+            --radius-sm: 0.625rem;
+            --radius-md: 0.875rem;
+            --radius-lg: 1rem;
+            --radius-xl: 1.25rem;
+            --touch-min: 44px;      /* WCAG touch target */
+            --header-h:  56px;
+            --bottom-nav-h: 60px;
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+            --safe-top:    env(safe-area-inset-top, 0px);
+        }
+
+        /* iPhone 14 (390px wide) */
+        @media (min-width: 390px) {
+            :root {
+                --font-xs:   0.75rem;
+                --font-sm:   0.875rem;
+                --font-base: 1rem;
+                --space-4:   1rem;
+            }
+        }
+
+        /* iPhone 14 Pro Max (430px wide) */
+        @media (min-width: 430px) {
+            :root {
+                --font-xs:   0.8125rem;
+                --font-sm:   0.9375rem;
+                --font-base: 1.0625rem;
+                --space-4:   1.125rem;
+            }
+        }
+
+        /* Reset căn bản */
+        *, *::before, *::after { box-sizing: border-box; }
+        html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-size: var(--font-base);
+            line-height: 1.5;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+            /* KHÔNG dùng zoom: gây lỗi trên iOS Safari */
+            background: #f8fafc;
+            padding-top: var(--safe-top);
+            padding-bottom: var(--safe-bottom);
+        }
+
+        /* Touch targets */
+        button, a, select, input[type="checkbox"], input[type="radio"] {
+            -webkit-tap-highlight-color: transparent;
+            outline: none !important;
+            min-height: var(--touch-min);
+        }
+        button:focus, a:focus, button:active, a:active {
+            outline: none !important;
+            box-shadow: none !important;
+        }
         *:focus { outline: none !important; -webkit-tap-highlight-color: transparent; }
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+
+        /* Input font — ngăn iOS zoom khi focus */
+        input, select, textarea {
+            font-size: var(--font-base) !important;
+            font-family: inherit;
+        }
+
+        /* Scrollbar nhỏ gọn */
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         .table-cell-nowrap th, .table-cell-nowrap td { white-space: nowrap; }
-        .week-checkbox:checked + div, .day-checkbox:checked + div { background-color: #4f46e5; color: white; border-color: #4f46e5; box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3), 0 2px 4px -1px rgba(79, 70, 229, 0.2); transform: scale(1.05); }
 
-        /* Hiệu ứng Rainbow Animation chạy đuổi xung quanh viền (Clean White & Smooth Slow Rainbow Border) */
+        /* Checkbox đã tick */
+        .week-checkbox:checked + div, .day-checkbox:checked + div {
+            background-color: #4f46e5; color: white; border-color: #4f46e5;
+            box-shadow: 0 4px 6px -1px rgba(79,70,229,0.3); transform: scale(1.05);
+        }
+
+        /* ========== ANIMATIONS ========== */
         @property --border-angle {
-            syntax: "<angle>";
-            inherits: true;
-            initial-value: 0turn;
+            syntax: "<angle>"; inherits: true; initial-value: 0turn;
         }
         @keyframes borderRotate {
-            0% { --border-angle: 0turn; }
-            100% { --border-angle: 1turn; }
+            0% { --border-angle: 0turn; } 100% { --border-angle: 1turn; }
         }
         .rainbow-border-animate {
             border: 2px solid transparent !important;
-            background-image: linear-gradient(#ffffff, #ffffff), 
-                              conic-gradient(from var(--border-angle), #ff0000, #ff8000, #ffff00, #00ff00, #00ffff, #0000ff, #8000ff, #ff0080, #ff0000) !important;
+            background-image: linear-gradient(#ffffff,#ffffff), conic-gradient(from var(--border-angle),#f00,#f80,#ff0,#0f0,#0ff,#00f,#80f,#f08,#f00) !important;
             background-origin: padding-box, border-box !important;
             background-clip: padding-box, border-box !important;
             -webkit-background-clip: padding-box, border-box !important;
             animation: borderRotate 5s linear infinite !important;
-            color: #1e293b !important;
-            font-weight: 700 !important;
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
-            text-shadow: none !important;
+            color: #1e293b !important; font-weight: 700 !important;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
         }
-        
-        /* Hiệu ứng chuyển động mượt mà cho sidebar và tab */
         @keyframes slideUpFade {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity:0; transform:translateY(15px); }
+            to   { opacity:1; transform:translateY(0); }
         }
-        .animate-slide-up { animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .animate-slide-up { animation: slideUpFade 0.4s cubic-bezier(0.16,1,0.3,1) forwards; }
 
-        /* Hiệu ứng lấp lánh (Shimmer) cho nút chính */
         @keyframes shimmer {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
+            0%   { background-position: -200% 0; }
+            100% { background-position:  200% 0; }
         }
-        .btn-sparkle {
-            position: relative; overflow: hidden;
-        }
+        .btn-sparkle { position:relative; overflow:hidden; }
         .btn-sparkle::after {
-            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
-            background: linear-gradient(to right, transparent, rgba(255,255,255,0.4), transparent);
+            content:''; position:absolute; top:0; left:-100%; width:50%; height:100%;
+            background: linear-gradient(to right,transparent,rgba(255,255,255,0.4),transparent);
             transform: skewX(-20deg); animation: shimmer 3s infinite;
         }
-
-        /* Hiệu ứng Nốt nhạc bay */
         @keyframes floatUp {
-            0% { transform: translateY(0) scale(0.8) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(-60px) scale(1.5) rotate(20deg); opacity: 0; }
+            0%   { transform:translateY(0) scale(0.8) rotate(0deg); opacity:1; }
+            100% { transform:translateY(-60px) scale(1.5) rotate(20deg); opacity:0; }
         }
         .music-note {
-            position: fixed; pointer-events: none; z-index: 9999;
+            position:fixed; pointer-events:none; z-index:9999;
             animation: floatUp 0.8s ease-out forwards;
-            font-size: 1.25rem; font-weight: bold; text-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            font-size: var(--font-lg); font-weight:bold;
         }
+        @keyframes toastIn  { from{transform:translateX(100%);opacity:0} to{transform:translateX(0);opacity:1} }
+        @keyframes toastOut { from{transform:translateX(0);opacity:1}   to{transform:translateX(100%);opacity:0} }
+        .toast-enter { animation: toastIn  0.3s cubic-bezier(0.16,1,0.3,1) forwards; }
+        .toast-exit  { animation: toastOut 0.3s forwards; }
 
-        /* Toast Animation */
-        @keyframes toastIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        @keyframes toastOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
-        .toast-enter { animation: toastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        .toast-exit { animation: toastOut 0.3s forwards; }
-
-        /* Sticky Header với Shrink-on-Scroll */
+        /* ========== HEADER ========== */
         #mobile-header {
+            height: var(--header-h);
             transition: all 0.3s ease;
             cursor: pointer;
+            padding-left: max(1rem, env(safe-area-inset-left));
+            padding-right: max(1rem, env(safe-area-inset-right));
         }
         #mobile-header.header-compact {
-            padding: 0.5rem 1rem !important;
+            height: 46px;
+            padding-top: 0.375rem !important;
+            padding-bottom: 0.375rem !important;
         }
-        #mobile-header.header-compact .logo-icon {
-            width: 2rem !important;
-            height: 2rem !important;
-            font-size: 0.875rem !important;
-        }
-        #mobile-header.header-compact .logo-text {
-            font-size: 0.875rem !important;
-        }
-        #mobile-header.header-compact .logo-version {
-            font-size: 0.5rem !important;
-        }
-        #mobile-header.header-compact .hamburger-btn {
-            padding: 0.375rem !important;
-        }
-        #mobile-header.header-compact .hamburger-btn svg {
-            width: 1.25rem !important;
-            height: 1.25rem !important;
+        #mobile-header.header-compact .logo-icon  { width:1.75rem!important; height:1.75rem!important; font-size:0.75rem!important; }
+        #mobile-header.header-compact .logo-text   { font-size:0.8125rem!important; }
+        #mobile-header.header-compact .logo-version{ font-size:0.45rem!important; }
+        #mobile-header.header-compact .hamburger-btn { padding:0.3rem!important; }
+        #mobile-header.header-compact .hamburger-btn svg { width:1.125rem!important; height:1.125rem!important; }
+
+        /* ========== MAIN CONTENT AREA ========== */
+        main { padding-bottom: calc(var(--bottom-nav-h) + var(--safe-bottom)); }
+
+        /* Content padding — vừa vặn trên màn nhỏ */
+        .tab-content > .tab-inner-padding, main > div > .space-y-6,
+        main .p-8 { padding: var(--space-4) !important; }
+
+        /* ========== CARDS ========== */
+        .mobile-card {
+            border-radius: var(--radius-xl);
+            padding: var(--space-4);
+            font-size: var(--font-sm);
         }
 
-        /* Thu nhỏ giao diện lại còn 80% cho nó hiện đầy đủ trên thiết bị di động */
-        @media (max-width: 1024px) {
-            body { zoom: 0.8; }
-            input, select, textarea { font-size: 20px !important; }
+        /* ========== TABLE trên mobile ========== */
+        .table-cell-nowrap th,
+        .table-cell-nowrap td {
+            font-size: var(--font-xs);
+            padding: 0.5rem 0.625rem !important;
         }
 
-        /* Responsive UI theo Hướng Xoay (Portrait vs Landscape) */
+        /* ========== PORTRAIT (chế độ dọc — mặc định dùng trên để b) ========== */
         @media (orientation: portrait) {
-            .portrait-flex { display: flex !important; }
-            .landscape-only { display: none !important; }
-            .master-table-view { display: none !important; }
-            .master-card-view { display: flex !important; flex-direction: column; gap: 0.75rem; }
-            .teachers-table-view { display: none !important; }
-            .teachers-card-view { display: flex !important; flex-direction: column; gap: 0.75rem; }
-            .students-table-view { display: none !important; }
-            .students-card-view { display: flex !important; flex-direction: column; gap: 0.75rem; }
+            .portrait-flex   { display: flex !important; }
+            .landscape-only  { display: none !important; }
+            .master-table-view  { display: none  !important; }
+            .master-card-view   { display: flex  !important; flex-direction:column; gap:0.625rem; }
+            .teachers-table-view{ display: none  !important; }
+            .teachers-card-view { display: flex  !important; flex-direction:column; gap:0.625rem; }
+            .students-table-view{ display: none  !important; }
+            .students-card-view { display: flex  !important; flex-direction:column; gap:0.625rem; }
+
             #schedule-grid-container {
                 display: flex !important;
                 flex-direction: column !important;
-                gap: 1rem !important;
+                gap: 0.75rem !important;
             }
-            #schedule-grid-container.mobile-compact-all {
-                gap: 0.5rem !important;
-            }
+            #schedule-grid-container.mobile-compact-all { gap: 0.375rem !important; }
             #schedule-grid-container.mobile-compact-all > div[id^="day-col-"] {
-                padding: 0.35rem !important;
-                border-radius: 0.75rem !important;
-                margin-bottom: 0.25rem !important;
+                padding: 0.375rem !important;
+                border-radius: var(--radius-md) !important;
+                margin-bottom: 0.125rem !important;
                 min-height: auto !important;
             }
+
+            /* Tune font size cho các card buổi học trên portrait */
+            #schedule-grid-container .text-xs { font-size: var(--font-xs) !important; }
+            #schedule-grid-container .text-sm { font-size: var(--font-sm) !important; }
         }
 
+        /* ========== LANDSCAPE (chế độ ngang) ========== */
         @media (orientation: landscape) {
-            .portrait-flex { display: none !important; }
+            .portrait-flex  { display: none !important; }
             .landscape-only { display: block !important; }
-            .master-table-view { display: block !important; }
-            .master-card-view { display: none !important; }
-            .teachers-table-view { display: block !important; }
-            .teachers-card-view { display: none !important; }
-            .students-table-view { display: block !important; }
-            .students-card-view { display: none !important; }
+            .master-table-view  { display: block !important; }
+            .master-card-view   { display: none  !important; }
+            .teachers-table-view{ display: block !important; }
+            .teachers-card-view { display: none  !important; }
+            .students-table-view{ display: block !important; }
+            .students-card-view { display: none  !important; }
             #schedule-grid-container {
                 display: grid !important;
-                grid-template-columns: repeat(7, minmax(260px, 1fr)) !important;
+                grid-template-columns: repeat(7, minmax(200px,1fr)) !important;
                 overflow-x: auto !important;
-                padding-bottom: 1rem !important;
+                padding-bottom: 0.75rem !important;
                 max-height: 82vh !important;
             }
-            #schedule-grid-container > div[id^="day-col-"] {
-                display: flex !important;
-            }
-            .sticky.top-0.z-20 { padding-top: 0.35rem !important; padding-bottom: 0.35rem !important; }
+            #schedule-grid-container > div[id^="day-col-"] { display:flex !important; }
+            .sticky.top-0.z-20 { padding-top:0.3rem!important; padding-bottom:0.3rem!important; }
         }
 
-        /* History Panel */
+        /* ========== HISTORY PANEL ========== */
         #history-panel {
-            position: fixed;
-            top: 70px;
-            right: 10px;
-            width: 320px;
-            max-width: calc(100vw - 20px);
+            position: fixed; top: calc(var(--header-h) + 8px); right: 10px;
+            width: min(320px, calc(100vw - 20px));
             max-height: 70vh;
-            background: white;
-            border-radius: 12px;
+            background: white; border-radius: var(--radius-lg);
             box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            z-index: 100;
-            overflow: hidden;
-            flex-direction: column;
-            border: 1px solid #e2e8f0;
+            z-index: 100; overflow: hidden;
+            flex-direction: column; border: 1px solid #e2e8f0;
         }
-        #history-panel.hidden { display: none; }
-        #history-panel.flex { display: flex; }
+        #history-panel.hidden { display:none; }
+        #history-panel.flex   { display:flex; }
         #history-panel-header {
-            padding: 12px 16px;
-            border-bottom: 1px solid #e2e8f0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            padding: 0.75rem 1rem; border-bottom: 1px solid #e2e8f0;
+            display: flex; justify-content: space-between; align-items: center;
             background: linear-gradient(to right, #eef2ff, #f0f9ff);
         }
-        #history-list {
-            overflow-y: auto;
-            max-height: calc(70vh - 50px);
-            padding: 8px;
-        }
+        #history-list { overflow-y:auto; max-height:calc(70vh - 50px); padding:0.5rem; }
         .history-item {
-            padding: 10px 12px;
-            border-radius: 8px;
-            margin-bottom: 6px;
-            font-size: 13px;
-            background: #f8fafc;
-            border-left: 3px solid #6366f1;
-            transition: all 0.2s;
+            padding: 0.625rem 0.75rem; border-radius: 0.5rem; margin-bottom: 0.375rem;
+            font-size: var(--font-xs); background:#f8fafc;
+            border-left: 3px solid #6366f1; transition: all 0.2s;
         }
-        .history-item:hover {
-            background: #f1f5f9;
-            transform: translateX(-2px);
-        }
-        .history-item-time {
-            font-size: 10px;
-            color: #64748b;
-            margin-top: 3px;
-        }
-        .history-empty {
-            padding: 30px 20px;
-            text-align: center;
-            color: #94a3b8;
-            font-size: 13px;
-        }
+        .history-item:hover { background:#f1f5f9; transform:translateX(-2px); }
+        .history-item-time  { font-size: 0.625rem; color:#64748b; margin-top:2px; }
+        .history-empty { padding:30px 20px; text-align:center; color:#94a3b8; font-size:var(--font-xs); }
+
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 h-screen flex overflow-hidden relative">
