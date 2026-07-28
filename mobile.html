@@ -1935,7 +1935,7 @@
                     }
                 } catch(e) { /* im lặng nếu mất mạng */ }
                 _realtimeInProgress = false;
-            }, 8000);
+            }, 15000)
 
             // Hook vào saveData để broadcast khi tab hiện tại thay đổi
             const _origSaveData = window.saveData;
@@ -4490,51 +4490,76 @@ function isLessonVisibleOnCalendarForDate(item, dateStr, targetMonthStr) {
 }
 
 function calculateTeacherAttendance(t, periodVal, monthStr) {
+    // V2: Tinh ca dua tren dau tick diem danh truc tiep
+    // - Chi tick "present" moi tinh vao so ca da day
+    // - Tick "off"/"absent" khong tinh
+    // - Khong dung isLessonVisibleOnCalendarForDate de tranh lech du lieu giua mobile/PC
     let shiftCount = 0;
     let hoursCount = 0;
     if (!t || !t.id) return { shiftCount, hoursCount };
-    
-    let baseSchedule = [];
-    if (typeof schedule !== 'undefined' && Array.isArray(schedule)) {
-        baseSchedule = schedule;
-    } else if (typeof monthlyData !== 'undefined' && typeof currentMonth !== 'undefined' && monthlyData[currentMonth] && Array.isArray(monthlyData[currentMonth].schedule)) {
-        baseSchedule = monthlyData[currentMonth].schedule;
+
+    // Gom tat ca schedule tu moi thang de tim lich theo ID
+    let allSchedule = [];
+    if (typeof monthlyData !== 'undefined') {
+        Object.values(monthlyData).forEach(md => {
+            if (md && Array.isArray(md.schedule)) allSchedule = allSchedule.concat(md.schedule);
+        });
     }
-    
-    const targetMonth = monthStr || (typeof currentMonth !== 'undefined' ? currentMonth : '');
+    // Them schedule hien tai phong truong hop chua sync vao monthlyData
+    if (typeof schedule !== 'undefined' && Array.isArray(schedule)) {
+        schedule.forEach(s => { if (!allSchedule.find(x => x.id === s.id)) allSchedule.push(s); });
+    }
 
-    for (let key in attendanceData) {
-        if (attendanceData[key] === 'present') {
-            let parts = key.split('_');
-            if (parts.length < 2) continue;
-            let schedId = parts[0];
-            let dateStr = parts[1];
-            
-            if (periodVal && periodVal !== 'all' && dateStr) {
-                const dayNum = parseInt(dateStr.split('-')[2], 10);
-                if ((periodVal === 'period1' || periodVal === 'p1') && dayNum > 15) continue;
-                if ((periodVal === 'period2' || periodVal === 'p2') && dayNum <= 15) continue;
-            }
+    // Gom tat ca attendanceData tu moi thang
+    let allAttendance = {};
+    if (typeof monthlyData !== 'undefined') {
+        Object.values(monthlyData).forEach(md => {
+            if (md && md.attendanceData) Object.assign(allAttendance, md.attendanceData);
+        });
+    }
+    // Them attendanceData hien tai
+    if (typeof attendanceData !== 'undefined') Object.assign(allAttendance, attendanceData);
 
-            let s = baseSchedule.find(x => x.id === schedId);
-            if (s && isLessonVisibleOnCalendarForDate(s, dateStr, targetMonth)) {
-                const targetTid = (s.type === 'substitute' && s.subTeacherId) ? s.subTeacherId : s.teacherId;
-                let isMatch = (targetTid === t.id || targetTid === t.name || (s.type !== 'substitute' && s.teacher === t.name));
-                if (!isMatch && s.subTeacherId && s.subTeacherId === t.id) isMatch = true;
-                if (isMatch) {
-                    shiftCount += 1;
-                    if (s.start && s.end) {
-                        try {
-                            const [sh, sm] = s.start.split(':').map(Number);
-                            const [eh, em] = s.end.split(':').map(Number);
-                            const diff = (eh + em/60) - (sh + sm/60);
-                            if (diff > 0) hoursCount += diff;
-                            else hoursCount += 1.5;
-                        } catch(e) { hoursCount += 1.5; }
-                    } else {
-                        hoursCount += 1.5;
-                    }
-                }
+    for (let key in allAttendance) {
+        // Chi dem ca duoc tick "present" (co mat / len lop)
+        if (allAttendance[key] !== 'present') continue;
+
+        let parts = key.split('_');
+        if (parts.length < 2) continue;
+        let schedId = parts[0];
+        let dateStr = parts[1];
+
+        // Loc theo dot thanh toan (p1: ngay 1-15, p2: ngay 16-cuoi)
+        if (periodVal && periodVal !== 'all' && dateStr) {
+            const dayNum = parseInt(dateStr.split('-')[2], 10);
+            if ((periodVal === 'period1' || periodVal === 'p1') && dayNum > 15) continue;
+            if ((periodVal === 'period2' || periodVal === 'p2') && dayNum <= 15) continue;
+        }
+
+        // Tim lich tuong ung trong allSchedule
+        let s = allSchedule.find(x => x.id === schedId);
+        if (!s) continue; // Khong tim thay lich -> bo qua
+
+        // Xac dinh giao vien cua ca nay
+        const targetTid = (s.type === 'substitute' && s.subTeacherId) ? s.subTeacherId : s.teacherId;
+        let isMatch = (targetTid === t.id || targetTid === t.name);
+        // Kiem tra them theo ten GV (fallback)
+        if (!isMatch && s.type !== 'substitute' && s.teacher === t.name) isMatch = true;
+        // Kiem tra GV the (substitute teacher)
+        if (!isMatch && s.subTeacherId && s.subTeacherId === t.id) isMatch = true;
+
+        if (isMatch) {
+            shiftCount += 1;
+            // Tinh gio day dua tren gio bat dau/ket thuc
+            if (s.start && s.end) {
+                try {
+                    const [sh, sm] = s.start.split(':').map(Number);
+                    const [eh, em] = s.end.split(':').map(Number);
+                    const diff = (eh + em/60) - (sh + sm/60);
+                    hoursCount += (diff > 0) ? diff : 1.5;
+                } catch(e) { hoursCount += 1.5; }
+            } else {
+                hoursCount += 1.5; // Mac dinh 1.5h neu khong ro gio
             }
         }
     }
