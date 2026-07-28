@@ -348,7 +348,7 @@
     <div id="main-content" class="flex-1 flex flex-col min-w-0 overflow-hidden relative transition-all duration-300">
 
         <!-- Top Bar with Hamburger & Tools -->
-        <div class="sticky top-0 z-20 bg-white/95 backdrop-blur-md border-b border-slate-200 px-3 py-2 flex items-center justify-between shadow-sm min-h-[48px]">
+        <div id="mobile-header" class="sticky top-0 z-20 bg-white/95 backdrop-blur-md border-b border-slate-200 px-3 py-2 flex items-center justify-between shadow-sm min-h-[48px]">
             <div class="flex items-center gap-2">
                 <button onclick="toggleSidebar()" class="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 active:scale-95 transition-all shadow-xs outline-none focus:outline-none">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
@@ -681,6 +681,15 @@
                     </select>
                     <select id="view-filter-teacher" onchange="renderWeeklySchedule()" class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm transition-all cursor-pointer flex-1 sm:flex-initial"></select>
                     <select id="view-filter-branch" onchange="renderWeeklySchedule()" class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm transition-all cursor-pointer flex-1 sm:flex-initial"></select>
+                    <!-- Lọc tuần phụ: chỉ dành cho Admin Chủ TT khi đang ở chế độ Tổng Quát -->
+                    <select id="view-filter-week-sub" onchange="renderWeeklySchedule()" class="hidden bg-amber-50 border border-amber-300 text-amber-800 font-bold rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 shadow-sm transition-all cursor-pointer flex-1 sm:flex-initial" title="Lọc đôi: chỉ hiển thị lịch của tuần này trong chế độ tổng quát">
+                        <option value="all">📅 Tất cả các tuần</option>
+                        <option value="1">Tuần 1</option>
+                        <option value="2">Tuần 2</option>
+                        <option value="3">Tuần 3</option>
+                        <option value="4">Tuần 4</option>
+                        <option value="5">Tuần 5</option>
+                    </select>
                     <button onclick="resetScheduleFilter()" class="text-[11px] font-bold text-slate-500 hover:text-rose-600 bg-slate-50 border border-slate-200 px-2.5 py-1.5 rounded-xl transition-all">↺ Xóa lọc</button>
                     <button onclick="toggleScheduleFilterPanel()" class="sm:hidden text-[11px] font-bold text-white bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 rounded-xl transition-all">Áp dụng</button>
                 </div>
@@ -2151,25 +2160,32 @@
 
         function resetScheduleFilter() {
             const wt = document.getElementById('view-filter-week');
+            const wtSub = document.getElementById('view-filter-week-sub');
             const ft = document.getElementById('view-filter-teacher');
             const fb = document.getElementById('view-filter-branch');
             if (wt) {
                 // Staff (giáo viên, giáo vụ, kế toán): về tuần hiện tại
-                // Admin/Manager: về 'all' (cả tháng)
+                // Admin Chủ TT: về 'summary' (Xem Tổng Quát) + tuần phụ = tuần hiện tại
+                // Manager: về 'all' (cả tháng)
                 const role = (typeof currentAuthUser !== 'undefined' && currentAuthUser) ? currentAuthUser.role : null;
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = now.getMonth() + 1;
+                const firstDateOfMonth = new Date(year, month - 1, 1);
+                const firstDayOfWeek = firstDateOfMonth.getDay();
+                const offset = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
+                const startDateOfCalendar = new Date(year, month - 1, 1 - offset);
+                const todayOffset = Math.floor((now - startDateOfCalendar) / 86400000);
+                const wk = Math.min(Math.floor(todayOffset / 7) + 1, 5);
                 if (role === 'teacher' || role === 'academic' || role === 'accountant') {
-                    const now = new Date();
-                    const year = now.getFullYear();
-                    const month = now.getMonth() + 1;
-                    const firstDateOfMonth = new Date(year, month - 1, 1);
-                    const firstDayOfWeek = firstDateOfMonth.getDay();
-                    const offset = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
-                    const startDateOfCalendar = new Date(year, month - 1, 1 - offset);
-                    const todayOffset = Math.floor((now - startDateOfCalendar) / 86400000);
-                    const wk = Math.floor(todayOffset / 7) + 1;
-                    wt.value = String(Math.min(wk, 5));
+                    wt.value = String(wk);
+                    if (wtSub) wtSub.value = 'all';
+                } else if (role === 'admin' || role === 'superadmin') {
+                    wt.value = 'summary';
+                    if (wtSub) wtSub.value = String(wk);
                 } else {
                     wt.value = 'all';
+                    if (wtSub) wtSub.value = 'all';
                 }
             }
             if (ft) ft.value = '';
@@ -3120,14 +3136,19 @@
 
                 // ====== LOGIC MẶC ĐỊNH THEO ROLE ======
                 // - Giáo viên / Giáo vụ / Kế toán: mở lần đầu trong tháng -> tuần hiện tại
-                // - Admin (Chủ TT) / superadmin / manager: mở lần đầu trong tháng -> 'all' (Cả tháng)
+                // - Admin (Chủ TT) / superadmin: mở lần đầu trong tháng -> 'summary' (Xem Tổng Quát)
+                // - Manager: mở lần đầu trong tháng -> 'all' (Cả tháng)
                 const role = (typeof currentAuthUser !== 'undefined' && currentAuthUser) ? currentAuthUser.role : null;
                 const isStaff = (role === 'teacher' || role === 'academic' || role === 'accountant');
+                const isAdminChuTT = (role === 'admin' || role === 'superadmin');
                 if (forceAutoSelect) {
                     if (isStaff) {
                         currentWeekVal = autoSelectWeek ? autoSelectWeek : '1';
+                    } else if (isAdminChuTT) {
+                        // Admin Chủ TT: mặc định Xem Tổng Quát (summary) để thấy toàn tháng gọn
+                        currentWeekVal = 'summary';
                     } else {
-                        // Admin/Manager: luôn để 'all' (Cả tháng)
+                        // Manager: Cả tháng
                         currentWeekVal = 'all';
                     }
                 }
@@ -3137,12 +3158,27 @@
             const selectedWeek = document.getElementById('view-filter-week').value;
             const filterTeacher = document.getElementById('view-filter-teacher').value;
             const filterBranch = document.getElementById('view-filter-branch').value;
+            const filterWeekSubEl = document.getElementById('view-filter-week-sub');
+            const filterWeekSub = filterWeekSubEl ? filterWeekSubEl.value : 'all';
             const isSummary = selectedWeek === 'summary';
             const isMobilePortraitAll = (typeof currentSelectedMobileDay !== 'undefined' && currentSelectedMobileDay === 'all' && window.innerWidth <= 1024 && window.innerHeight > window.innerWidth);
             // compactMode: chỉ bật khi (a) chế độ Tổng Quát, hoặc (b) đang xem cả tháng trên mobile portrait
             // Khi chọn 1 tuần cụ thể -> hiện đầy đủ thông tin ca học (không compact)
             const isSpecificWeek = selectedWeek !== 'all' && !isSummary;
             const compactMode = isSummary || (isMobilePortraitAll && !isSpecificWeek);
+
+            // Hiện/ẩn select tuần phụ: chỉ Admin Chủ TT + đang ở chế độ Tổng Quát
+            if (filterWeekSubEl) {
+                const roleNow = (typeof currentAuthUser !== 'undefined' && currentAuthUser) ? currentAuthUser.role : null;
+                const isAdminChuTTNow = (roleNow === 'admin' || roleNow === 'superadmin');
+                if (isSummary && isAdminChuTTNow) {
+                    filterWeekSubEl.classList.remove('hidden');
+                } else {
+                    filterWeekSubEl.classList.add('hidden');
+                    // Reset về 'all' khi không dùng
+                    if (filterWeekSubEl.value !== 'all') filterWeekSubEl.value = 'all';
+                }
+            }
 
             const daysMapOfWeek = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
             days.forEach((dayName, dayIndex) => {
@@ -3164,8 +3200,10 @@
                 let hasAnyDate = false;
 
                 for (let w = 1; w <= totalWeeks; w++) {
-                    const displayWeekNum = w > 5 ? 5 : w; 
+                    const displayWeekNum = w > 5 ? 5 : w;
                     if (selectedWeek !== 'all' && !isSummary && parseInt(selectedWeek) !== displayWeekNum) continue;
+                    // Lọc đôi: ở chế độ Tổng Quát, nếu Admin chọn tuần phụ -> chỉ hiện tuần đó
+                    if (isSummary && filterWeekSub !== 'all' && parseInt(filterWeekSub) !== displayWeekNum) continue;
 
                     hasAnyDate = true;
                     const currentDate = new Date(startDateOfCalendar);
