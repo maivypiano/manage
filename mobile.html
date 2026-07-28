@@ -3673,11 +3673,8 @@ function switchAuthTab(tabId) {
     if (err) err.classList.add('hidden');
 }
 
-function handleLogin(e) {
+async function handleLogin(e) {
     if (e) e.preventDefault();
-    if (localStorage.getItem('mv_users_data')) {
-        try { users = JSON.parse(localStorage.getItem('mv_users_data')) || users; } catch(err){}
-    }
     const email = document.getElementById('login-email').value.trim().toLowerCase();
     const pwd = document.getElementById('login-pwd').value;
 
@@ -3686,15 +3683,36 @@ function handleLogin(e) {
         return;
     }
 
+    // Luôn tải danh sách users mới nhất từ server trước khi đăng nhập
+    // Đảm bảo tài khoản đăng ký trên thiết bị khác vẫn đăng nhập được
+    try {
+        if (typeof showToast === 'function') showToast('⏳ Đang xác thực tài khoản...', 'info');
+        const res = await fetch(API_URL + '?t=' + new Date().getTime());
+        const data = await res.json();
+        if (data && data.users && Array.isArray(data.users) && data.users.length > 0) {
+            users = data.users;
+            try { localStorage.setItem('mv_users_data', JSON.stringify(users)); } catch(e) {}
+        }
+    } catch(err) {
+        // Nếu không có mạng, dùng cache cục bộ
+        if (localStorage.getItem('mv_users_data')) {
+            try { users = JSON.parse(localStorage.getItem('mv_users_data')) || users; } catch(err2){}
+        }
+    }
+
     const user = users.find(u => u.email.toLowerCase() === email && u.password === pwd);
     if (!user) {
-        showAuthError("Gmail hoặc Mật khẩu không chính xác!");
+        showAuthError("Gmail hoặc Mật khẩu không chính xác! (Tài khoản chưa được tạo hoặc chưa duyệt)");
+        return;
+    }
+    if (user.status === 'pending') {
+        showAuthError('Tài khoản của bạn đang chờ Admin phê duyệt. Vui lòng liên hệ để được duyệt sớm!');
         return;
     }
 
     currentAuthUser = user;
     localStorage.setItem('mv_auth_session', JSON.stringify(currentAuthUser));
-    if (typeof showToast === 'function') showToast(`Đăng nhập thành công! Xin chào ${user.name}`, 'success');
+    if (typeof showToast === 'function') showToast(`✅ Đăng nhập thành công! Xin chào ${user.name}`, 'success');
     checkAuthStatus();
 }
 
