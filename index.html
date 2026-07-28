@@ -2072,7 +2072,10 @@
                 let statusText = "";
                 let statusClass = "";
                 
-                if (s.completedLessons === 0) {
+                if (s.status === 'inactive') {
+                    statusText = "Đã nghỉ";
+                    statusClass = "bg-rose-100 text-rose-700 border border-rose-200";
+                } else if (s.completedLessons === 0) {
                     statusText = "Chưa học";
                     statusClass = "bg-slate-100 text-slate-600";
                 } else if (s.completedLessons >= s.lessons) {
@@ -2117,7 +2120,11 @@
                             </select>`;
                         })()}
                     </td>
-                    <td class="py-3 px-4 text-right"><button onclick="deleteStudent('${s.id}')" class="interactive-btn text-xs text-rose-500 hover:text-white hover:bg-rose-500 px-3 py-1.5 rounded-lg font-semibold transition-colors active:scale-95">Xóa</button></td>
+                    <td class="py-3 px-4 text-right flex gap-1 justify-end flex-wrap">
+                        ${s.status === 'inactive' ? 
+                            '<button onclick="restoreStudent(\'' + s.id + '\')" class="interactive-btn text-xs text-emerald-600 hover:text-white hover:bg-emerald-500 px-3 py-1.5 rounded-lg font-semibold transition-colors active:scale-95">Khôi phục</button>' : ''}
+                        <button onclick="deleteStudent('${s.id}')" class="interactive-btn text-xs ${s.status === 'inactive' ? 'text-slate-400 hover:text-white hover:bg-slate-500' : 'text-rose-500 hover:text-white hover:bg-rose-500'} px-3 py-1.5 rounded-lg font-semibold transition-colors active:scale-95">${s.status === 'inactive' ? 'Xóa hẳn' : 'Cho nghỉ'}</button>
+                    </td>
                 </tr>`;
             }).join('');
         }
@@ -2184,7 +2191,33 @@
             showToast(`Đã thêm CS: ${bName}`);
         }
         function deleteTeacher(id){ saveStateToHistory(); teachers = teachers.filter(x=>x.id!==id); saveData(); initApp(); showToast("Đã xóa GV"); }
-        function deleteStudent(id){ saveStateToHistory(); students = students.filter(x=>x.id!==id); saveData(); initApp(); showToast("Đã xóa HV"); }
+        function deleteStudent(id) {
+    const s = students.find(x => x.id === id);
+    if (!s) return;
+    if (s.status === 'inactive') {
+        // Da nghi: hoi co muon xoa han khong
+        if (!confirm('HV "' + s.name + '" da nghi. Xoa han se mat toan bo lich su?\nBam OK de xoa han, Cancel de giu.')) return;
+        saveStateToHistory();
+        students = students.filter(x => x.id !== id);
+        saveData(); initApp();
+        showToast('Da xoa han HV: ' + s.name);
+    } else {
+        // Chua nghi: danh dau nghi thay vi xoa han
+        if (!confirm('Danh dau HV "' + s.name + '" da nghi hoc?\nLich su van duoc giu. Bam OK de xac nhan.')) return;
+        saveStateToHistory();
+        s.status = 'inactive';
+        saveData(); initApp();
+        showToast('Da danh dau HV "' + s.name + '" da nghi hoc.');
+    }
+}
+function restoreStudent(id) {
+    const s = students.find(x => x.id === id);
+    if (!s) return;
+    saveStateToHistory();
+    s.status = 'active';
+    saveData(); initApp();
+    showToast('Da khoi phuc HV: ' + s.name);
+}
         function deleteBranch(id){ saveStateToHistory(); branches = branches.filter(x=>x.id!==id); saveData(); initApp(); showToast("Đã xóa Cơ Sở"); }
 
         window.editMasterStudent = function(index, td) {
@@ -2422,7 +2455,10 @@
                 const teacher = teachers.find(t => t.id === entry.teacherId);
                 const branchObj = branches.find(b => b.name === entry.branch) || { name: entry.branch, colorClass: "bg-slate-100 text-slate-800 border-slate-300" };
                 
-                if (!student || !teacher) return;
+                // Giu lich cua HV da nghi (chi an neu hoan toan khong tim thay)
+                if (!teacher) return;
+                const studentName = student ? student.name : (entry.studentName || entry.studentId || '?');
+                const isInactiveStudent = !student || student.status === 'inactive';
                 if (searchValue && !student.name.toLowerCase().includes(searchValue)) return;
                 if (teacherFilter && entry.teacherId !== teacherFilter) return;
                 
@@ -2453,7 +2489,7 @@
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-50 transition-colors animate-slide-up" style="animation-delay: ${idx * 0.03}s; opacity: 0; animation-fill-mode: forwards;">
                         <td class="py-3 px-4 text-slate-400 text-xs font-medium">${index+1}</td>
-                        <td class="py-3 px-4 font-bold text-slate-800 cursor-pointer" ondblclick="editMasterStudent(${index}, this)">${formatStudentNameWithSubjects(student)}</td>
+                        <td class="py-3 px-4 font-bold cursor-pointer ${isInactiveStudent ? 'text-slate-400' : 'text-slate-800'}" ondblclick="editMasterStudent(${index}, this)">${student ? formatStudentNameWithSubjects(student) : '<span class=\'text-slate-400 italic text-xs\'>' + studentName + '</span>'} ${isInactiveStudent && student ? '<span class=\'ml-1 text-[10px] bg-rose-100 text-rose-600 px-1.5 py-0.5 rounded font-bold\'>Đã nghỉ</span>' : ''}</td>
                         <td class="py-3 px-4 cursor-pointer" ondblclick="editMasterTeacher(${index}, this)"><span class="px-2.5 py-1 rounded-md text-xs font-semibold border shadow-sm ${tInfo.colorClass}">${tInfo.plainText}</span></td>
                         <td class="py-3 px-4 cursor-pointer" ondblclick="editMasterTime(${index}, this)"><span class="font-bold text-slate-700">${dayDisplay}</span> <span class="text-[11px] font-medium text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded-md ml-1 border border-slate-200 shadow-sm">${entry.start} - ${entry.end}</span></td>
                         <td class="py-3 px-4 cursor-pointer" ondblclick="editMasterBranch(${index}, this)"><span class="text-xs px-2.5 py-1 rounded-md border shadow-sm ${branchObj.colorClass} font-medium">${entry.branch}</span></td>
