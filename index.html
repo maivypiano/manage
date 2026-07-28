@@ -1728,6 +1728,32 @@
             updateDatePickerText();
         }
 
+        
+        function navigateMonth(delta) {
+            // Chuyen thang: delta = -1 (truoc) hoac +1 (sau)
+            if (!currentMonth) return;
+            const parts = currentMonth.split('-');
+            let year = parseInt(parts[0]);
+            let month = parseInt(parts[1]);
+            month += delta;
+            if (month < 1) { month = 12; year--; }
+            if (month > 12) { month = 1; year++; }
+            const newMonth = year + '-' + String(month).padStart(2, '0');
+            // Cap nhat month-input va goi handleMonthChange
+            const mi = document.getElementById('month-input');
+            if (mi) { mi.value = newMonth; handleMonthChange(); }
+            else {
+                // Neu khong co input thi doi truc tiep
+                saveStateToHistory();
+                monthlyData[currentMonth] = { schedule: [...schedule], attendanceData: {...attendanceData} };
+                currentMonth = newMonth;
+                if (!monthlyData[currentMonth]) monthlyData[currentMonth] = { schedule: [], attendanceData: {} };
+                syncCurrentMonthPointers();
+                saveData();
+                initApp();
+                showToast('Da doi sang thang ' + currentMonth);
+            }
+        }
         function handleMonthChange() {
             const newMonth = document.getElementById('month-input').value;
             if(!newMonth) return;
@@ -3688,39 +3714,32 @@ function isLessonVisibleOnCalendarForDate(item, dateStr, targetMonthStr) {
 }
 
 function calculateTeacherAttendance(t, periodVal, monthStr) {
-    // V2: Tinh ca dua tren dau tick diem danh truc tiep
-    // - Chi tick "present" moi tinh vao so ca da day
-    // - Tick "off"/"absent" khong tinh
-    // - Khong dung isLessonVisibleOnCalendarForDate de tranh lech du lieu giua mobile/PC
+    // V3: Chi tinh thang hien tai (currentMonth hoac monthStr)
+    // Dua tren dau tick present - bao nhieu tick tinh bay nhieu
     let shiftCount = 0;
     let hoursCount = 0;
     if (!t || !t.id) return { shiftCount, hoursCount };
 
-    // Gom tat ca schedule tu moi thang de tim lich theo ID
-    let allSchedule = [];
-    if (typeof monthlyData !== 'undefined') {
-        Object.values(monthlyData).forEach(md => {
-            if (md && Array.isArray(md.schedule)) allSchedule = allSchedule.concat(md.schedule);
-        });
+    // Lay schedule va attendanceData cua thang can tinh
+    const targetMonth = monthStr || (typeof currentMonth !== 'undefined' ? currentMonth : '');
+    let baseSchedule = [];
+    let baseAttendance = {};
+
+    if (targetMonth && typeof monthlyData !== 'undefined' && monthlyData[targetMonth]) {
+        baseSchedule = monthlyData[targetMonth].schedule || [];
+        baseAttendance = monthlyData[targetMonth].attendanceData || {};
     }
-    // Them schedule hien tai phong truong hop chua sync vao monthlyData
-    if (typeof schedule !== 'undefined' && Array.isArray(schedule)) {
-        schedule.forEach(s => { if (!allSchedule.find(x => x.id === s.id)) allSchedule.push(s); });
+    // Fallback: neu schedule/attendanceData hien tai la cua thang nay
+    if (typeof schedule !== 'undefined' && Array.isArray(schedule) && schedule.length > 0) {
+        baseSchedule = schedule;
+    }
+    if (typeof attendanceData !== 'undefined' && Object.keys(attendanceData).length > 0) {
+        baseAttendance = attendanceData;
     }
 
-    // Gom tat ca attendanceData tu moi thang
-    let allAttendance = {};
-    if (typeof monthlyData !== 'undefined') {
-        Object.values(monthlyData).forEach(md => {
-            if (md && md.attendanceData) Object.assign(allAttendance, md.attendanceData);
-        });
-    }
-    // Them attendanceData hien tai
-    if (typeof attendanceData !== 'undefined') Object.assign(allAttendance, attendanceData);
-
-    for (let key in allAttendance) {
-        // Chi dem ca duoc tick "present" (co mat / len lop)
-        if (allAttendance[key] !== 'present') continue;
+    for (let key in baseAttendance) {
+        // Chi dem tick "present" (co mat / len lop)
+        if (baseAttendance[key] !== 'present') continue;
 
         let parts = key.split('_');
         if (parts.length < 2) continue;
@@ -3734,21 +3753,18 @@ function calculateTeacherAttendance(t, periodVal, monthStr) {
             if ((periodVal === 'period2' || periodVal === 'p2') && dayNum <= 15) continue;
         }
 
-        // Tim lich tuong ung trong allSchedule
-        let s = allSchedule.find(x => x.id === schedId);
-        if (!s) continue; // Khong tim thay lich -> bo qua
+        // Tim lich tuong ung
+        let s = baseSchedule.find(x => x.id === schedId);
+        if (!s) continue;
 
         // Xac dinh giao vien cua ca nay
         const targetTid = (s.type === 'substitute' && s.subTeacherId) ? s.subTeacherId : s.teacherId;
         let isMatch = (targetTid === t.id || targetTid === t.name);
-        // Kiem tra them theo ten GV (fallback)
         if (!isMatch && s.type !== 'substitute' && s.teacher === t.name) isMatch = true;
-        // Kiem tra GV the (substitute teacher)
         if (!isMatch && s.subTeacherId && s.subTeacherId === t.id) isMatch = true;
 
         if (isMatch) {
             shiftCount += 1;
-            // Tinh gio day dua tren gio bat dau/ket thuc
             if (s.start && s.end) {
                 try {
                     const [sh, sm] = s.start.split(':').map(Number);
@@ -3757,7 +3773,7 @@ function calculateTeacherAttendance(t, periodVal, monthStr) {
                     hoursCount += (diff > 0) ? diff : 1.5;
                 } catch(e) { hoursCount += 1.5; }
             } else {
-                hoursCount += 1.5; // Mac dinh 1.5h neu khong ro gio
+                hoursCount += 1.5;
             }
         }
     }
