@@ -2633,7 +2633,7 @@ const dateBadge = exactBadge + (exactBadge && excludedBadge ? ' ' : '') + exclud
                                     window._studentPresentMap[stId].push({ 
                                         date: dStr, 
                                         schedId: sId, 
-                                        startTime: sched.startTime || "00:00" 
+                                        start: sched.start || "00:00" 
                                     });
                                 }
                             }
@@ -2643,8 +2643,8 @@ const dateBadge = exactBadge + (exactBadge && excludedBadge ? ' ' : '') + exclud
                     for (let stId in window._studentPresentMap) {
                         window._studentPresentMap[stId].sort((a, b) => {
                             if (a.date === b.date) {
-                                if (a.startTime !== b.startTime) {
-                                    return a.startTime.localeCompare(b.startTime);
+                                if (a.start !== b.start) {
+                                    return a.start.localeCompare(b.start);
                                 }
                                 return a.schedId.localeCompare(b.schedId);
                             }
@@ -2669,10 +2669,10 @@ const dateBadge = exactBadge + (exactBadge && excludedBadge ? ' ' : '') + exclud
                 return totalCompleted.toString();
             } else {
                 let countBefore = 0;
-                let sStartTime = "00:00";
+                let sStart = "00:00";
                 if (scheduleId && typeof schedule !== 'undefined') {
                     let s = schedule.find(x => x.id === scheduleId);
-                    if (s && s.startTime) sStartTime = s.startTime;
+                    if (s && s.start) sStart = s.start;
                 }
                 
                 for (let i = 0; i < presentRecords.length; i++) {
@@ -2680,8 +2680,8 @@ const dateBadge = exactBadge + (exactBadge && excludedBadge ? ' ' : '') + exclud
                     if (r.date < dateKey) {
                         countBefore++;
                     } else if (r.date === dateKey) {
-                        if (r.startTime < sStartTime) countBefore++;
-                        else if (r.startTime === sStartTime && scheduleId && r.schedId < scheduleId) countBefore++;
+                        if (r.start < sStart) countBefore++;
+                        else if (r.start === sStart && scheduleId && r.schedId < scheduleId) countBefore++;
                     }
                 }
                 return (base + countBefore).toString();
@@ -3954,12 +3954,7 @@ function calculateTeacherAttendance(t, periodVal, monthStr) {
         const isSub       = (s.subTeacherId === t.id || s.subTeacherId === t.name);
         const isNameMatch = (!s.teacherId && s.teacher === t.name);
         
-        let isMatch = false;
-        if (s.type === 'substitute' || s.subTeacherId) {
-            isMatch = isSub; // Dạy thế -> Tính cho GV dạy thế, bỏ qua GV gốc
-        } else {
-            isMatch = isOriginal || isNameMatch; // Bình thường -> Tính cho GV gốc
-        }
+        let isMatch = isOriginal || isNameMatch; // Luôn tính lương/buổi cho GV gốc dù có dạy thế
 
         if (isMatch) {
             shiftCount += 1;
