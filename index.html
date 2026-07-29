@@ -4681,26 +4681,6 @@ function autoSelectTeacherInMaster(studentId) {
     // Removed auto-select logic by user request
 }
 
-    if (!teacherSelect) return;
-    
-    if (scheduleType === 'substitute') {
-        // Lịch thế: Hiện những giáo viên khác, TRỪ giáo viên phụ trách
-        const assignedTeacherId = s ? s.teacherId : null;
-        teacherSelect.innerHTML = '<option value="" disabled selected>-- Chọn giáo viên dạy thế --</option>' + 
-            teachers.filter(t => t.id !== assignedTeacherId).map(t => `<option value="${t.id}">${t.display}</option>`).join('');
-    } else {
-        // Lịch chính/bù: LỌC TUYỆT ĐỐI chỉ hiển thị GV phụ trách của học viên này
-        if (s && s.teacherId) {
-            const assignedTeacher = teachers.find(t => t.id === s.teacherId);
-            if (assignedTeacher) {
-                teacherSelect.innerHTML = `<option value="${assignedTeacher.id}" selected>${assignedTeacher.display} (GV Phụ Trách)</option>`;
-                return;
-            }
-        }
-        teacherSelect.innerHTML = '<option value="" disabled selected>-- Chọn giáo viên --</option>' + 
-            teachers.map(t => `<option value="${t.id}">${t.display}</option>`).join('');
-    }
-}
 
 function autoSelectStudentByTeacher(teacherId) {
     // Removed auto-select logic by user request
