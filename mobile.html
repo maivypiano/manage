@@ -79,10 +79,19 @@
             line-height: 1.5;
             overflow-x: hidden;
             -webkit-tap-highlight-color: transparent;
-            /* KHÔNG dùng zoom: gây lỗi trên iOS Safari */
             background: #f8fafc;
             padding-top: var(--safe-top);
             padding-bottom: var(--safe-bottom);
+        }
+        /* Dam bao header luon cố định, khong bi che */
+        #mobile-header {
+            position: sticky !important;
+            top: 0 !important;
+            z-index: 40 !important;
+            background: rgba(255,255,255,0.97) !important;
+            backdrop-filter: blur(12px) !important;
+            -webkit-backdrop-filter: blur(12px) !important;
+            box-shadow: 0 1px 8px rgba(0,0,0,0.07) !important;
         }
 
         /* Touch targets */
@@ -2766,14 +2775,14 @@
                 let statusClass = "";
                 
                 if (s.status === 'inactive') {
-                    statusText = "Đã nghỉ";
+                    statusText = "Nghỉ học";
                     statusClass = "bg-rose-100 text-rose-700 border border-rose-200";
+                } else if (s.completedLessons >= s.lessons && s.lessons > 0) {
+                    statusText = "Học xong";
+                    statusClass = "bg-emerald-100 text-emerald-700 border border-emerald-200";
                 } else if (s.completedLessons === 0) {
                     statusText = "Chưa học";
                     statusClass = "bg-slate-100 text-slate-600";
-                } else if (s.completedLessons >= s.lessons) {
-                    statusText = "Đã hoàn thành";
-                    statusClass = "bg-emerald-100 text-emerald-700";
                 } else {
                     statusText = "Đang học";
                     statusClass = "bg-blue-50 border border-blue-200 text-blue-700";
@@ -2813,10 +2822,15 @@
                             </select>`;
                         })()}
                     </td>
-                    <td class="py-3 px-4 text-right flex gap-1 justify-end flex-wrap">
-                        ${s.status === 'inactive' ? 
-                            '<button onclick="restoreStudent(\'' + s.id + '\')" class="interactive-btn text-xs text-emerald-600 hover:text-white hover:bg-emerald-500 px-3 py-1.5 rounded-lg font-semibold transition-colors active:scale-95">Khôi phục</button>' : ''}
-                        <button onclick="deleteStudent('${s.id}')" class="interactive-btn text-xs ${s.status === 'inactive' ? 'text-slate-400 hover:text-white hover:bg-slate-500' : 'text-rose-500 hover:text-white hover:bg-rose-500'} px-3 py-1.5 rounded-lg font-semibold transition-colors active:scale-95">${s.status === 'inactive' ? 'Xóa hẳn' : 'Cho nghỉ'}</button>
+                    <td class="py-3 px-4 text-right">
+                        <div class="flex gap-1 justify-end flex-wrap">
+                        ${s.status === 'inactive' ? `
+                            <button onclick="restoreStudent('${s.id}')" class="interactive-btn text-xs text-emerald-600 hover:text-white hover:bg-emerald-500 px-3 py-1.5 rounded-lg font-semibold transition-colors active:scale-95">Học lại</button>
+                            <button onclick="deleteStudent('${s.id}')" class="interactive-btn text-xs text-slate-400 hover:text-white hover:bg-slate-500 px-3 py-1.5 rounded-lg font-semibold transition-colors active:scale-95">Xóa hẳn</button>
+                        ` : `
+                            <button onclick="deleteStudent('${s.id}')" class="interactive-btn text-xs text-rose-500 hover:text-white hover:bg-rose-500 px-3 py-1.5 rounded-lg font-semibold transition-colors active:scale-95">Cho nghỉ</button>
+                        `}
+                        </div>
                     </td>
                 </tr>`;
             }).join('');
@@ -2928,7 +2942,7 @@
         saveStateToHistory();
         s.status = 'inactive';
         saveData(); initApp();
-        showToast('Da danh dau HV "' + s.name + '" da nghi hoc.');
+        showToast('Da danh dau HV "' + s.name + '" nghi hoc.');
     }
 }
 function restoreStudent(id) {
@@ -3211,7 +3225,7 @@ function restoreStudent(id) {
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-50 transition-colors animate-slide-up" style="animation-delay: ${idx * 0.03}s; opacity: 0; animation-fill-mode: forwards;">
                         <td class="py-3 px-4 text-slate-400 text-xs font-medium">${index+1}</td>
-                        <td class="py-3 px-4 font-bold cursor-pointer ${isInactiveStudent ? 'text-slate-400' : 'text-slate-800'}" ondblclick="editMasterStudent(${index}, this)">${student ? formatStudentNameWithSubjects(student) : '<span class=\'text-slate-400 italic text-xs\'>' + studentName + '</span>'} ${isInactiveStudent && student ? '<span class=\'ml-1 text-[10px] bg-rose-100 text-rose-600 px-1.5 py-0.5 rounded font-bold\'>Đã nghỉ</span>' : ''}</td>
+                        <td class="py-3 px-4 font-bold cursor-pointer ${isInactiveStudent ? 'text-slate-400' : 'text-slate-800'}" ondblclick="editMasterStudent(${index}, this)">${student ? formatStudentNameWithSubjects(student) : '<span class=\'text-slate-400 italic text-xs\'>' + studentName + '</span>'} ${isInactiveStudent && student ? '<span class=\'ml-1 text-[10px] bg-rose-100 text-rose-600 px-1.5 py-0.5 rounded font-bold\'>Nghỉ học</span>' : ''}</td>
                         <td class="py-3 px-4 cursor-pointer" ondblclick="editMasterTeacher(${index}, this)"><span class="px-2.5 py-1 rounded-md text-xs font-semibold border shadow-sm ${tInfo.colorClass}">${tInfo.plainText}</span></td>
                         <td class="py-3 px-4 cursor-pointer" ondblclick="editMasterTime(${index}, this)"><span class="font-bold text-slate-700">${dayDisplay}</span> <span class="text-[11px] font-medium text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded-md ml-1 border border-slate-200 shadow-sm">${entry.start} - ${entry.end}</span></td>
                         <td class="py-3 px-4 cursor-pointer" ondblclick="editMasterBranch(${index}, this)"><span class="text-xs px-2.5 py-1 rounded-md border shadow-sm ${branchObj.colorClass} font-medium">${entry.branch}</span></td>
@@ -3612,6 +3626,30 @@ function restoreStudent(id) {
             });
             if (typeof applyMobileDaySelection === 'function') applyMobileDaySelection();
             if (typeof updateFilterBadge === 'function') updateFilterBadge();
+
+            // Mobile: auto scroll den ngay hom nay neu la role thuong va view tuan hien tai
+            if (window.innerWidth <= 1024) {
+                const _selWeekNow = document.getElementById('view-filter-week');
+                const _selVal = _selWeekNow ? _selWeekNow.value : 'all';
+                const _roleNow = (typeof currentAuthUser !== 'undefined' && currentAuthUser) ? currentAuthUser.role : null;
+                const _isStaffNow = (_roleNow === 'teacher' || _roleNow === 'academic' || _roleNow === 'accountant');
+                // Chi scroll khi dang xem tuan cu the (khong phai all/summary)
+                if (_isStaffNow && _selVal !== 'all' && _selVal !== 'summary' && window._shouldScrollToday) {
+                    window._shouldScrollToday = false;
+                    setTimeout(() => {
+                        // Tim ngay hom nay trong lich
+                        const _nowDate = new Date();
+                        const _container = document.querySelector('[id^="day-col-"]');
+                        if (_container) {
+                            // Tim element co isToday border-amber
+                            const _todayCard = document.querySelector('.border-amber-400');
+                            if (_todayCard) {
+                                _todayCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            }
+                        }
+                    }, 400);
+                }
+            }
         }
         
         function renderTeacherStats() {
@@ -4094,6 +4132,62 @@ function checkAuthStatus() {
         }
     }
     
+    // === DEFAULT TAB SAU DANG NHAP THEO ROLE ===
+    const _role = currentAuthUser ? currentAuthUser.role : null;
+    const _isAdminChuTT = (_role === 'admin' || _role === 'superadmin');
+    const _activeTab = document.querySelector('.tab-content:not(.hidden)');
+    const _currentTabId = _activeTab ? _activeTab.id : '';
+
+    // Chi tu dong chuyen tab neu dang o tab mac dinh (sheet1) hoac vua dang nhap
+    const _shouldSwitchTab = !window._hasSetDefaultTab || _currentTabId === 'tab-sheet1';
+    if (_shouldSwitchTab) {
+        window._hasSetDefaultTab = true;
+        // Tat ca role deu vao tab Lich & Diem Danh
+        setTimeout(() => {
+            if (typeof switchTab === 'function') {
+                switchTab('sheet3', 'Lich & Diem Danh');
+            }
+            const weekSel = document.getElementById('view-filter-week');
+            if (weekSel) {
+                if (_isAdminChuTT) {
+                    // Admin Chu TT: Xem Tong Quat (summary) - bao quat ca tuan
+                    weekSel.value = 'summary';
+                } else {
+                    // Role khac: tu dong chon tuan hien tai
+                    const _now = new Date();
+                    const _parts = (typeof currentMonth !== 'undefined' ? currentMonth : '').split('-');
+                    const _year = parseInt(_parts[0]); const _mon = parseInt(_parts[1]);
+                    const _firstDate = new Date(_year, _mon - 1, 1);
+                    const _firstDay = _firstDate.getDay();
+                    const _offset = _firstDay === 0 ? 6 : _firstDay - 1;
+                    const _calStart = new Date(_year, _mon - 1, 1 - _offset);
+                    const _diffDays = Math.floor((_now - _calStart) / (1000*60*60*24));
+                    const _curWeek = Math.min(5, Math.max(1, Math.floor(_diffDays / 7) + 1));
+                    weekSel.value = _curWeek.toString();
+                }
+                if (typeof renderWeeklySchedule === 'function') renderWeeklySchedule();
+            }
+            // Mobile: auto scroll den ngay hom nay (role thuong)
+            if (!_isAdminChuTT && window.innerWidth <= 1024) {
+                setTimeout(() => {
+                    const _today = new Date();
+                    const _dd = String(_today.getDate()).padStart(2,'0');
+                    const _mm = String(_today.getMonth()+1).padStart(2,'0');
+                    const _todayStr = _dd + '/' + _mm;
+                    // Tim div chua date display ngay hom nay
+                    const _allDateDivs = document.querySelectorAll('[class*="rounded-2xl"]');
+                    let _todayEl = null;
+                    _allDateDivs.forEach(el => {
+                        if (el.textContent.includes(_todayStr)) _todayEl = el;
+                    });
+                    if (_todayEl) {
+                        _todayEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }, 600);
+            }
+        }, 200);
+    }
+
     return true;
 }
 
@@ -4158,6 +4252,8 @@ async function handleLogin(e) {
     currentAuthUser = user;
     localStorage.setItem('mv_auth_session', JSON.stringify(currentAuthUser));
     if (typeof showToast === 'function') showToast(`✅ Đăng nhập thành công! Xin chào ${user.name}`, 'success');
+    window._hasSetDefaultTab = false; // Reset de force chuyen tab dung sau dang nhap
+    window._shouldScrollToday = true; // Cho phep scroll den ngay hom nay
     checkAuthStatus();
 }
 
