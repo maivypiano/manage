@@ -895,11 +895,11 @@
                 <input type="hidden" id="qa-day-name">
                 <div>
                     <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Học sinh</label>
-                    <select id="qa-student-select" onchange="autoSelectTeacherInQuickAdd(this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500"></select>
+                    <select id="qa-student-select" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500"></select>
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Giáo viên</label>
-                    <select id="qa-teacher-select" onchange="autoSelectStudentInQuickAdd(this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500"></select>
+                    <select id="qa-teacher-select" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500"></select>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
@@ -1243,7 +1243,7 @@
                 const ts = document.getElementById('qa-teacher-select');
                 if (ts) {
                     ts.value = currentAuthUser.teacherId;
-                    if (typeof autoSelectStudentInQuickAdd === 'function') autoSelectStudentInQuickAdd(currentAuthUser.teacherId);
+                    
                 }
             }
             document.getElementById('qa-branch-select').innerHTML = branches.map(b => `<option value="${b.name}">${b.name}</option>`).join('');
@@ -2622,10 +2622,10 @@ const dateBadge = exactBadge + (exactBadge && excludedBadge ? ' ' : '') + exclud
                     
                     for (let key in attendanceData) {
                         if (attendanceData[key] === 'present') {
-                            let parts = key.split('_');
-                            if (parts.length >= 2) {
-                                let sId = parts[0];
-                                let dStr = parts[1];
+                            let lastUIdx = key.lastIndexOf('_');
+                            if (lastUIdx !== -1) {
+                                let sId = key.substring(0, lastUIdx);
+                                let dStr = key.substring(lastUIdx + 1);
                                 let sched = schedMap[sId];
                                 if (sched) {
                                     let stId = sched.studentId;
@@ -3930,10 +3930,10 @@ function calculateTeacherAttendance(t, periodVal, monthStr) {
     for (let key in baseAttendance) {
         if (baseAttendance[key] !== 'present') continue;
 
-        let parts = key.split('_');
-        if (parts.length < 2) continue;
-        let schedId = parts[0];
-        let dateStr = parts[1];
+        let lastUIdx = key.lastIndexOf('_');
+        if (lastUIdx === -1) continue;
+        let schedId = key.substring(0, lastUIdx);
+        let dateStr = key.substring(lastUIdx + 1);
 
         // Loc theo dot thanh toan
         if (periodVal && periodVal !== 'all' && dateStr) {
@@ -4678,10 +4678,8 @@ function handleMasterTypeChange() {
 }
 
 function autoSelectTeacherInMaster(studentId) {
-    const s = students.find(x => x.id === studentId);
-    const teacherSelect = document.getElementById('form-teacher');
-    const typeSelect = document.getElementById('form-type');
-    const scheduleType = typeSelect ? typeSelect.value : 'main';
+    // Removed auto-select logic by user request
+}
 
     if (!teacherSelect) return;
     
@@ -4705,22 +4703,7 @@ function autoSelectTeacherInMaster(studentId) {
 }
 
 function autoSelectStudentByTeacher(teacherId) {
-    const studentSelect = document.getElementById('form-student');
-    const typeSelect = document.getElementById('form-type');
-    const scheduleType = typeSelect ? typeSelect.value : 'main';
-    if (!studentSelect || !teacherId) return;
-    
-    if (scheduleType !== 'substitute') {
-        // Khi chọn GV trước -> CHỈ hiển thị danh sách học viên do GV đó phụ trách
-        const assignedStudents = students.filter(s => s.teacherId === teacherId);
-        if (assignedStudents.length > 0) {
-            studentSelect.innerHTML = '<option value="" disabled selected>-- Chọn học viên phụ trách --</option>' +
-                assignedStudents.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
-        } else {
-            studentSelect.innerHTML = '<option value="" disabled selected>-- GV này chưa phụ trách học viên nào --</option>' +
-                students.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
-        }
-    }
+    // Removed auto-select logic by user request
 }
 
 // === VIETQR PAYMENT & GMAIL AUTOMATION FUNCTIONS ===
