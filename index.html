@@ -2608,7 +2608,7 @@ const dateBadge = exactBadge + (exactBadge && excludedBadge ? ' ' : '') + exclud
             showToast(msg, status === 'present' ? 'success' : 'info');
         }
 
-                        function getLessonSnapshot(student, dateKey, attStatus, scheduleId) {
+                                function getLessonSnapshot(student, dateKey, attStatus, scheduleId) {
             if (!student) return "0";
             
             // Performance optimization: Cache the present records for all students to avoid O(N^3) complexity
@@ -2630,7 +2630,11 @@ const dateBadge = exactBadge + (exactBadge && excludedBadge ? ' ' : '') + exclud
                                 if (sched) {
                                     let stId = sched.studentId;
                                     if (!window._studentPresentMap[stId]) window._studentPresentMap[stId] = [];
-                                    window._studentPresentMap[stId].push({ date: dStr, schedId: sId });
+                                    window._studentPresentMap[stId].push({ 
+                                        date: dStr, 
+                                        schedId: sId, 
+                                        startTime: sched.startTime || "00:00" 
+                                    });
                                 }
                             }
                         }
@@ -2638,7 +2642,12 @@ const dateBadge = exactBadge + (exactBadge && excludedBadge ? ' ' : '') + exclud
                     
                     for (let stId in window._studentPresentMap) {
                         window._studentPresentMap[stId].sort((a, b) => {
-                            if (a.date === b.date) return a.schedId.localeCompare(b.schedId);
+                            if (a.date === b.date) {
+                                if (a.startTime !== b.startTime) {
+                                    return a.startTime.localeCompare(b.startTime);
+                                }
+                                return a.schedId.localeCompare(b.schedId);
+                            }
                             return a.date.localeCompare(b.date);
                         });
                     }
@@ -2660,10 +2669,20 @@ const dateBadge = exactBadge + (exactBadge && excludedBadge ? ' ' : '') + exclud
                 return totalCompleted.toString();
             } else {
                 let countBefore = 0;
+                let sStartTime = "00:00";
+                if (scheduleId && typeof schedule !== 'undefined') {
+                    let s = schedule.find(x => x.id === scheduleId);
+                    if (s && s.startTime) sStartTime = s.startTime;
+                }
+                
                 for (let i = 0; i < presentRecords.length; i++) {
                     let r = presentRecords[i];
-                    if (r.date < dateKey) countBefore++;
-                    else if (r.date === dateKey && scheduleId && r.schedId < scheduleId) countBefore++;
+                    if (r.date < dateKey) {
+                        countBefore++;
+                    } else if (r.date === dateKey) {
+                        if (r.startTime < sStartTime) countBefore++;
+                        else if (r.startTime === sStartTime && scheduleId && r.schedId < scheduleId) countBefore++;
+                    }
                 }
                 return (base + countBefore).toString();
             }
