@@ -3370,18 +3370,63 @@ const dateBadge = exactBadge + (exactBadge && excludedBadge ? ' ' : '') + exclud
                 function getLessonSnapshot(student, dateKey, attStatus, scheduleId) {
     if (!student) return "0";
     
-    let presentRecords = [];
-    if (typeof attendanceData !== 'undefined' && typeof schedule !== 'undefined') {
-        for (let key in attendanceData) {
-            if (attendanceData[key] === 'present') {
-                let parts = key.split('_');
-                if (parts.length >= 2) {
-                    let sId = parts[0];
-                    let dStr = parts[1];
-                    let sched = schedule.find(s => s.id === sId);
-                    if (sched && sched.studentId === student.id) {
-                        presentRecords.push({ date: dStr, schedId: sId });
+    // Performance optimization: Cache the present records for all students to avoid O(N^3) complexity
+    if (!window._studentPresentMap) {
+        window._studentPresentMap = {};
+        if (typeof attendanceData !== 'undefined' && typeof schedule !== 'undefined') {
+            let schedMap = {};
+            for (let i = 0; i < schedule.length; i++) {
+                schedMap[schedule[i].id] = schedule[i];
+            }
+            
+            for (let key in attendanceData) {
+                if (attendanceData[key] === 'present') {
+                    let parts = key.split('_');
+                    if (parts.length >= 2) {
+                        let sId = parts[0];
+                        let dStr = parts[1];
+                        let sched = schedMap[sId];
+                        if (sched) {
+                            let stId = sched.studentId;
+                            if (!window._studentPresentMap[stId]) window._studentPresentMap[stId] = [];
+                            window._studentPresentMap[stId].push({ date: dStr, schedId: sId });
+                        }
                     }
+                }
+            }
+            
+            for (let stId in window._studentPresentMap) {
+                window._studentPresentMap[stId].sort((a, b) => {
+                    if (a.date === b.date) return a.schedId.localeCompare(b.schedId);
+                    return a.date.localeCompare(b.date);
+                });
+            }
+        }
+    }
+    
+    let presentRecords = window._studentPresentMap[student.id] || [];
+    
+    let totalCompleted = student.completedLessons || 0;
+    let currentMonthPresents = presentRecords.length;
+    let base = totalCompleted - currentMonthPresents;
+    if (base < 0) base = 0;
+    
+    if (attStatus === 'present' && scheduleId) {
+        let index = presentRecords.findIndex(r => r.date === dateKey && r.schedId === scheduleId);
+        if (index !== -1) {
+            return (base + index + 1).toString();
+        }
+        return totalCompleted.toString();
+    } else {
+        let countBefore = 0;
+        for (let i = 0; i < presentRecords.length; i++) {
+            let r = presentRecords[i];
+            if (r.date < dateKey) countBefore++;
+            else if (r.date === dateKey && scheduleId && r.schedId < scheduleId) countBefore++;
+        }
+        return (base + countBefore).toString();
+    }
+}
                 }
             }
         }
@@ -3435,6 +3480,7 @@ const dateBadge = exactBadge + (exactBadge && excludedBadge ? ' ' : '') + exclud
         }
 
         function renderWeeklySchedule() {
+    window._studentPresentMap = null;
             const parts = currentMonth.split('-'); 
             const year = parseInt(parts[0]); 
             const month = parseInt(parts[1]);
