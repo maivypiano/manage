@@ -2608,12 +2608,51 @@ const dateBadge = exactBadge + (exactBadge && excludedBadge ? ' ' : '') + exclud
             showToast(msg, status === 'present' ? 'success' : 'info');
         }
 
-                function getLessonSnapshot(student, dateKey, attStatus) {
-            if (!student) return "0";
-            if (!student.completedAtDate) student.completedAtDate = {};
-            if (attStatus === 'present' && student.completedAtDate[dateKey] !== undefined) {
-                return student.completedAtDate[dateKey];
+                function getLessonSnapshot(student, dateKey, attStatus, scheduleId) {
+    if (!student) return "0";
+    
+    let presentRecords = [];
+    if (typeof attendanceData !== 'undefined' && typeof schedule !== 'undefined') {
+        for (let key in attendanceData) {
+            if (attendanceData[key] === 'present') {
+                let parts = key.split('_');
+                if (parts.length >= 2) {
+                    let sId = parts[0];
+                    let dStr = parts[1];
+                    let sched = schedule.find(s => s.id === sId);
+                    if (sched && sched.studentId === student.id) {
+                        presentRecords.push({ date: dStr, schedId: sId });
+                    }
+                }
             }
+        }
+    }
+    
+    presentRecords.sort((a, b) => {
+        if (a.date === b.date) return a.schedId.localeCompare(b.schedId);
+        return a.date.localeCompare(b.date);
+    });
+    
+    let totalCompleted = student.completedLessons || 0;
+    let currentMonthPresents = presentRecords.length;
+    let base = totalCompleted - currentMonthPresents;
+    if (base < 0) base = 0;
+    
+    if (attStatus === 'present' && scheduleId) {
+        let index = presentRecords.findIndex(r => r.date === dateKey && r.schedId === scheduleId);
+        if (index !== -1) {
+            return (base + index + 1).toString();
+        }
+        return totalCompleted.toString();
+    } else {
+        let countBefore = 0;
+        for (let r of presentRecords) {
+            if (r.date < dateKey) countBefore++;
+            else if (r.date === dateKey && scheduleId && r.schedId < scheduleId) countBefore++;
+        }
+        return (base + countBefore).toString();
+    }
+}
             const dates = Object.keys(student.completedAtDate).sort();
             let latestVal = 0;
             let found = false;
@@ -2840,7 +2879,7 @@ const dateBadge = exactBadge + (exactBadge && excludedBadge ? ' ' : '') + exclud
                                         ${typeTag}
                                         <div class="flex justify-between items-center mb-2 gap-1">
                                             <span class="text-[10px] font-bold text-indigo-700 bg-indigo-50 px-2 py-1 rounded-lg border border-indigo-100 shadow-sm">${entry.start} - ${entry.end}</span>
-                                            <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-1 rounded-lg border border-emerald-100 shadow-sm" title="Tiến độ: ${getLessonSnapshot(student, dateKey, attStatus)}/${student.lessons || 24} buổi">${getLessonSnapshot(student, dateKey, attStatus)}/${student.lessons || 24}</span>
+                                            <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-1 rounded-lg border border-emerald-100 shadow-sm" title="Tiến độ: ${getLessonSnapshot(student, dateKey, attStatus, entry.id)}/${student.lessons || 24} buổi">${getLessonSnapshot(student, dateKey, attStatus, entry.id)}/${student.lessons || 24}</span>
                                             <div class="flex items-center gap-1">
                                                 <button onclick="openQuickEditScheduleModal('${entry.id}', '${dateKey}'); event.stopPropagation();" class="text-slate-300 hover:text-indigo-600 px-1 text-xs" title="Sửa nhanh">✎</button>
                                                 <span class="text-[8px] font-bold border shadow-sm ${branchObj.colorClass} px-2 py-1 rounded-lg">${entry.branch}</span>
@@ -3900,7 +3939,13 @@ function calculateTeacherAttendance(t, periodVal, monthStr) {
         const isOriginal  = (s.teacherId === t.id || s.teacherId === t.name);
         const isSub       = (s.subTeacherId === t.id || s.subTeacherId === t.name);
         const isNameMatch = (!s.teacherId && s.teacher === t.name);
-        const isMatch     = isOriginal || isSub || isNameMatch;
+        
+        let isMatch = false;
+        if (s.type === 'substitute' || s.subTeacherId) {
+            isMatch = isSub; // Dạy thế -> Tính cho GV dạy thế, bỏ qua GV gốc
+        } else {
+            isMatch = isOriginal || isNameMatch; // Bình thường -> Tính cho GV gốc
+        }
 
         if (isMatch) {
             shiftCount += 1;
