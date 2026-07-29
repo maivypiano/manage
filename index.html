@@ -1543,22 +1543,23 @@
                 try {
                     const response = await fetch(API_URL + "?t=" + new Date().getTime());
                     const data = await response.json();
-                    if (data && typeof data === 'object') {
-                        // Ghi de cache du server tra ve rong (xu ly truong hop xoa GG Sheet)
-                        let changed = false;
-                        if (Array.isArray(data.teachers)) { teachers = data.teachers; changed = true; }
-                        if (Array.isArray(data.students)) { students = data.students; changed = true; }
-                        if (Array.isArray(data.branches)) { branches = data.branches; changed = true; }
-                        if (Array.isArray(data.users)) { users = data.users; try { localStorage.setItem('mv_users_data', JSON.stringify(users)); } catch(e){} changed = true; }
-                        if (data.monthlyData && typeof data.monthlyData === 'object') { monthlyData = data.monthlyData; changed = true; }
+                    if (data && typeof data === 'object' && !data.error) {
+                        // NẾU CÓ INTERNET VÀ SERVER TRẢ VỀ -> ĐÈ CACHE BẰNG MỌI GIÁ (kể cả khi Google Sheet trống trơn)
+                        teachers = Array.isArray(data.teachers) ? data.teachers : [];
+                        students = Array.isArray(data.students) ? data.students : [];
+                        branches = Array.isArray(data.branches) ? data.branches : [];
+                        users = Array.isArray(data.users) ? data.users : [];
+                        monthlyData = (data.monthlyData && typeof data.monthlyData === 'object') ? data.monthlyData : {};
+                        
                         if (!monthlyData[currentMonth]) monthlyData[currentMonth] = { schedule: [], attendanceData: {} };
-                        if (changed) {
-                            localStorage.setItem('mv_cache_data', JSON.stringify({ teachers, students, branches, monthlyData, users }));
-                            syncCurrentMonthPointers();
-                            initApp();
-                            updateUndoRedoUI();
-                            if (typeof checkAuthStatus === 'function') checkAuthStatus();
-                        }
+                        
+                        try { localStorage.setItem('mv_users_data', JSON.stringify(users)); } catch(e){}
+                        localStorage.setItem('mv_cache_data', JSON.stringify({ teachers, students, branches, monthlyData, users }));
+                        
+                        syncCurrentMonthPointers();
+                        initApp();
+                        if (typeof updateUndoRedoUI === 'function') updateUndoRedoUI();
+                        if (typeof checkAuthStatus === 'function') checkAuthStatus();
                     }
                 } catch (error) { console.log("Loi mang, su dung du lieu cuc bo."); }
             })();
@@ -2283,7 +2284,27 @@ function restoreStudent(id) {
             initApp();
         };
 
-        window.editMasterDate = function(index, td) {
+        
+window._isDateCoveredByRecurring = function(entry, dateStr) {
+    if (!entry.day || !entry.weeks) return false;
+    const parts = dateStr.split('-');
+    const d = new Date(parts[0], parseInt(parts[1])-1, parts[2]);
+    const days = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
+    if (days[d.getDay()] !== entry.day) return false;
+    
+    const firstDateOfMonth = new Date(parts[0], parseInt(parts[1])-1, 1);
+    const firstDayOfWeek = firstDateOfMonth.getDay() === 0 ? 6 : firstDateOfMonth.getDay() - 1;
+    let w = Math.ceil((firstDayOfWeek + parseInt(parts[2])) / 7);
+    if (w > 5) w = 5;
+    return entry.weeks.includes(w);
+};
+
+window._isDateActive = function(entry, dateStr) {
+    if (entry.excludedDates && entry.excludedDates.includes(dateStr)) return false;
+    if (entry.exactDates && entry.exactDates.includes(dateStr)) return true;
+    return window._isDateCoveredByRecurring(entry, dateStr);
+};
+window.editMasterDate = function(index, td) {
             if (td.getAttribute('data-editing')) return;
             const entry = schedule[index];
             td.setAttribute('data-editing', 'true');
@@ -2298,7 +2319,7 @@ function restoreStudent(id) {
             html += `<div class="grid grid-cols-7 gap-1">`;
             for(let i=1; i<=daysInMonth; i++) {
                 const dateStr = `${year}-${String(month).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
-                const isSelected = entry.exactDates && entry.exactDates.includes(dateStr);
+                const isSelected = window._isDateActive(entry, dateStr);
                 const isSun = new Date(year, month - 1, i).getDay() === 0;
                 
                 html += `
@@ -2317,24 +2338,43 @@ function restoreStudent(id) {
             td.innerHTML = html;
         };
 
-        window.saveMasterDate = function(index, btn) {
+                window.saveMasterDate = function(index, btn) {
             const container = btn.parentElement;
             const checked = Array.from(container.querySelectorAll('.edit-date-cb:checked')).map(cb => cb.value);
-            if(checked.length === 0) { showToast('Phải chọn ít nhất 1 ngày', 'error'); return; }
-            if (schedule[index]) { 
-                saveStateToHistory(); 
-                checked.sort();
-                schedule[index].exactDates = checked;
+            const unchecked = Array.from(container.querySelectorAll('.edit-date-cb:not(:checked)')).map(cb => cb.value);
+            
+            if (schedule[index]) {
+                saveStateToHistory();
+                const entry = schedule[index];
+                entry.exactDates = entry.exactDates || [];
+                entry.excludedDates = entry.excludedDates || [];
                 
-                delete schedule[index].exactDate;
-                delete schedule[index].day;
-                delete schedule[index].weeks;
-
+                checked.forEach(dateStr => {
+                    entry.excludedDates = entry.excludedDates.filter(d => d !== dateStr);
+                    if (!window._isDateCoveredByRecurring(entry, dateStr) && !entry.exactDates.includes(dateStr)) {
+                        entry.exactDates.push(dateStr);
+                    }
+                });
+                
+                unchecked.forEach(dateStr => {
+                    entry.exactDates = entry.exactDates.filter(d => d !== dateStr);
+                    if (window._isDateCoveredByRecurring(entry, dateStr) && !entry.excludedDates.includes(dateStr)) {
+                        entry.excludedDates.push(dateStr);
+                    }
+                });
+                
+                if (entry.exactDates.length === 0) delete entry.exactDates;
+                else entry.exactDates.sort();
+                
+                if (entry.excludedDates.length === 0) delete entry.excludedDates;
+                else entry.excludedDates.sort();
+                
+                delete entry.exactDate; // Clean up old exactDate if exists
+                
                 saveData(); initApp(); showToast("Đã lưu Ngày học");
             }
         };
-
-        window.editMasterType = function(index, td) {
+window.editMasterType = function(index, td) {
             if (td.getAttribute('data-editing')) return;
             const entry = schedule[index];
             td.setAttribute('data-editing', 'true');
@@ -2483,7 +2523,9 @@ function restoreStudent(id) {
                 }
                 const dayDisplay = uniqueDays.length > 0 ? uniqueDays.join(', ') : '';
 
-                const dateBadge = (entry.exactDates || []).map(d => `<span class="bg-indigo-50 text-indigo-700 text-[11px] px-2 py-1 rounded-md font-bold border border-indigo-100">${d.split('-').reverse().join('/')}</span>`).join(' ');
+                const exactBadge = (entry.exactDates || []).map(d => `<span class="bg-indigo-50 text-indigo-700 text-[11px] px-2 py-1 rounded-md font-bold border border-indigo-100">${d.split('-').reverse().join('/')}</span>`).join(' ');
+const excludedBadge = (entry.excludedDates || []).map(d => `<span class="bg-rose-50 text-rose-700 text-[11px] px-2 py-1 rounded-md font-bold border border-rose-100 line-through" title="Đã xóa nghỉ">${d.split('-').reverse().join('/')}</span>`).join(' ');
+const dateBadge = exactBadge + (exactBadge && excludedBadge ? ' ' : '') + excludedBadge;
                 let typeBadge = `<span class="bg-emerald-50 text-emerald-600 text-[10px] px-2 py-1 rounded font-semibold border border-emerald-100">Cố định</span>`;
                 if (entry.type === 'makeup') typeBadge = `<span class="bg-amber-100 text-amber-800 text-[10px] px-2 py-1 rounded font-bold">Lịch bù</span>`;
                 else if (entry.type === 'substitute') typeBadge = `<span class="bg-teal-100 text-teal-800 text-[10px] px-2 py-1 rounded font-bold">Dạy thế</span>`;
