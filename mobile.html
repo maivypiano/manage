@@ -699,15 +699,6 @@
                     </select>
                     <select id="view-filter-teacher" onchange="renderWeeklySchedule()" class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm transition-all cursor-pointer flex-1 sm:flex-initial"></select>
                     <select id="view-filter-branch" onchange="renderWeeklySchedule()" class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm transition-all cursor-pointer flex-1 sm:flex-initial"></select>
-                    <!-- Lọc tuần phụ: chỉ dành cho Admin Chủ TT khi đang ở chế độ Tổng Quát -->
-                    <select id="view-filter-week-sub" onchange="renderWeeklySchedule()" class="hidden bg-amber-50 border border-amber-300 text-amber-800 font-bold rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 shadow-sm transition-all cursor-pointer flex-1 sm:flex-initial" title="Lọc đôi: chỉ hiển thị lịch của tuần này trong chế độ tổng quát">
-                        <option value="all">📅 Tất cả các tuần</option>
-                        <option value="1">Tuần 1</option>
-                        <option value="2">Tuần 2</option>
-                        <option value="3">Tuần 3</option>
-                        <option value="4">Tuần 4</option>
-                        <option value="5">Tuần 5</option>
-                    </select>
                     <button onclick="resetScheduleFilter()" class="text-[11px] font-bold text-slate-500 hover:text-rose-600 bg-slate-50 border border-slate-200 px-2.5 py-1.5 rounded-xl transition-all">↺ Xóa lọc</button>
                     <button onclick="toggleScheduleFilterPanel()" class="sm:hidden text-[11px] font-bold text-white bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 rounded-xl transition-all">Áp dụng</button>
                 </div>
@@ -2406,8 +2397,7 @@
 
         function resetScheduleFilter() {
             const wt = document.getElementById('view-filter-week');
-            const wtSub = document.getElementById('view-filter-week-sub');
-            const ft = document.getElementById('view-filter-teacher');
+                        const ft = document.getElementById('view-filter-teacher');
             const fb = document.getElementById('view-filter-branch');
             if (wt) {
                 // Staff (giáo viên, giáo vụ, kế toán): về tuần hiện tại
@@ -2425,13 +2415,12 @@
                 const wk = Math.min(Math.floor(todayOffset / 7) + 1, 5);
                 if (role === 'teacher' || role === 'academic' || role === 'accountant') {
                     wt.value = String(wk);
-                    if (wtSub) wtSub.value = 'all';
+                    
                 } else if (role === 'admin' || role === 'superadmin') {
-                    wt.value = 'summary';
-                    if (wtSub) wtSub.value = String(wk);
+                    wt.value = String(wk);
                 } else {
                     wt.value = 'all';
-                    if (wtSub) wtSub.value = 'all';
+                    
                 }
             }
             if (ft) ft.value = '';
@@ -3539,8 +3528,7 @@ function renderWeeklySchedule() {
             const selectedWeek = document.getElementById('view-filter-week').value;
             const filterTeacher = document.getElementById('view-filter-teacher').value;
             const filterBranch = document.getElementById('view-filter-branch').value;
-            const filterWeekSubEl = document.getElementById('view-filter-week-sub');
-            const filterWeekSub = filterWeekSubEl ? filterWeekSubEl.value : 'all';
+            
             let isSummary = selectedWeek === 'summary';
             // Ép Admin Chủ TT xem dạng tóm tắt gọn gàng cho tuần được chọn
             if (typeof currentAuthUser !== 'undefined' && currentAuthUser && (currentAuthUser.role === 'admin' || currentAuthUser.role === 'superadmin') && selectedWeek !== 'summary' && selectedWeek !== 'all') {
@@ -3553,15 +3541,10 @@ function renderWeeklySchedule() {
             const compactMode = isSummary || (isMobilePortraitAll && !isSpecificWeek);
 
             // Hiện/ẩn select tuần phụ: chỉ Admin Chủ TT + đang ở chế độ Tổng Quát
-            if (filterWeekSubEl) {
-                const roleNow = (typeof currentAuthUser !== 'undefined' && currentAuthUser) ? currentAuthUser.role : null;
-                const isAdminChuTTNow = (roleNow === 'admin' || roleNow === 'superadmin');
-                if (isSummary && isAdminChuTTNow) {
-                    filterWeekSubEl.classList.remove('hidden');
-                } else {
-                    filterWeekSubEl.classList.add('hidden');
+             else {
+                    
                     // Reset về 'all' khi không dùng
-                    if (filterWeekSubEl.value !== 'all') filterWeekSubEl.value = 'all';
+                    
                 }
             }
 
@@ -3597,7 +3580,6 @@ function renderWeeklySchedule() {
                     const displayWeekNum = w > 5 ? 5 : w;
                     if (selectedWeek !== 'all' && selectedWeek !== 'summary' && parseInt(selectedWeek) !== displayWeekNum) continue;
                     // Lọc đôi: ở chế độ Tổng Quát, nếu Admin chọn tuần phụ -> chỉ hiện tuần đó
-                    if (isSummary && filterWeekSub !== 'all' && parseInt(filterWeekSub) !== displayWeekNum) continue;
 
                     hasAnyDate = true;
                     const currentDate = new Date(startDateOfCalendar);
@@ -4284,10 +4266,7 @@ function checkAuthStatus() {
                     const _diffDaysSub = Math.floor((_nowSub - _calStartSub) / (1000*60*60*24));
                     const _curWeekSub = Math.min(5, Math.max(1, Math.floor(_diffDaysSub / 7) + 1));
                     weekSel.value = _curWeekSub.toString();
-                    const weekSubEl = document.getElementById('view-filter-week-sub');
-                    if (weekSubEl) {
-                        weekSubEl.value = _curWeekSub.toString();
-                    }
+                    
                 } else {
                     // Role khac: tu dong chon tuan hien tai
                     const _now = new Date();
@@ -5856,3 +5835,7 @@ function confirmPaidAndSendEmail(teacherId, salaryMoney, bankInfo) {
 
 </body>
 </html>
+
+
+
+
