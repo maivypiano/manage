@@ -3540,14 +3540,6 @@ function renderWeeklySchedule() {
             const isSpecificWeek = selectedWeek !== 'all' && !isSummary;
             const compactMode = isSummary || (isMobilePortraitAll && !isSpecificWeek);
 
-            // Hiện/ẩn select tuần phụ: chỉ Admin Chủ TT + đang ở chế độ Tổng Quát
-             else {
-                    
-                    // Reset về 'all' khi không dùng
-                    
-                }
-            }
-
             const daysMapOfWeek = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
             days.forEach((dayName, dayIndex) => {
                 const col = document.getElementById(`day-col-${dayName}`);
