@@ -1811,6 +1811,21 @@
                     const response = await fetch(API_URL + "?t=" + new Date().getTime());
                     const data = await response.json();
                     if (data && typeof data === 'object' && !data.error) {
+                        // Kiểm tra phiên bản dữ liệu trước khi đè cache
+                        try {
+                            const localCacheStr = localStorage.getItem('mv_cache_data');
+                            if (localCacheStr) {
+                                const localCache = JSON.parse(localCacheStr);
+                                const serverLastModified = data._lastModified || 0;
+                                const localLastModified = localCache._lastModified || 0;
+                                if (localLastModified > serverLastModified) {
+                                    console.log("Dữ liệu local mới hơn server. Bỏ qua đồng bộ để tránh mất dữ liệu.");
+                                    if (typeof showToast === 'function') showToast("Đã giữ lại dữ liệu mới nhất trên máy (Server đang bị trễ).", "warning");
+                                    return;
+                                }
+                            }
+                        } catch(e) {}
+
                         // NẾU CÓ INTERNET VÀ SERVER TRẢ VỀ -> ĐÈ CACHE BẰNG MỌI GIÁ (kể cả khi Google Sheet trống trơn)
                         teachers = Array.isArray(data.teachers) ? data.teachers : [];
                         students = Array.isArray(data.students) ? data.students : [];
@@ -2304,7 +2319,7 @@
         async function saveData() {
             // cleanOrphanAttendanceData bypassed
             monthlyData[currentMonth] = { schedule, attendanceData };
-            const payload = { teachers, students, branches, monthlyData, users };
+            const payload = { teachers, students, branches, monthlyData, users, _lastModified: Date.now() };
             
             // 1. LƯU NGAY VÀO CACHE TRÌNH DUYỆT (Đảm bảo không bao giờ mất dữ liệu kể cả tắt trang)
             try {
@@ -3526,7 +3541,11 @@ function renderWeeklySchedule() {
             const filterBranch = document.getElementById('view-filter-branch').value;
             const filterWeekSubEl = document.getElementById('view-filter-week-sub');
             const filterWeekSub = filterWeekSubEl ? filterWeekSubEl.value : 'all';
-            const isSummary = selectedWeek === 'summary';
+            let isSummary = selectedWeek === 'summary';
+            // Ép Admin Chủ TT xem dạng tóm tắt gọn gàng cho tuần được chọn
+            if (typeof currentAuthUser !== 'undefined' && currentAuthUser && (currentAuthUser.role === 'admin' || currentAuthUser.role === 'superadmin') && selectedWeek !== 'summary' && selectedWeek !== 'all') {
+                isSummary = true;
+            }
             const isMobilePortraitAll = (typeof currentSelectedMobileDay !== 'undefined' && currentSelectedMobileDay === 'all' && window.innerWidth <= 1024 && window.innerHeight > window.innerWidth);
             // compactMode: chỉ bật khi (a) chế độ Tổng Quát, hoặc (b) đang xem cả tháng trên mobile portrait
             // Khi chọn 1 tuần cụ thể -> hiện đầy đủ thông tin ca học (không compact)
@@ -3549,6 +3568,15 @@ function renderWeeklySchedule() {
             const daysMapOfWeek = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
             days.forEach((dayName, dayIndex) => {
                 const col = document.getElementById(`day-col-${dayName}`);
+                if (col) {
+                    if (compactMode || isSummary) {
+                        col.classList.remove('min-h-[180px]', 'min-h-[80vh]');
+                        col.classList.add('min-h-0');
+                    } else {
+                        col.classList.remove('min-h-0');
+                        col.classList.add('min-h-[180px]');
+                    }
+                }
                 const isTodayCol = (dayName === daysMapOfWeek[now.getDay()]);
                 const dayBadgeClass = isTodayCol 
                     ? 'border-2 border-amber-500 bg-amber-50 text-amber-900 shadow-md ring-2 ring-amber-400/40 font-extrabold' 
@@ -3567,7 +3595,7 @@ function renderWeeklySchedule() {
 
                 for (let w = 1; w <= totalWeeks; w++) {
                     const displayWeekNum = w > 5 ? 5 : w;
-                    if (selectedWeek !== 'all' && !isSummary && parseInt(selectedWeek) !== displayWeekNum) continue;
+                    if (selectedWeek !== 'all' && selectedWeek !== 'summary' && parseInt(selectedWeek) !== displayWeekNum) continue;
                     // Lọc đôi: ở chế độ Tổng Quát, nếu Admin chọn tuần phụ -> chỉ hiện tuần đó
                     if (isSummary && filterWeekSub !== 'all' && parseInt(filterWeekSub) !== displayWeekNum) continue;
 
@@ -4246,7 +4274,6 @@ function checkAuthStatus() {
             if (weekSel) {
                 if (_isAdminChuTT) {
                     // Admin Chu TT: Xem Tong Quat (summary) - bao quat ca tuan
-                    weekSel.value = 'summary';
                     const _nowSub = new Date();
                     const _partsSub = (typeof currentMonth !== 'undefined' ? currentMonth : '').split('-');
                     const _yearSub = parseInt(_partsSub[0]); const _monSub = parseInt(_partsSub[1]);
@@ -4256,6 +4283,7 @@ function checkAuthStatus() {
                     const _calStartSub = new Date(_yearSub, _monSub - 1, 1 - _offsetSub);
                     const _diffDaysSub = Math.floor((_nowSub - _calStartSub) / (1000*60*60*24));
                     const _curWeekSub = Math.min(5, Math.max(1, Math.floor(_diffDaysSub / 7) + 1));
+                    weekSel.value = _curWeekSub.toString();
                     const weekSubEl = document.getElementById('view-filter-week-sub');
                     if (weekSubEl) {
                         weekSubEl.value = _curWeekSub.toString();
