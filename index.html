@@ -1544,6 +1544,21 @@
                     const response = await fetch(API_URL + "?t=" + new Date().getTime());
                     const data = await response.json();
                     if (data && typeof data === 'object' && !data.error) {
+                        // Kiểm tra phiên bản dữ liệu trước khi đè cache
+                        try {
+                            const localCacheStr = localStorage.getItem('mv_cache_data');
+                            if (localCacheStr) {
+                                const localCache = JSON.parse(localCacheStr);
+                                const serverLastModified = data._lastModified || 0;
+                                const localLastModified = localCache._lastModified || 0;
+                                if (localLastModified > serverLastModified) {
+                                    console.log("Dữ liệu local mới hơn server. Bỏ qua đồng bộ để tránh mất dữ liệu.");
+                                    if (typeof showToast === 'function') showToast("Đã giữ lại dữ liệu mới nhất trên máy (Server đang bị trễ).", "warning");
+                                    return;
+                                }
+                            }
+                        } catch(e) {}
+
                         // NẾU CÓ INTERNET VÀ SERVER TRẢ VỀ -> ĐÈ CACHE BẰNG MỌI GIÁ (kể cả khi Google Sheet trống trơn)
                         teachers = Array.isArray(data.teachers) ? data.teachers : [];
                         students = Array.isArray(data.students) ? data.students : [];
@@ -1781,7 +1796,7 @@
         async function saveData() {
             // cleanOrphanAttendanceData bypassed
             monthlyData[currentMonth] = { schedule, attendanceData };
-            const payload = { teachers, students, branches, monthlyData, users };
+            const payload = { teachers, students, branches, monthlyData, users, _lastModified: Date.now() };
             
             // 1. LƯU NGAY VÀO CACHE TRÌNH DUYỆT (Đảm bảo không bao giờ mất dữ liệu kể cả tắt trang)
             try {
