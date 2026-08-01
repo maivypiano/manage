@@ -831,7 +831,7 @@
                 <input type="hidden" id="qe-schedule-id">
                 <input type="hidden" id="qe-date-key">
                 <div>
-                    <label class="flex justify-between items-end text-xs font-bold text-slate-500 uppercase tracking-wider mb-1"><span>Học sinh</span><input type="text" id="qa-search-student" oninput="if(typeof filterQaStudentSelect === 'function') filterQaStudentSelect()" placeholder="Tìm..." class="w-24 px-1 py-0.5 border-b border-slate-300 bg-transparent focus:outline-none focus:border-indigo-500 text-xs text-slate-700 font-normal lowercase"></label>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Học sinh</label>
                     <input type="text" id="qe-student-name" class="w-full bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 text-sm font-bold text-slate-700 cursor-not-allowed" disabled>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
@@ -1248,6 +1248,7 @@
             const modal = document.getElementById('quick-add-modal');
             if (!modal) return;
             document.getElementById('qa-day-name').value = dayName;
+            if(document.getElementById('qa-search-student')) document.getElementById('qa-search-student').value = '';
             document.getElementById('qa-day-display').textContent = dayName;
             document.getElementById('qa-scope-day-name').textContent = dayName;
             
@@ -4872,7 +4873,22 @@ function confirmPaidAndSendEmail(teacherId, salaryMoney, bankInfo) {
     closeVietQRModal();
 }
 
-</script>
+
+        function filterQaStudentSelect() {
+            try {
+                const val = (document.getElementById('qa-search-student')?.value || '').toLowerCase();
+                const filtered = students.filter(s => s && s.name && String(s.name).toLowerCase().includes(val));
+                document.getElementById('qa-student-select').innerHTML = '<option value="" disabled selected>-- Chọn học viên --</option>' + filtered.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+            } catch(e) { console.error(e); }
+        }
+        function filterFormStudentSelect() {
+            try {
+                const val = (document.getElementById('form-search-student')?.value || '').toLowerCase();
+                const filtered = students.filter(s => s && s.name && String(s.name).toLowerCase().includes(val));
+                document.getElementById('form-student').innerHTML = '<option value="" disabled selected>-- Chọn học viên --</option>' + filtered.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+            } catch(e) { console.error(e); }
+        }
+    </script>
 
     <!-- ==================== MODAL: VIETQR & GMAIL API ==================== -->
     <div id="vietqr-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 animate-fade-in">
