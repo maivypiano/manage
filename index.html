@@ -1,6 +1,17 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+
+    <script>
+        // TỰ ĐỘNG XÓA CACHE ĐỂ LẤY DATA TỪ GG SHEET LÀM CHUẨN
+        if (!localStorage.getItem('cache_cleared_v7')) {
+            localStorage.removeItem('mv_cache_data');
+            localStorage.setItem('cache_cleared_v7', 'true');
+            alert('Đã xóa sạch dữ liệu tạm trên máy. Hệ thống sẽ tải lại dữ liệu gốc từ Google Sheets!');
+            window.location.reload();
+        }
+    </script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mai Vy Piano - Quản Lý Lịch Học & Giảng Dạy v3.5 (Animated)</title>
@@ -938,7 +949,7 @@
                     <div class="space-y-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
                         <label class="flex items-start gap-2 text-xs font-bold text-indigo-700 cursor-pointer">
                             <input type="radio" name="qa-scope" value="recurring" checked onchange="toggleQaDateSelection(this.value)" class="mt-0.5 text-indigo-600 focus:ring-indigo-500">
-                            <span>Cố định hàng tuần vào <span id="qa-scope-day-name"></span> (Lịch cố định các tuần)</span>
+                            <span>Thêm lịch hôm nay <span id="qa-scope-day-name" class="hidden"></span></span>
                         </label>
                         <label class="flex items-start gap-2 text-xs font-medium text-slate-600 cursor-pointer">
                             <input type="radio" name="qa-scope" value="specific_dates" onchange="toggleQaDateSelection(this.value)" class="mt-0.5 text-indigo-600 focus:ring-indigo-500">
@@ -1108,7 +1119,7 @@
             document.getElementById('qe-end-time').value = entry.end || '';
             
             const teacherSelect = document.getElementById('qe-teacher-select');
-            teacherSelect.innerHTML = teachers.map(t => `<option value="${t.id}" ${t.id === entry.teacherId ? 'selected' : ''}>${t.display} (${t.id})</option>`).join('');
+            teacherSelect.innerHTML = '<option value=\"\" disabled selected>-- Chọn giáo viên --</option>' + teachers.map(t => `<option value="${t.id}" ${t.id === entry.teacherId ? 'selected' : ''}>${t.display} (${t.id})</option>`).join('');
             
             const subSelect = document.getElementById('qe-sub-teacher-select');
             if (subSelect) subSelect.innerHTML = teachers.map(t => `<option value="${t.id}" ${t.id === (entry.subTeacherId || entry.teacherId) ? 'selected' : ''}>${t.display} (${t.id})</option>`).join('');
@@ -2585,7 +2596,13 @@ const dateBadge = exactBadge + (exactBadge && excludedBadge ? ' ' : '') + exclud
             let msg = "";
             if (oldStatus === status) {
                 delete attendanceData[key];
-                if(status === 'present' && student) student.completedLessons = Math.max(0, student.completedLessons - 1);
+                if(status === 'present' && student) {
+                        const sched = schedule.find(sc => sc.id === scheduleId);
+                        const isTrial = sched && sched.type === 'trial';
+                        if (!isTrial) {
+                             student.completedLessons = Math.max(0, student.completedLessons - 1);
+                        }
+                    }
                     if (student.completedAtDate && student.completedAtDate[dateString] !== undefined) {
                         delete student.completedAtDate[dateString];
                     }
@@ -2595,7 +2612,12 @@ const dateBadge = exactBadge + (exactBadge && excludedBadge ? ' ' : '') + exclud
                 // Cộng/Trừ buổi cho student - LUÔN tìm được student trước khi cộng
                 if(status === 'present' && oldStatus !== 'present') {
                     if (student) {
+                    const sched = schedule.find(sc => sc.id === scheduleId);
+                    const isTrial = sched && sched.type === 'trial';
+                    if (!isTrial) {
+                        
                         student.completedLessons++;
+                    }
                         if (!student.completedAtDate) student.completedAtDate = {};
                         student.completedAtDate[dateString] = student.completedLessons;
                     } else {
@@ -2603,7 +2625,12 @@ const dateBadge = exactBadge + (exactBadge && excludedBadge ? ' ' : '') + exclud
                     }
                 }
                 if(oldStatus === 'present' && status !== 'present' && student) {
+                    const sched = schedule.find(sc => sc.id === scheduleId);
+                    const isTrial = sched && sched.type === 'trial';
+                    if (!isTrial) {
+                        
                     student.completedLessons = Math.max(0, student.completedLessons - 1);
+                    }
                     if (student.completedAtDate && student.completedAtDate[dateString] !== undefined) {
                         delete student.completedAtDate[dateString];
                     }
