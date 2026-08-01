@@ -1376,7 +1376,7 @@
             document.getElementById('qe-end-time').value = entry.end || '';
             
             const teacherSelect = document.getElementById('qe-teacher-select');
-            teacherSelect.innerHTML = teachers.map(t => `<option value="${t.id}" ${t.id === entry.teacherId ? 'selected' : ''}>${t.display} (${t.id})</option>`).join('');
+            teacherSelect.innerHTML = '<option value=\"\" disabled selected>-- Chọn giáo viên --</option>' + teachers.map(t => `<option value="${t.id}" ${t.id === entry.teacherId ? 'selected' : ''}>${t.display} (${t.id})</option>`).join('');
             
             const subSelect = document.getElementById('qe-sub-teacher-select');
             if (subSelect) subSelect.innerHTML = teachers.map(t => `<option value="${t.id}" ${t.id === (entry.subTeacherId || entry.teacherId) ? 'selected' : ''}>${t.display} (${t.id})</option>`).join('');
@@ -1609,10 +1609,32 @@
             if (type !== 'substitute') delete newEntryObj.subTeacherId;
 
             if (scope === 'recurring') {
-                newEntryObj.day = dayName;
-                newEntryObj.weeks = [1, 2, 3, 4, 5];
-                schedule.push(newEntryObj);
-                showToast(`Đã thêm lịch cố định vào ${dayName} trong Master Data!`);
+                const [year, month] = currentMonth.split('-');
+                const daysInMonth = new Date(year, month, 0).getDate();
+                const daysNameList = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+                let today = new Date();
+                let closestDate = null;
+                let minDiff = 99999999999;
+                
+                for(let i=1; i<=daysInMonth; i++) {
+                    let dt = new Date(year, month - 1, i);
+                    if (daysNameList[dt.getDay()] === dayName) {
+                        let diff = Math.abs(dt.getTime() - today.getTime());
+                        if (diff < minDiff) {
+                            minDiff = diff;
+                            closestDate = dt;
+                        }
+                    }
+                }
+                
+                if (closestDate) {
+                    newEntryObj.exactDates = [formatDate(closestDate)];
+                    schedule.push(newEntryObj);
+                    showToast(`Đã thêm lịch vào ${dayName} (${formatDate(closestDate)})`);
+                } else {
+                    showToast('Không tìm thấy ngày phù hợp', 'error');
+                    return;
+                }
             } else {
                 const selectedDates = Array.from(document.querySelectorAll('input[name="qa-exact-dates"]:checked')).map(cb => cb.value);
                 if (selectedDates.length === 0) {
@@ -3345,7 +3367,13 @@ const dateBadge = exactBadge + (exactBadge && excludedBadge ? ' ' : '') + exclud
             let msg = "";
             if (oldStatus === status) {
                 delete attendanceData[key];
-                if(status === 'present' && student) student.completedLessons = Math.max(0, student.completedLessons - 1);
+                if(status === 'present' && student) {
+                        const sched = schedule.find(sc => sc.id === scheduleId);
+                        const isTrial = sched && sched.type === 'trial';
+                        if (!isTrial) {
+                             student.completedLessons = Math.max(0, student.completedLessons - 1);
+                        }
+                    }
                     if (student.completedAtDate && student.completedAtDate[dateString] !== undefined) {
                         delete student.completedAtDate[dateString];
                     }
@@ -3362,7 +3390,12 @@ const dateBadge = exactBadge + (exactBadge && excludedBadge ? ' ' : '') + exclud
                     }
                 }
                 if(oldStatus === 'present' && status !== 'present' && student) {
+                    const sched = schedule.find(sc => sc.id === scheduleId);
+                    const isTrial = sched && sched.type === 'trial';
+                    if (!isTrial) {
+                        
                     student.completedLessons = Math.max(0, student.completedLessons - 1);
+                    }
                     if (student.completedAtDate && student.completedAtDate[dateString] !== undefined) {
                         delete student.completedAtDate[dateString];
                     }
