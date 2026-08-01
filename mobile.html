@@ -1,6 +1,17 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+
+    <script>
+        // TỰ ĐỘNG XÓA CACHE ĐỂ LẤY DATA TỪ GG SHEET LÀM CHUẨN
+        if (!localStorage.getItem('cache_cleared_v7')) {
+            localStorage.removeItem('mv_cache_data');
+            localStorage.setItem('cache_cleared_v7', 'true');
+            alert('Đã xóa sạch dữ liệu tạm trên máy. Hệ thống sẽ tải lại dữ liệu gốc từ Google Sheets!');
+            window.location.reload();
+        }
+    </script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Mai Vy Piano - Quản Lý Lịch Học & Giảng Dạy v3.5 (Animated)</title>
@@ -1165,7 +1176,7 @@
                     <div class="space-y-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
                         <label class="flex items-start gap-2 text-xs font-bold text-indigo-700 cursor-pointer">
                             <input type="radio" name="qa-scope" value="recurring" checked onchange="toggleQaDateSelection(this.value)" class="mt-0.5 text-indigo-600 focus:ring-indigo-500">
-                            <span>Cố định hàng tuần vào <span id="qa-scope-day-name"></span> (Lịch cố định các tuần)</span>
+                            <span>Thêm lịch hôm nay <span id="qa-scope-day-name" class="hidden"></span></span>
                         </label>
                         <label class="flex items-start gap-2 text-xs font-medium text-slate-600 cursor-pointer">
                             <input type="radio" name="qa-scope" value="specific_dates" onchange="toggleQaDateSelection(this.value)" class="mt-0.5 text-indigo-600 focus:ring-indigo-500">
