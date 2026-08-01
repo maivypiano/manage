@@ -1352,10 +1352,32 @@
             if (type !== 'substitute') delete newEntryObj.subTeacherId;
 
             if (scope === 'recurring') {
-                newEntryObj.day = dayName;
-                newEntryObj.weeks = [1, 2, 3, 4, 5];
-                schedule.push(newEntryObj);
-                showToast(`Đã thêm lịch cố định vào ${dayName} trong Master Data!`);
+                const [year, month] = currentMonth.split('-');
+                const daysInMonth = new Date(year, month, 0).getDate();
+                const daysNameList = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+                let today = new Date();
+                let closestDate = null;
+                let minDiff = 99999999999;
+                
+                for(let i=1; i<=daysInMonth; i++) {
+                    let dt = new Date(year, month - 1, i);
+                    if (daysNameList[dt.getDay()] === dayName) {
+                        let diff = Math.abs(dt.getTime() - today.getTime());
+                        if (diff < minDiff) {
+                            minDiff = diff;
+                            closestDate = dt;
+                        }
+                    }
+                }
+                
+                if (closestDate) {
+                    newEntryObj.exactDates = [formatDate(closestDate)];
+                    schedule.push(newEntryObj);
+                    showToast(`Đã thêm lịch vào ${dayName} (${formatDate(closestDate)})`);
+                } else {
+                    showToast('Không tìm thấy ngày phù hợp', 'error');
+                    return;
+                }
             } else {
                 const selectedDates = Array.from(document.querySelectorAll('input[name="qa-exact-dates"]:checked')).map(cb => cb.value);
                 if (selectedDates.length === 0) {
