@@ -268,9 +268,12 @@
                     </div>
 
                     <div class="bg-white rounded-2xl border border-slate-200 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_30px_-4px_rgba(0,0,0,0.08)] transition-shadow duration-500 overflow-hidden flex flex-col h-[550px]">
-                        <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-white">
-                            <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">Học Viên</h3>
-                            <span class="bg-sky-50 text-sky-700 text-xs font-bold px-3 py-1 rounded-full" id="student-count"></span>
+                        <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-white flex-wrap gap-2">
+                            <div class="flex items-center gap-3">
+                                <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">Học Viên</h3>
+                                <span class="bg-sky-50 text-sky-700 text-xs font-bold px-3 py-1 rounded-full" id="student-count"></span>
+                            </div>
+                            <input type="text" id="search-students" oninput="if(typeof renderStudents === 'function') renderStudents()" placeholder="Tìm học viên..." class="w-full sm:w-48 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sky-500">
                         </div>
                         <div class="p-4 border-b border-slate-100 bg-slate-50/80">
                             <form onsubmit="addStudent(event)" class="flex flex-wrap gap-2">
@@ -367,7 +370,7 @@
                     </h3>
                     <form onsubmit="addScheduleEntry(event)" class="grid grid-cols-1 md:grid-cols-4 xl:grid-cols-10 gap-4 items-end relative z-10">
                         <div class="xl:col-span-2">
-                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Học Viên</label>
+                            <label class="flex justify-between items-end text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2"><span>Học Viên</span><input type="text" id="form-search-student" oninput="if(typeof filterFormStudentSelect === 'function') filterFormStudentSelect()" placeholder="Tìm..." class="w-32 px-1 py-0.5 border-b border-slate-300 bg-transparent focus:outline-none focus:border-indigo-500 text-[11px] text-slate-700 font-normal lowercase"></label>
                             <select id="form-student" onchange="autoSelectTeacherInMaster(this.value)" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"></select>
                         </div>
                         <div class="xl:col-span-2">
@@ -828,7 +831,7 @@
                 <input type="hidden" id="qe-schedule-id">
                 <input type="hidden" id="qe-date-key">
                 <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Học sinh</label>
+                    <label class="flex justify-between items-end text-xs font-bold text-slate-500 uppercase tracking-wider mb-1"><span>Học sinh</span><input type="text" id="qa-search-student" oninput="if(typeof filterQaStudentSelect === 'function') filterQaStudentSelect()" placeholder="Tìm..." class="w-24 px-1 py-0.5 border-b border-slate-300 bg-transparent focus:outline-none focus:border-indigo-500 text-xs text-slate-700 font-normal lowercase"></label>
                     <input type="text" id="qe-student-name" class="w-full bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 text-sm font-bold text-slate-700 cursor-not-allowed" disabled>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
@@ -905,7 +908,7 @@
             <div class="p-6 space-y-4 text-left max-h-[75vh] overflow-y-auto custom-scrollbar">
                 <input type="hidden" id="qa-day-name">
                 <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Học sinh</label>
+                    <label class="flex justify-between items-end text-xs font-bold text-slate-500 uppercase tracking-wider mb-1"><span>Học sinh</span><input type="text" id="qa-search-student" oninput="if(typeof filterQaStudentSelect === 'function') filterQaStudentSelect()" placeholder="Tìm..." class="w-24 px-1 py-0.5 border-b border-slate-300 bg-transparent focus:outline-none focus:border-indigo-500 text-xs text-slate-700 font-normal lowercase"></label>
                     <select id="qa-student-select" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500"></select>
                 </div>
                 <div>
@@ -2103,7 +2106,10 @@
             // 1. Nếu hoàn thành -> xuống dưới
             // 2. Nếu cùng trạng thái -> Xếp số buổi tăng dần
             // 3. Nếu số buổi bằng nhau -> ABC
-            const sortedStudents = [...students].sort((a, b) => {
+            const searchVal = (document.getElementById('search-students')?.value || '').toLowerCase();
+              const filteredStudents = students.filter(s => s.name.toLowerCase().includes(searchVal));
+              document.getElementById('student-count').textContent = `${filteredStudents.length} HV`;
+              const sortedStudents = [...filteredStudents].sort((a, b) => {
                 const aCompleted = a.completedLessons > 0 && a.completedLessons >= a.lessons;
                 const bCompleted = b.completedLessons > 0 && b.completedLessons >= b.lessons;
                 
