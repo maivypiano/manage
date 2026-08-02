@@ -225,6 +225,11 @@
                     </div>
                 </div>
 
+                
+                <div id="sync-indicator" class="flex items-center gap-2 px-3 py-2 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl text-xs font-bold shadow-sm transition-all" title="Trạng thái lưu dữ liệu">
+                    <div id="sync-dot" class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]"></div>
+                    <span id="sync-text" class="hidden md:inline">Đã lưu</span>
+                </div>
                 <button onclick="exportToCSV()" class="interactive-btn flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-900 text-white font-semibold px-5 py-2.5 rounded-xl transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 active:scale-95 text-sm btn-sparkle">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                     Xuất File
@@ -1830,23 +1835,71 @@
         }
 
         let saveTimeout = null;
-        async function saveData() {
-            // cleanOrphanAttendanceData bypassed
+        async let isSyncing = false;
+        let hasPendingSave = false;
+        let pendingPayload = null;
+
+        function updateSyncUI(state) {
+            const ind = document.getElementById('sync-indicator');
+            const dot = document.getElementById('sync-dot');
+            const txt = document.getElementById('sync-text');
+            if(!ind || !dot || !txt) return;
+            
+            ind.className = 'flex items-center gap-2 px-3 py-2 border rounded-xl text-xs font-bold shadow-sm transition-all cursor-default';
+            if(state === 'synced') {
+                ind.classList.add('bg-emerald-50', 'border-emerald-200', 'text-emerald-700');
+                dot.className = 'w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]';
+                txt.textContent = 'Đã lưu';
+            } else if(state === 'waiting') {
+                ind.classList.add('bg-amber-50', 'border-amber-200', 'text-amber-700');
+                dot.className = 'w-2 h-2 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.8)] animate-pulse';
+                txt.textContent = 'Chờ lưu...';
+            } else if(state === 'syncing') {
+                ind.classList.add('bg-sky-50', 'border-sky-200', 'text-sky-700');
+                dot.className = 'w-2 h-2 rounded-full bg-sky-500 shadow-[0_0_8px_rgba(14,165,233,0.8)] animate-bounce';
+                txt.textContent = 'Đang đẩy lên...';
+            }
+        }
+
+        async function flushPendingSave() {
+            if(!pendingPayload) return;
+            hasPendingSave = false;
+            isSyncing = true;
+            updateSyncUI('syncing');
+            try {
+                // keepalive: true ensures request completes even if page closes
+                await fetch(API_URL, { 
+                    method: 'POST', 
+                    mode: 'no-cors', 
+                    keepalive: true,
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
+                    body: pendingPayload 
+                });
+            } catch (error) {
+                console.error("Lỗi đồng bộ ngầm:", error);
+            } finally {
+                isSyncing = false;
+                pendingPayload = null;
+                updateSyncUI('synced');
+            }
+        }
+
+        function saveData() {
             monthlyData[currentMonth] = { schedule, attendanceData };
             const payload = { teachers, students, branches, monthlyData, users, _lastModified: Date.now() };
+            pendingPayload = JSON.stringify(payload);
             
-            // 1. LƯU NGAY VÀO CACHE TRÌNH DUYỆT (Đảm bảo không bao giờ mất dữ liệu kể cả tắt trang)
             try {
-                localStorage.setItem('mv_cache_data', JSON.stringify(payload));
+                localStorage.setItem('mv_cache_data', pendingPayload);
             } catch(e) {}
 
-            // 2. DEBOUNCE / GỘP LỆNH GỬI LÊN SERVER (Trì hoãn 1.5s để giảm tải server 80%)
+            hasPendingSave = true;
+            updateSyncUI('waiting');
+
             if (saveTimeout) clearTimeout(saveTimeout);
-            saveTimeout = setTimeout(async () => {
-                try {
-                    await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
-                } catch (error) {}
-            }, 1500);
+            saveTimeout = setTimeout(() => {
+                flushPendingSave();
+            }, 1000); // 1s debounce
         }
 
         function initApp() {
@@ -4888,6 +4941,24 @@ function confirmPaidAndSendEmail(teacherId, salaryMoney, bankInfo) {
                 document.getElementById('form-student').innerHTML = '<option value="" disabled selected>-- Chọn học viên --</option>' + filtered.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
             } catch(e) { console.error(e); }
         }
+    
+        window.addEventListener('beforeunload', (e) => {
+            if (hasPendingSave || isSyncing) {
+                // Force flush immediately
+                if (saveTimeout) clearTimeout(saveTimeout);
+                if (hasPendingSave) {
+                    // SendBeacon is extremely reliable for beforeunload, but Apps Script POST needs keepalive fetch
+                    try {
+                        fetch(API_URL, { method: 'POST', mode: 'no-cors', keepalive: true, headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: pendingPayload });
+                    } catch(err){}
+                }
+                
+                // Show warning dialog (browsers may ignore custom message, but will show warning)
+                e.preventDefault();
+                e.returnValue = 'Dữ liệu chưa lưu xong, bạn có chắc muốn thoát?';
+                return e.returnValue;
+            }
+        });
     </script>
 
     <!-- ==================== MODAL: VIETQR & GMAIL API ==================== -->
