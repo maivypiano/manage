@@ -5766,6 +5766,24 @@ function confirmPaidAndSendEmail(teacherId, salaryMoney, bankInfo) {
                 document.getElementById('form-student').innerHTML = '<option value="" disabled selected>-- Chọn học viên --</option>' + filtered.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
             } catch(e) { console.error(e); }
         }
+    
+        window.addEventListener('beforeunload', (e) => {
+            if (hasPendingSave || isSyncing) {
+                // Force flush immediately
+                if (saveTimeout) clearTimeout(saveTimeout);
+                if (hasPendingSave) {
+                    // SendBeacon is extremely reliable for beforeunload, but Apps Script POST needs keepalive fetch
+                    try {
+                        fetch(API_URL, { method: 'POST', mode: 'no-cors', keepalive: true, headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: pendingPayload });
+                    } catch(err){}
+                }
+                
+                // Show warning dialog (browsers may ignore custom message, but will show warning)
+                e.preventDefault();
+                e.returnValue = 'Dữ liệu chưa lưu xong, bạn có chắc muốn thoát?';
+                return e.returnValue;
+            }
+        });
     </script>
 
     <!-- ==================== MODAL: VIETQR & GMAIL API ==================== -->
