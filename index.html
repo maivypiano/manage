@@ -3,13 +3,6 @@
 <head>
 
     <script>
-        // TỰ ĐỘNG XÓA CACHE ĐỂ LẤY DATA TỪ GG SHEET LÀM CHUẨN
-        if (!localStorage.getItem('cache_cleared_v7')) {
-            localStorage.removeItem('mv_cache_data');
-            localStorage.setItem('cache_cleared_v7', 'true');
-            alert('Đã xóa sạch dữ liệu tạm trên máy. Hệ thống sẽ tải lại dữ liệu gốc từ Google Sheets!');
-            window.location.reload();
-        }
     </script>
 
     <meta charset="UTF-8">
@@ -207,7 +200,7 @@
         <a href="javascript:void(0)" onclick="openChangePasswordModal()" class="block px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 transition flex items-center gap-2">🔑 Đổi mật khẩu</a>
         <a href="javascript:void(0)" onclick="if(currentAuthUser&&(currentAuthUser.role==='superadmin'||currentAuthUser.role==='admin'||currentAuthUser.role==='accountant')) switchTab('accounting', 'Mục Kế Toán & Bảng Lương'); showUserProfileMenu();" id="menu-acc-link" class="hidden px-4 py-2.5 text-xs font-bold text-emerald-700 hover:bg-emerald-50 transition flex items-center gap-2">Mục Kế Toán & Lương</a>
         <a href="javascript:void(0)" onclick="if(currentAuthUser&&(currentAuthUser.role==='superadmin'||currentAuthUser.role==='admin')) switchTab('users', 'Phân Quyền Admin'); showUserProfileMenu();" id="menu-admin-link" class="hidden px-4 py-2.5 text-xs font-bold text-purple-700 hover:bg-purple-50 transition flex items-center gap-2">Quản lý Phân quyền</a>
-        <a href="javascript:void(0)" onclick="if(confirm('Xóa toàn bộ cache trình duyệt và tải lại từ server?')){localStorage.clear();location.reload();}" class="block px-4 py-2.5 text-xs font-bold text-amber-600 hover:bg-amber-50 transition flex items-center gap-2">🗑️ Xóa cache &amp; tải lại</a>
+        
         <a href="javascript:void(0)" onclick="logoutUser()" class="block px-4 py-2.5 text-xs font-bold text-rose-600 hover:bg-rose-50 transition border-t border-slate-100 mt-1 pt-2 flex items-center gap-2">🚪 Đăng xuất</a>
     </div>
                 </div>
@@ -1549,50 +1542,22 @@
             const realCurrentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
             currentMonth = realCurrentMonth;
 
-            const cachedData = localStorage.getItem('mv_cache_data');
-            if (cachedData) {
-                try {
-                    const parsed = JSON.parse(cachedData);
-                    teachers = parsed.teachers || teachers;
-                    students = parsed.students || students;
-                    branches = parsed.branches || branches;
-                    monthlyData = parsed.monthlyData || monthlyData;
-                } catch(e) {}
+            const loader = document.getElementById('initial-loading-screen');
+            if (loader) {
+                loader.innerHTML = `
+                    <div class="w-12 h-12 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin mb-4"></div>
+                    <p class="text-sm font-bold text-slate-600 animate-pulse">Đang tải dữ liệu từ máy chủ...</p>
+                    <p id="network-error-msg" class="text-xs font-bold text-rose-500 mt-3 hidden text-center px-4 bg-rose-50 border border-rose-200 py-2 rounded-lg">Không thể kết nối đến máy chủ!<br>Vui lòng kiểm tra mạng và thử lại.</p>
+                    <button id="retry-btn" onclick="window.location.reload()" class="mt-4 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-bold shadow-md hidden transition-colors">Tải lại trang</button>
+                `;
             }
 
-            
-
-            if (!monthlyData[currentMonth]) monthlyData[currentMonth] = { schedule: [], attendanceData: {} };
-            const monthInputEl = document.getElementById('month-input');
-            if (monthInputEl) monthInputEl.value = currentMonth;
-            syncCurrentMonthPointers();
-
-            // 2. Cleanup (không gộp lịch)
-            if (!window._mvCleanupDone) {
-                window._mvCleanupDone = true;
-                cleanupAndMergeData();
-            }
-
-            // 3. RENDER NGAY từ cache — không chờ server
-            initApp();
-            updateUndoRedoUI();
-            switchTab('sheet3', 'Lich Hoc & Diem Danh');
-
-            // Xóa loading screen ngay lập tức
-            setTimeout(() => {
-                const loader = document.getElementById('initial-loading-screen');
-                if (loader) { loader.classList.add('opacity-0'); setTimeout(() => loader.remove(), 500); }
-            }, 300);
-
-            // 4. BACKGROUND SYNC: Cập nhật ngầm từ server (KHÔNG block UI)
             (async () => {
                 try {
                     const response = await fetch(API_URL + "?t=" + new Date().getTime());
                     const data = await response.json();
+                    
                     if (data && typeof data === 'object' && !data.error) {
-                        
-
-                        // NẾU CÓ INTERNET VÀ SERVER TRẢ VỀ -> ĐÈ CACHE BẰNG MỌI GIÁ (kể cả khi Google Sheet trống trơn)
                         teachers = Array.isArray(data.teachers) ? data.teachers : [];
                         students = Array.isArray(data.students) ? data.students : [];
                         branches = Array.isArray(data.branches) ? data.branches : [];
@@ -1600,17 +1565,39 @@
                         monthlyData = (data.monthlyData && typeof data.monthlyData === 'object') ? data.monthlyData : {};
                         
                         if (!monthlyData[currentMonth]) monthlyData[currentMonth] = { schedule: [], attendanceData: {} };
-                        
                         try { localStorage.setItem('mv_users_data', JSON.stringify(users)); } catch(e){}
-                        try { localStorage.setItem('mv_cache_data', JSON.stringify(data)); } catch(e){}
-                        
+
+                        const monthInputEl = document.getElementById('month-input');
+                        if (monthInputEl) monthInputEl.value = currentMonth;
                         
                         syncCurrentMonthPointers();
+
+                        if (!window._mvCleanupDone) {
+                            window._mvCleanupDone = true;
+                            cleanupAndMergeData();
+                        }
+
                         initApp();
                         if (typeof updateUndoRedoUI === 'function') updateUndoRedoUI();
                         if (typeof checkAuthStatus === 'function') checkAuthStatus();
+                        
+                        if(typeof switchTab === 'function') switchTab('sheet3', 'Lịch Trực Quan & Điểm Danh');
+
+                        setTimeout(() => {
+                            if (loader) { loader.classList.add('opacity-0'); setTimeout(() => loader.remove(), 500); }
+                        }, 300);
+                    } else {
+                        throw new Error("Dữ liệu không hợp lệ");
                     }
-                } catch (error) { console.log("Loi mang, su dung du lieu cuc bo."); }
+                } catch (error) {
+                    console.error("Lỗi tải dữ liệu máy chủ:", error);
+                    if (loader) {
+                        document.querySelector('#initial-loading-screen .animate-spin')?.classList.add('hidden');
+                        document.querySelector('#initial-loading-screen .animate-pulse')?.classList.add('hidden');
+                        document.getElementById('network-error-msg')?.classList.remove('hidden');
+                        document.getElementById('retry-btn')?.classList.remove('hidden');
+                    }
+                }
             })();
         };
 
@@ -1728,7 +1715,7 @@
                     migrated = true;
                 }
             });
-            if(migrated && typeof saveData === 'function') { saveData(); }
+            // if(migrated && typeof saveData === 'function') { saveData(); }
             // cleanOrphanAttendanceData bypassed
             
             document.querySelectorAll('.current-month-display').forEach(el => {
@@ -1880,7 +1867,7 @@
             monthlyData[currentMonth] = { schedule, attendanceData };
             const payload = { teachers, students, branches, monthlyData, users, _lastModified: Date.now() };
             pendingPayload = JSON.stringify(payload);
-            try { localStorage.setItem('mv_cache_data', pendingPayload); } catch(e){}
+            
             
             
 
