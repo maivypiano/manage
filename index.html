@@ -1549,6 +1549,17 @@
             const realCurrentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
             currentMonth = realCurrentMonth;
 
+            const cachedData = localStorage.getItem('mv_cache_data');
+            if (cachedData) {
+                try {
+                    const parsed = JSON.parse(cachedData);
+                    teachers = parsed.teachers || teachers;
+                    students = parsed.students || students;
+                    branches = parsed.branches || branches;
+                    monthlyData = parsed.monthlyData || monthlyData;
+                } catch(e) {}
+            }
+
             
 
             if (!monthlyData[currentMonth]) monthlyData[currentMonth] = { schedule: [], attendanceData: {} };
@@ -1591,6 +1602,7 @@
                         if (!monthlyData[currentMonth]) monthlyData[currentMonth] = { schedule: [], attendanceData: {} };
                         
                         try { localStorage.setItem('mv_users_data', JSON.stringify(users)); } catch(e){}
+                        try { localStorage.setItem('mv_cache_data', JSON.stringify(data)); } catch(e){}
                         
                         
                         syncCurrentMonthPointers();
@@ -1868,6 +1880,7 @@
             monthlyData[currentMonth] = { schedule, attendanceData };
             const payload = { teachers, students, branches, monthlyData, users, _lastModified: Date.now() };
             pendingPayload = JSON.stringify(payload);
+            try { localStorage.setItem('mv_cache_data', pendingPayload); } catch(e){}
             
             
 
