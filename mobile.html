@@ -1848,10 +1848,10 @@
                 } catch (error) {
                     console.error("Lỗi tải dữ liệu máy chủ:", error);
                     if (loader) {
-                        document.querySelector('#initial-loading-screen .animate-spin')?.classList.add('hidden');
-                        document.querySelector('#initial-loading-screen .animate-pulse')?.classList.add('hidden');
-                        document.getElementById('network-error-msg')?.classList.remove('hidden');
-                        document.getElementById('retry-btn')?.classList.remove('hidden');
+                        var el1 = document.querySelector('#initial-loading-screen .animate-spin'); if(el1) el1.classList.add('hidden');
+                        var el2 = document.querySelector('#initial-loading-screen .animate-pulse'); if(el2) el2.classList.add('hidden');
+                        var el3 = document.getElementById('network-error-msg'); if(el3) el3.classList.remove('hidden');
+                        var el4 = document.getElementById('retry-btn'); if(el4) el4.classList.remove('hidden');
                     }
                 }
             })();
@@ -1957,10 +1957,10 @@
                             });
                         }
                         const newHash = [
-                            data.teachers?.length || 0,
-                            data.students?.length || 0,
-                            data.branches?.length || 0,
-                            data.users?.length || 0,
+                            (data.teachers ? data.teachers.length : 0),
+                            (data.students ? data.students.length : 0),
+                            (data.branches ? data.branches.length : 0),
+                            (data.users ? data.users.length : 0),
                             data.monthlyData ? Object.keys(data.monthlyData).length : 0,
                             _pollTotalAtt
                         ].join('|');
@@ -2782,7 +2782,7 @@
             // 1. Nếu hoàn thành -> xuống dưới
             // 2. Nếu cùng trạng thái -> Xếp số buổi tăng dần
             // 3. Nếu số buổi bằng nhau -> ABC
-            const searchVal = (document.getElementById('search-students')?.value || '').toLowerCase();
+            const searchVal = ((document.getElementById('search-students') ? document.getElementById('search-students').value : '') || '').toLowerCase();
               const filteredStudents = students.filter(s => s.name.toLowerCase().includes(searchVal));
               document.getElementById('student-count').textContent = `${filteredStudents.length} HV`;
               const sortedStudents = [...filteredStudents].sort((a, b) => {
@@ -4385,9 +4385,9 @@ async function handleLogin(e) {
             if (data && data.users && Array.isArray(data.users) && data.users.length > 0) {
                 users = data.users;
                 try { localStorage.setItem('mv_users_data', JSON.stringify(users)); } catch(e) {}
-                if (data.teachers?.length > 0) teachers = data.teachers;
-                if (data.students?.length > 0) students = data.students;
-                if (data.branches?.length > 0) branches = data.branches;
+                if ((data.teachers && data.teachers.length) > 0) teachers = data.teachers;
+                if ((data.students && data.students.length) > 0) students = data.students;
+                if ((data.branches && data.branches.length) > 0) branches = data.branches;
                 if (data.monthlyData && Object.keys(data.monthlyData).length > 0) monthlyData = data.monthlyData;
                 
             }
@@ -5439,7 +5439,7 @@ function changeStudentTeacher(studentId, newTeacherId) {
     if (typeof renderTeacherStats === 'function') renderTeacherStats();
     if (typeof renderStudents === 'function') renderStudents();
     
-    const tName = teachers.find(t => t.id === newTeacherId)?.name || "Chưa gán";
+    const tName = (teachers.find(t => t.id === newTeacherId) ? teachers.find(t => t.id === newTeacherId).name : undefined) || "Chưa gán";
     if (typeof showToast === 'function') {
         showToast(`Đã gán GV phụ trách "${tName}" cho ${s.name}${syncCount > 0 ? ` (Đồng bộ ${syncCount} buổi bên Master Data)` : ''}`, "success");
     }
@@ -5753,14 +5753,14 @@ function confirmPaidAndSendEmail(teacherId, salaryMoney, bankInfo) {
 
         function filterQaStudentSelect() {
             try {
-                const val = (document.getElementById('qa-search-student')?.value || '').toLowerCase();
+                const val = ((document.getElementById('qa-search-student') ? document.getElementById('qa-search-student').value : '') || '').toLowerCase();
                 const filtered = students.filter(s => s && s.name && String(s.name).toLowerCase().includes(val));
                 document.getElementById('qa-student-select').innerHTML = '<option value="" disabled selected>-- Chọn học viên --</option>' + filtered.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
             } catch(e) { console.error(e); }
         }
         function filterFormStudentSelect() {
             try {
-                const val = (document.getElementById('form-search-student')?.value || '').toLowerCase();
+                const val = ((document.getElementById('form-search-student') ? document.getElementById('form-search-student').value : '') || '').toLowerCase();
                 const filtered = students.filter(s => s && s.name && String(s.name).toLowerCase().includes(val));
                 document.getElementById('form-student').innerHTML = '<option value="" disabled selected>-- Chọn học viên --</option>' + filtered.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
             } catch(e) { console.error(e); }
