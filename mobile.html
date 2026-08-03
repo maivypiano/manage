@@ -2385,9 +2385,10 @@
             }
 
             // (Đã tắt tính năng gộp lịch trùng theo yêu cầu)
-            if (cleanupCount > 0) {
-                if (typeof saveData === 'function') saveData();
-            }
+            // KHÔNG auto-save lúc load để tránh ghi đè server bằng cache cũ
+            // if (cleanupCount > 0) {
+            //     if (typeof saveData === 'function') saveData();
+            // }
 
             return { cleanupCount, mergeCount: 0 };
         }
