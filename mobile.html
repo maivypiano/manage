@@ -1764,7 +1764,7 @@
         const DEFAULT_STUDENTS = [];
         const DEFAULT_BRANCHES = [];
         
-        const API_URL = "https://script.google.com/macros/s/AKfycbxBFAdraeIdy2LostAxGXMR9RIICdeFH52ETbPJjTIiagre63SPRhPV9amcJluAI1EcmQ/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbwDofbGhPq4vaD1FNzMpvKaOAXuhgnCdfpNIltgauezYi3PmdROI3dBPDYCnXbc0uIE/exec";
 
         let teachers = DEFAULT_TEACHERS;
         let students = DEFAULT_STUDENTS;
@@ -1801,6 +1801,17 @@
             const now = new Date();
             const realCurrentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
             currentMonth = realCurrentMonth;
+
+            const cachedData = localStorage.getItem('mv_cache_data');
+            if (cachedData) {
+                try {
+                    const parsed = JSON.parse(cachedData);
+                    teachers = parsed.teachers || teachers;
+                    students = parsed.students || students;
+                    branches = parsed.branches || branches;
+                    monthlyData = parsed.monthlyData || monthlyData;
+                } catch(e) {}
+            }
 
             
 
@@ -1844,6 +1855,7 @@
                         if (!monthlyData[currentMonth]) monthlyData[currentMonth] = { schedule: [], attendanceData: {} };
                         
                         try { localStorage.setItem('mv_users_data', JSON.stringify(users)); } catch(e){}
+                        try { localStorage.setItem('mv_cache_data', JSON.stringify(data)); } catch(e){}
                         
                         
                         syncCurrentMonthPointers();
