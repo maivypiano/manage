@@ -286,6 +286,10 @@
                                 <input type="text" id="new-student-name" placeholder="Tên học viên..." required class="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm flex-1 focus:outline-none focus:ring-2 focus:ring-sky-500 transition-all">
                                 <input type="text" id="new-student-phone" placeholder="SĐT..." class="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm w-32 focus:outline-none focus:ring-2 focus:ring-sky-500 transition-all">
                                 <input type="number" id="new-student-lessons" placeholder="Số buổi..." class="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm w-24 focus:outline-none focus:ring-2 focus:ring-sky-500 transition-all">
+                                <label class="flex items-center gap-1.5 text-sm font-semibold text-slate-700 cursor-pointer bg-white px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 transition-all">
+                                    <input type="checkbox" id="new-student-trial" class="w-4 h-4 text-sky-600 rounded border-slate-300 focus:ring-sky-500">
+                                    Học thử
+                                </label>
                                 <button type="submit" class="interactive-btn bg-sky-600 hover:bg-sky-700 text-white font-bold px-4 py-2 rounded-lg text-sm transition-all shadow-md hover:shadow-lg active:scale-95">+</button>
                             </form>
                         </div>
@@ -1847,7 +1851,7 @@
                 await fetch(API_URL, { 
                     method: 'POST', 
                     mode: 'no-cors', 
-                    keepalive: true,
+                    
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
                     body: pendingPayload 
                 });
@@ -2158,6 +2162,9 @@
                 if (s.status === 'inactive') {
                     statusText = "Nghỉ học";
                     statusClass = "bg-rose-100 text-rose-700 border border-rose-200";
+                } else if (s.status === 'trial') {
+                    statusText = "Học thử";
+                    statusClass = "bg-purple-100 text-purple-700 border border-purple-200";
                 } else if (s.completedLessons >= s.lessons && s.lessons > 0) {
                     statusText = "Học xong";
                     statusClass = "bg-emerald-100 text-emerald-700 border border-emerald-200";
@@ -2267,7 +2274,11 @@
                 return;
             }
             const newId = customId || generateNextStudentId();
-            students.push({id: newId, name: n, phone: document.getElementById('new-student-phone').value.trim(), lessons: parseInt(l)||0, completedLessons:0}); 
+            const trialEl = document.getElementById('new-student-trial');
+            const isTrial = trialEl ? trialEl.checked : false;
+            let newStudent = {id: newId, name: n, phone: document.getElementById('new-student-phone').value.trim(), lessons: parseInt(l)||0, completedLessons:0};
+            if (isTrial) newStudent.status = 'trial';
+            students.push(newStudent); 
             saveData(); initApp(); e.target.reset(); 
             showToast(`Đã thêm HV: ${n} (${newId})`);
         }
@@ -2305,6 +2316,14 @@ function restoreStudent(id) {
     s.status = 'active';
     saveData(); initApp();
     showToast('Da khoi phuc HV: ' + s.name);
+}
+function makeOfficialStudent(id) {
+    const s = students.find(x => x.id === id);
+    if (!s) return;
+    saveStateToHistory();
+    delete s.status;
+    saveData(); initApp();
+    showToast('Đã chuyển HV "' + s.name + '" sang chính thức.');
 }
         function deleteBranch(id){ saveStateToHistory(); branches = branches.filter(x=>x.id!==id); saveData(); initApp(); showToast("Đã xóa Cơ Sở"); }
 
@@ -4923,7 +4942,7 @@ function confirmPaidAndSendEmail(teacherId, salaryMoney, bankInfo) {
                 if (hasPendingSave) {
                     // SendBeacon is extremely reliable for beforeunload, but Apps Script POST needs keepalive fetch
                     try {
-                        fetch(API_URL, { method: 'POST', mode: 'no-cors', keepalive: true, headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: pendingPayload });
+                        fetch(API_URL, { method: 'POST', mode: 'no-cors',  headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: pendingPayload });
                     } catch(err){}
                 }
                 
