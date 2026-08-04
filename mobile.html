@@ -2264,11 +2264,7 @@
             // if(migrated && typeof saveData === 'function') { saveData(); }
             // cleanOrphanAttendanceData bypassed
 
-            try {
-                    // if (changed && typeof saveData === 'function') saveData();
-                }
-            } catch(e){}
-            
+
             document.querySelectorAll('.current-month-display').forEach(el => {
                 const parts = currentMonth.split('-');
                 el.textContent = `${parts[1]}/${parts[0]}`;
@@ -3440,30 +3436,9 @@ const dateBadge = exactBadge + (exactBadge && excludedBadge ? ' ' : '') + exclud
             let msg = "";
             if (oldStatus === status) {
                 delete attendanceData[key];
-                if(status === 'present' && student) {
-                        const sched = schedule.find(sc => sc.id === scheduleId);
-                        const isTrial = sched && sched.type === 'trial';
-                        if (!isTrial) {
-                        }
-                    }
-                    }
                 msg = "Đã bỏ chọn điểm danh";
             } else {
                 attendanceData[key] = status;
-                if(status === 'present' && oldStatus !== 'present') {
-                    if (student) {
-                    } else {
-                        console.warn(`⚠️ markAttendance: Không tìm thấy học viên cho scheduleId=${scheduleId}, studentId=${studentId}`);
-                    }
-                }
-                if(oldStatus === 'present' && status !== 'present' && student) {
-                    const sched = schedule.find(sc => sc.id === scheduleId);
-                    const isTrial = sched && sched.type === 'trial';
-                    if (!isTrial) {
-                        
-                    }
-                    }
-                }
                 msg = status === 'present' ? `Đã điểm danh "Lên lớp" cho ${student ? student.name : 'học viên'}` : `Đã báo "Nghỉ" cho ${student ? student.name : 'học viên'}`;
             }
 
