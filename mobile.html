@@ -3454,81 +3454,6 @@ const dateBadge = exactBadge + (exactBadge && excludedBadge ? ' ' : '') + exclud
             showToast(msg, status === 'present' ? 'success' : 'info');
         }
 
-                                function getLessonSnapshot(student, dateKey, attStatus, scheduleId) {
-            if (!student) return "0";
-            
-            // Performance optimization: Cache the present records for all students to avoid O(N^3) complexity
-            if (!window._studentPresentMap) {
-                window._studentPresentMap = {};
-                if (typeof attendanceData !== 'undefined' && typeof schedule !== 'undefined') {
-                    let schedMap = {};
-                    for (let i = 0; i < schedule.length; i++) {
-                        schedMap[schedule[i].id] = schedule[i];
-                    }
-                    
-                    for (let key in attendanceData) {
-                        if (attendanceData[key] === 'present') {
-                            let lastUIdx = key.lastIndexOf('_');
-                            if (lastUIdx !== -1) {
-                                let sId = key.substring(0, lastUIdx);
-                                let dStr = key.substring(lastUIdx + 1);
-                                let sched = schedMap[sId];
-                                if (sched) {
-                                    let stId = sched.studentId;
-                                    if (!window._studentPresentMap[stId]) window._studentPresentMap[stId] = [];
-                                    window._studentPresentMap[stId].push({ 
-                                        date: dStr, 
-                                        schedId: sId, 
-                                        start: sched.start || "00:00" 
-                                    });
-                                }
-                            }
-                        }
-                    }
-                    
-                    for (let stId in window._studentPresentMap) {
-                        window._studentPresentMap[stId].sort((a, b) => {
-                            if (a.date === b.date) {
-                                if (a.start !== b.start) {
-                                    return a.start.localeCompare(b.start);
-                                }
-                                return a.schedId.localeCompare(b.schedId);
-                            }
-                            return a.date.localeCompare(b.date);
-                        });
-                    }
-                }
-            }
-            
-            let presentRecords = window._studentPresentMap[student.id] || [];
-            
-            let currentMonthPresents = presentRecords.length;
-            
-            if (attStatus === 'present' && scheduleId) {
-                let index = presentRecords.findIndex(r => r.date === dateKey && r.schedId === scheduleId);
-                if (index !== -1) {
-                    return (index + 1).toString();
-                }
-            } else {
-                let countBefore = 0;
-                let sStart = "00:00";
-                if (scheduleId && typeof schedule !== 'undefined') {
-                    let s = schedule.find(x => x.id === scheduleId);
-                    if (s && s.start) sStart = s.start;
-                }
-                
-                for (let i = 0; i < presentRecords.length; i++) {
-                    let r = presentRecords[i];
-                    if (r.date < dateKey) {
-                        countBefore++;
-                    } else if (r.date === dateKey) {
-                        if (r.start < sStart) countBefore++;
-                        else if (r.start === sStart && scheduleId && r.schedId < scheduleId) countBefore++;
-                    }
-                }
-                return (countBefore).toString();
-            }
-        }
 
 function renderWeeklySchedule() {
     window._studentPresentMap = null;
@@ -3775,7 +3700,6 @@ function renderWeeklySchedule() {
                                         ${typeTag}
                                         <div class="flex justify-between items-center mb-2 gap-1">
                                             <span class="text-[10px] font-bold text-indigo-700 bg-indigo-50 px-2 py-1 rounded-lg border border-indigo-100 shadow-sm">${entry.start} - ${entry.end}</span>
-                                            <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-1 rounded-lg border border-emerald-100 shadow-sm" title="Tiến độ: ${getLessonSnapshot(student, dateKey, attStatus, entry.id)}/${student.lessons || 24} buổi">${getLessonSnapshot(student, dateKey, attStatus, entry.id)}/${student.lessons || 24}</span>
                                             <div class="flex items-center gap-1">
                                                 <button onclick="openQuickEditScheduleModal('${entry.id}', '${dateKey}'); event.stopPropagation();" class="text-slate-300 hover:text-indigo-600 px-1 text-xs" title="Sửa nhanh">✎</button>
                                                 <span class="text-[8px] font-bold border shadow-sm ${branchObj.colorClass} px-2 py-1 rounded-lg">${entry.branch}</span>
