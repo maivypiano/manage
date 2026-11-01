@@ -116,13 +116,23 @@
     <!-- Sidebar (Docked side-by-side on desktop, never obscures header) -->
     <aside id="sidebar" class="w-64 bg-white border-r border-slate-200 flex flex-col flex-shrink-0 z-30 transition-all duration-300">
         <!-- Brand Header inside Sidebar -->
-        <div class="h-20 flex items-center gap-3 px-6 border-b border-slate-100 flex-shrink-0">
-            <div class="bg-gradient-to-br from-indigo-600 to-purple-700 text-white w-10 h-10 flex items-center justify-center rounded-xl shadow-lg shadow-indigo-200 font-black text-lg tracking-wider">
-                M
-            </div>
-            <div>
-                <h1 class="text-base font-extrabold text-slate-900 leading-tight tracking-tight">M.Manage</h1>
-                <span class="text-[10px] font-extrabold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-200">v1.3.1 Enterprise</span>
+        <div class="py-2.5 px-4 border-b border-slate-100 flex-shrink-0">
+            <div class="flex items-center gap-2.5">
+                <div class="bg-gradient-to-br from-indigo-600 to-purple-700 text-white w-9 h-9 flex items-center justify-center rounded-xl shadow-md shadow-indigo-200 font-black text-base tracking-wider shrink-0">
+                    M
+                </div>
+                <div class="min-w-0 flex-1">
+                    <div class="flex items-center gap-1.5">
+                        <h1 class="text-sm font-extrabold text-slate-900 leading-tight tracking-tight">M.Manage</h1>
+                        <span class="text-[9px] font-extrabold text-indigo-600 bg-indigo-50 px-1.5 py-0.2 rounded border border-indigo-200">v1.3.2</span>
+                    </div>
+                    <div id="sidebar-center-badge" onclick="handleCenterPillClick()" class="flex items-center gap-1 mt-1 cursor-pointer group text-[11px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-lg hover:bg-emerald-100 transition truncate shadow-2xs" title="Đang kết nối trung tâm - Bấm để chuyển">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0 animate-ping"></span>
+                        <span class="text-[10px] text-emerald-600 font-medium shrink-0">Đang xem:</span>
+                        <span id="sidebar-center-name" class="font-extrabold truncate max-w-[85px]">M.Manage Center</span>
+                        <span id="sidebar-center-code" class="text-[9px] font-mono bg-emerald-200/70 px-1 rounded text-emerald-900 shrink-0">MÃ</span>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -229,11 +239,12 @@
                 <div class="hidden sm:block w-px h-7 bg-slate-200 shrink-0"></div>
 
                 <!-- Interactive Center Pill (Multi-Tenant SaaS - Fluid Responsive) -->
-                <div id="header-center-pill" onclick="handleCenterPillClick()" class="hidden md:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-slate-900 border border-slate-700 hover:border-amber-500/60 transition text-xs font-bold shadow-xs cursor-pointer group shrink-0 max-w-[160px] lg:max-w-[200px]" title="Bấm để quản lý trung tâm hoặc xem mã mời">
-                    <div id="header-center-dot" class="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></div>
-                    <span class="text-slate-400 shrink-0">TT:</span>
-                    <span id="header-center-name" class="text-amber-300 font-extrabold group-hover:text-amber-200 truncate max-w-[80px] lg:max-w-[110px] inline-block">M.Manage Center</span>
-                    <span id="header-center-code-badge" class="px-1.5 py-0.5 rounded bg-slate-800 text-[10px] font-mono text-slate-300 border border-slate-700 shrink-0">MÃ</span>
+                <div id="header-center-pill" onclick="handleCenterPillClick()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 hover:border-amber-500/60 transition text-xs font-bold shadow-xs cursor-pointer group shrink-0 max-w-[200px] lg:max-w-[260px]" title="Đang kết nối trung tâm - Bấm để chuyển hoặc xem thông tin">
+                    <div id="header-center-dot" class="w-2 h-2 rounded-full bg-emerald-400 shrink-0 animate-pulse"></div>
+                    <span class="text-slate-400 shrink-0 text-[11px]">Đang xem:</span>
+                    <span id="header-center-name" class="text-amber-300 font-extrabold group-hover:text-amber-200 truncate max-w-[90px] lg:max-w-[130px] inline-block">M.Manage Center</span>
+                    <span id="header-center-code-badge" class="px-1.5 py-0.5 rounded bg-slate-800 text-[10px] font-mono text-amber-300 border border-amber-500/40 shrink-0">MÃ</span>
+                    <svg class="w-3 h-3 text-slate-400 group-hover:text-amber-300 transition shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                 </div>
 
                 <div class="hidden md:block w-px h-7 bg-slate-200 shrink-0"></div>
@@ -353,6 +364,21 @@
                             <!-- Cột 2: CÔNG CỤ DỮ LIỆU & QUẢN TRỊ -->
                             <div class="space-y-1 border-l border-slate-100 pl-3.5">
                                 <div class="px-2 py-0.5 text-[10px] font-extrabold uppercase text-slate-400 tracking-wider">Dữ Liệu & Hệ Thống</div>
+                                <!-- Cứu Nguy: Force Pull & Push 2 Chiều -->
+                                <button type="button" onclick="handleForcePullFromCloud();" class="w-full px-2.5 py-1.5 rounded-xl bg-cyan-50/90 hover:bg-cyan-100 text-cyan-800 font-extrabold transition flex items-center justify-between border border-cyan-200/80 shadow-2xs group cursor-pointer" title="Ép buộc tải toàn bộ dữ liệu mới nhất từ Đám Mây / Web về máy tính">
+                                    <div class="flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-cyan-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                        <span class="text-xs">Tải Lại Từ Đám Mây</span>
+                                    </div>
+                                    <span class="px-1.5 py-0.5 rounded text-[9px] font-mono bg-cyan-200/80 text-cyan-900 font-bold shrink-0">Pull</span>
+                                </button>
+                                <button type="button" onclick="handleForcePushToCloud();" class="w-full px-2.5 py-1.5 rounded-xl bg-emerald-50/90 hover:bg-emerald-100 text-emerald-800 font-extrabold transition flex items-center justify-between border border-emerald-200/80 shadow-2xs group cursor-pointer" title="Ép buộc đẩy toàn bộ dữ liệu trên máy tính lên lưu Đám Mây">
+                                    <div class="flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                                        <span class="text-xs">Đẩy Lên Đám Mây</span>
+                                    </div>
+                                    <span class="px-1.5 py-0.5 rounded text-[9px] font-mono bg-emerald-200/80 text-emerald-900 font-bold shrink-0">Push</span>
+                                </button>
                                 <a href="javascript:void(0)" onclick="exportSystemBackupJSON(); closeUserProfileMenu();" class="px-2.5 py-2 rounded-xl text-indigo-700 hover:bg-indigo-50 font-bold transition flex items-center gap-2.5" title="Tải tệp sao lưu dữ liệu máy tính (JSON)">
                                     <svg class="w-4 h-4 text-indigo-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                                     <span>Sao Lưu Dữ Liệu</span>
@@ -3195,11 +3221,46 @@
 
         // === CÁC HÀM XỬ LÝ ĐA TRUNG TÂM (MULTI-TENANT CORE) ===
         function normalizeMultiTenantData(raw) {
-            if (!raw || typeof raw !== 'object') return { centers, joinRequests, tenantsData, users };
+            if (!raw || typeof raw !== 'object') return { centers, joinRequests, tenantsData, users, hasLocalUnpublishedData: false };
 
-            // 1. Phục hồi danh sách các trung tâm (Giai đoạn 7: Tenant Isolation - Không tự chèn trung tâm lạ)
+            let hasLocalUnpublishedData = false;
+
+            // Đảm bảo dữ liệu bộ nhớ đang thao tác được cập nhật vào partition trước khi hợp nhất
+            if (typeof currentCenterId !== 'undefined' && currentCenterId && typeof tenantsData !== 'undefined' && tenantsData && tenantsData[currentCenterId]) {
+                if (typeof teachers !== 'undefined' && Array.isArray(teachers) && teachers.length > 0) tenantsData[currentCenterId].teachers = teachers;
+                if (typeof students !== 'undefined' && Array.isArray(students) && students.length > 0) tenantsData[currentCenterId].students = students;
+                if (typeof branches !== 'undefined' && Array.isArray(branches) && branches.length > 0) tenantsData[currentCenterId].branches = branches;
+                if (typeof monthlyData !== 'undefined' && monthlyData && Object.keys(monthlyData).length > 0) tenantsData[currentCenterId].monthlyData = monthlyData;
+                if (typeof tuitionRecords !== 'undefined' && Array.isArray(tuitionRecords) && tuitionRecords.length > 0) tenantsData[currentCenterId].tuitionRecords = tuitionRecords;
+            }
+
+            // 1. SMART MERGE: DANH SÁCH TRUNG TÂM (CENTERS)
             if (Array.isArray(raw.centers) && raw.centers.length > 0) {
-                centers = raw.centers.filter(c => c && c.id && c.id !== 'CTR-MAIVY-01');
+                const centerMap = new Map();
+                if (Array.isArray(centers)) {
+                    centers.forEach(c => {
+                        if (c && c.id && c.id !== 'CTR-MAIVY-01') centerMap.set(c.id, c);
+                    });
+                }
+                const serverCenterIds = new Set();
+                raw.centers.forEach(sc => {
+                    if (sc && sc.id && sc.id !== 'CTR-MAIVY-01') {
+                        serverCenterIds.add(sc.id);
+                        if (!centerMap.has(sc.id)) {
+                            centerMap.set(sc.id, sc);
+                        } else {
+                            centerMap.set(sc.id, Object.assign({}, centerMap.get(sc.id), sc));
+                        }
+                    }
+                });
+                for (let cid of centerMap.keys()) {
+                    if (!serverCenterIds.has(cid) && cid !== DEFAULT_CENTER_ID) {
+                        hasLocalUnpublishedData = true;
+                        break;
+                    }
+                }
+
+                centers = Array.from(centerMap.values()).filter(c => c && c.id && c.id !== 'CTR-MAIVY-01');
                 const hasRealNamedCenter = centers.some(c => c.id !== DEFAULT_CENTER_ID && c.name && c.name.trim());
                 if (hasRealNamedCenter) {
                     centers = centers.filter(c => c.id !== DEFAULT_CENTER_ID);
@@ -3207,57 +3268,44 @@
                 if (centers.length === 0) {
                     centers = [DEFAULT_CENTER];
                 }
-            } else {
+            } else if (!Array.isArray(centers) || centers.length === 0) {
                 centers = [DEFAULT_CENTER];
             }
 
-            // 2. Phục hồi danh sách yêu cầu liên kết
+            // 2. SMART MERGE: YÊU CẦU LIÊN KẾT (JOIN REQUESTS)
             if (Array.isArray(raw.joinRequests)) {
-                joinRequests = raw.joinRequests;
+                const reqMap = new Map();
+                if (Array.isArray(joinRequests)) {
+                    joinRequests.forEach(r => { if (r && r.id) reqMap.set(r.id, r); });
+                }
+                raw.joinRequests.forEach(sr => {
+                    if (sr && sr.id) reqMap.set(sr.id, sr);
+                });
+                joinRequests = Array.from(reqMap.values());
             }
 
-            // 3. Phục hồi kho dữ liệu của từng trung tâm
-            if (raw.tenantsData && typeof raw.tenantsData === 'object' && Object.keys(raw.tenantsData).length > 0) {
-                tenantsData = raw.tenantsData;
-            } else {
-                tenantsData = {};
-            }
-
-            // 4. Tương thích ngược: Di trú dữ liệu gốc sang CTR-MAIVY-01
-            if (!tenantsData[DEFAULT_CENTER_ID]) {
-                tenantsData[DEFAULT_CENTER_ID] = {
-                    teachers: Array.isArray(raw.teachers) ? raw.teachers : [],
-                    students: Array.isArray(raw.students) ? raw.students : [],
-                    branches: Array.isArray(raw.branches) ? raw.branches : [],
-                    monthlyData: (raw.monthlyData && typeof raw.monthlyData === 'object') ? raw.monthlyData : {},
-                    _lastModified: Number(raw._lastModified) || Date.now()
-                };
-            } else {
-                if (Array.isArray(raw.teachers) && raw.teachers.length > 0 && (!tenantsData[DEFAULT_CENTER_ID].teachers || tenantsData[DEFAULT_CENTER_ID].teachers.length === 0)) {
-                    tenantsData[DEFAULT_CENTER_ID].teachers = raw.teachers;
-                }
-                if (Array.isArray(raw.students) && raw.students.length > 0 && (!tenantsData[DEFAULT_CENTER_ID].students || tenantsData[DEFAULT_CENTER_ID].students.length === 0)) {
-                    tenantsData[DEFAULT_CENTER_ID].students = raw.students;
-                }
-                if (raw.monthlyData && Object.keys(raw.monthlyData).length > 0 && (!tenantsData[DEFAULT_CENTER_ID].monthlyData || Object.keys(tenantsData[DEFAULT_CENTER_ID].monthlyData).length === 0)) {
-                    tenantsData[DEFAULT_CENTER_ID].monthlyData = raw.monthlyData;
-                }
-            }
-
-            // 5. Gán centerId cho tất cả giáo viên và học viên của từng trung tâm
-            Object.keys(tenantsData).forEach(cId => {
-                const tData = tenantsData[cId];
-                if (tData && Array.isArray(tData.teachers)) {
-                    tData.teachers.forEach(t => { if (!t.centerId) t.centerId = cId; });
-                }
-                if (tData && Array.isArray(tData.students)) {
-                    tData.students.forEach(s => { if (!s.centerId) s.centerId = cId; });
-                }
-            });
-
-            // 6. Xử lý Users: Gán centerId cho các user cũ
+            // 3. SMART MERGE: TÀI KHOẢN NGƯỜI DÙNG (USERS)
             if (Array.isArray(raw.users) && raw.users.length > 0) {
-                users = raw.users;
+                const userMap = new Map();
+                if (Array.isArray(users)) {
+                    users.forEach(u => {
+                        if (u && u.id) userMap.set(u.id, u);
+                        else if (u && u.email) userMap.set(u.email.toLowerCase(), u);
+                    });
+                }
+                raw.users.forEach(su => {
+                    if (su) {
+                        const key = su.id || (su.email ? su.email.toLowerCase() : null);
+                        if (key) {
+                            if (!userMap.has(key)) {
+                                userMap.set(key, su);
+                            } else {
+                                userMap.set(key, Object.assign({}, userMap.get(key), su));
+                            }
+                        }
+                    }
+                });
+                users = Array.from(userMap.values());
                 users.forEach(u => {
                     if (!u.centerId && (u.role === 'admin' || u.role === 'superadmin' || u.role === 'teacher' || u.role === 'accountant')) {
                         u.centerId = DEFAULT_CENTER_ID;
@@ -3265,7 +3313,203 @@
                 });
             }
 
-            return { centers, joinRequests, tenantsData, users };
+            // 4. SMART MERGE: KHO DỮ LIỆU TỪNG TRUNG TÂM (TENANTS DATA DEEP MERGE)
+            if (!tenantsData || typeof tenantsData !== 'object') tenantsData = {};
+            const incomingTenants = (raw.tenantsData && typeof raw.tenantsData === 'object' && Object.keys(raw.tenantsData).length > 0)
+                ? Object.assign({}, raw.tenantsData)
+                : {};
+
+            // Hỗ trợ tương thích ngược nếu payload server thuộc định dạng đơn trung tâm cũ:
+            if (Object.keys(incomingTenants).length === 0 && (Array.isArray(raw.students) || Array.isArray(raw.teachers) || raw.monthlyData)) {
+                incomingTenants[DEFAULT_CENTER_ID] = {
+                    teachers: Array.isArray(raw.teachers) ? raw.teachers : [],
+                    students: Array.isArray(raw.students) ? raw.students : [],
+                    branches: Array.isArray(raw.branches) ? raw.branches : [],
+                    monthlyData: (raw.monthlyData && typeof raw.monthlyData === 'object') ? raw.monthlyData : {},
+                    _lastModified: Number(raw._lastModified) || Date.now()
+                };
+            }
+
+            const allCenterIds = new Set([...Object.keys(tenantsData), ...Object.keys(incomingTenants)]);
+
+            allCenterIds.forEach(cId => {
+                const localData = tenantsData[cId] || {};
+                const serverData = incomingTenants[cId] || {};
+
+                // A. Hợp nhất Học Viên (Students)
+                const studentMap = new Map();
+                const serverStudentIds = new Set();
+                if (Array.isArray(serverData.students)) {
+                    serverData.students.forEach(ss => {
+                        if (ss && ss.id) {
+                            serverStudentIds.add(ss.id);
+                            studentMap.set(ss.id, ss);
+                        }
+                    });
+                }
+                if (Array.isArray(localData.students)) {
+                    localData.students.forEach(ls => {
+                        if (ls && ls.id) {
+                            if (!serverStudentIds.has(ls.id)) {
+                                studentMap.set(ls.id, ls);
+                                hasLocalUnpublishedData = true;
+                            } else {
+                                const ss = studentMap.get(ls.id);
+                                const ssTime = Number(ss.updatedAt || ss._lastModified) || 0;
+                                const lsTime = Number(ls.updatedAt || ls._lastModified) || 0;
+                                if (lsTime > ssTime) {
+                                    studentMap.set(ls.id, Object.assign({}, ss, ls));
+                                    hasLocalUnpublishedData = true;
+                                } else {
+                                    studentMap.set(ls.id, Object.assign({}, ls, ss));
+                                }
+                            }
+                        }
+                    });
+                }
+                const mergedStudents = Array.from(studentMap.values()).map(s => {
+                    if (!s.centerId) s.centerId = cId;
+                    return s;
+                });
+
+                // B. Hợp nhất Giáo Viên (Teachers)
+                const teacherMap = new Map();
+                const serverTeacherIds = new Set();
+                if (Array.isArray(serverData.teachers)) {
+                    serverData.teachers.forEach(st => {
+                        if (st && st.id) {
+                            serverTeacherIds.add(st.id);
+                            teacherMap.set(st.id, st);
+                        }
+                    });
+                }
+                if (Array.isArray(localData.teachers)) {
+                    localData.teachers.forEach(lt => {
+                        if (lt && lt.id) {
+                            if (!serverTeacherIds.has(lt.id)) {
+                                teacherMap.set(lt.id, lt);
+                                hasLocalUnpublishedData = true;
+                            } else {
+                                const st = teacherMap.get(lt.id);
+                                teacherMap.set(lt.id, Object.assign({}, lt, st));
+                            }
+                        }
+                    });
+                }
+                const mergedTeachers = Array.from(teacherMap.values()).map(t => {
+                    if (!t.centerId) t.centerId = cId;
+                    return t;
+                });
+
+                // C. Hợp nhất Phiếu Thu Học Phí (Tuition Records)
+                const tuitionMap = new Map();
+                const serverTuitionIds = new Set();
+                if (Array.isArray(serverData.tuitionRecords)) {
+                    serverData.tuitionRecords.forEach(sr => {
+                        if (sr && sr.id && sr.id !== 'PT2610-001' && sr.studentId !== 'HV01' && (sr.studentName || '').toLowerCase() !== 'nguyễn mai anh') {
+                            serverTuitionIds.add(sr.id);
+                            tuitionMap.set(sr.id, sr);
+                        }
+                    });
+                }
+                if (Array.isArray(localData.tuitionRecords)) {
+                    localData.tuitionRecords.forEach(lr => {
+                        if (lr && lr.id && lr.id !== 'PT2610-001' && lr.studentId !== 'HV01' && (lr.studentName || '').toLowerCase() !== 'nguyễn mai anh') {
+                            if (!serverTuitionIds.has(lr.id)) {
+                                tuitionMap.set(lr.id, lr);
+                                hasLocalUnpublishedData = true;
+                            } else {
+                                const sr = tuitionMap.get(lr.id);
+                                const status = (lr.status === 'paid' || sr.status === 'paid') ? 'paid' : (sr.status || lr.status);
+                                tuitionMap.set(lr.id, Object.assign({}, lr, sr, { status }));
+                            }
+                        }
+                    });
+                }
+                const mergedTuition = Array.from(tuitionMap.values()).sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+
+                // D. Hợp nhất Cơ Sở (Branches)
+                const sanitize = (typeof sanitizeAndNormalizeBranches === 'function')
+                    ? sanitizeAndNormalizeBranches
+                    : (list => Array.isArray(list) ? list : []);
+                const localBranches = sanitize(localData.branches);
+                const serverBranches = sanitize(serverData.branches);
+                const branchMap = new Map();
+                localBranches.forEach(b => { if (b && b.name) branchMap.set(b.name.trim().toLowerCase(), b); });
+                serverBranches.forEach(b => {
+                    if (b && b.name) {
+                        const k = b.name.trim().toLowerCase();
+                        if (!branchMap.has(k)) {
+                            branchMap.set(k, b);
+                        } else {
+                            branchMap.set(k, Object.assign({}, branchMap.get(k), b));
+                        }
+                    }
+                });
+                const mergedBranches = Array.from(branchMap.values());
+
+                // E. Hợp nhất Lịch Học & Điểm Danh Từng Tháng (Monthly Data)
+                const mergedMonthly = {};
+                const allMonths = new Set([
+                    ...Object.keys(localData.monthlyData || {}),
+                    ...Object.keys(serverData.monthlyData || {})
+                ]);
+
+                allMonths.forEach(mKey => {
+                    const lm = (localData.monthlyData && localData.monthlyData[mKey]) ? localData.monthlyData[mKey] : { schedule: [], attendanceData: {} };
+                    const sm = (serverData.monthlyData && serverData.monthlyData[mKey]) ? serverData.monthlyData[mKey] : { schedule: [], attendanceData: {} };
+
+                    const schedMap = new Map();
+                    const serverSchedIds = new Set();
+                    if (Array.isArray(sm.schedule)) {
+                        sm.schedule.forEach(entry => {
+                            if (entry && entry.id) {
+                                serverSchedIds.add(entry.id);
+                                schedMap.set(entry.id, entry);
+                            }
+                        });
+                    }
+                    if (Array.isArray(lm.schedule)) {
+                        lm.schedule.forEach(entry => {
+                            if (entry && entry.id) {
+                                if (!serverSchedIds.has(entry.id)) {
+                                    schedMap.set(entry.id, entry);
+                                    hasLocalUnpublishedData = true;
+                                } else {
+                                    schedMap.set(entry.id, Object.assign({}, schedMap.get(entry.id), entry));
+                                }
+                            }
+                        });
+                    }
+
+                    const localAtt = (lm.attendanceData && typeof lm.attendanceData === 'object') ? lm.attendanceData : {};
+                    const serverAtt = (sm.attendanceData && typeof sm.attendanceData === 'object') ? sm.attendanceData : {};
+                    const mergedAttendance = Object.assign({}, serverAtt, localAtt);
+
+                    for (let attKey in localAtt) {
+                        if (!serverAtt[attKey]) {
+                            hasLocalUnpublishedData = true;
+                            break;
+                        }
+                    }
+
+                    mergedMonthly[mKey] = {
+                        schedule: Array.from(schedMap.values()),
+                        attendanceData: mergedAttendance
+                    };
+                });
+
+                tenantsData[cId] = {
+                    teachers: mergedTeachers,
+                    students: mergedStudents,
+                    branches: mergedBranches,
+                    tuitionRecords: mergedTuition,
+                    monthlyData: mergedMonthly,
+                    _lastModified: Math.max(Number(localData._lastModified) || 0, Number(serverData._lastModified) || 0, Date.now())
+                };
+            });
+
+            return { centers, joinRequests, tenantsData, users, hasLocalUnpublishedData };
         }
 
         
@@ -3296,6 +3540,39 @@
             return result;
         }
         window.sanitizeAndNormalizeBranches = sanitizeAndNormalizeBranches;
+
+        function updateCenterUI() {
+            const center = currentCenter || (Array.isArray(centers) ? centers.find(c => c && c.id === currentCenterId) : null) || (Array.isArray(centers) ? centers[0] : null) || DEFAULT_CENTER;
+            const cName = (center && center.name && center.name.trim()) ? center.name : 'M.Manage Center';
+            const cCode = (center && center.code) ? center.code : (center && center.id ? center.id.substring(0, 8) : 'MV2026');
+
+            // 1. Desktop Top Header Pill
+            const hName = document.getElementById('header-center-name');
+            const hCode = document.getElementById('header-center-code-badge');
+            const hDot = document.getElementById('header-center-dot');
+            const hPill = document.getElementById('header-center-pill');
+            if (hPill) hPill.classList.remove('hidden');
+            if (hName) hName.textContent = cName;
+            if (hCode) hCode.textContent = cCode;
+            if (hDot) hDot.className = "w-2 h-2 rounded-full bg-emerald-400 shrink-0 animate-pulse";
+
+            // 2. Sidebar Brand Header Badge
+            const sName = document.getElementById('sidebar-center-name');
+            const sCode = document.getElementById('sidebar-center-code');
+            const sBadge = document.getElementById('sidebar-center-badge');
+            if (sBadge) sBadge.classList.remove('hidden');
+            if (sName) sName.textContent = cName;
+            if (sCode) sCode.textContent = cCode;
+
+            // 3. Mobile Header Pill
+            const mName = document.getElementById('mobile-header-center-name');
+            const mCode = document.getElementById('mobile-header-center-code');
+            const mPill = document.getElementById('mobile-header-center-pill');
+            if (mPill) mPill.classList.remove('hidden');
+            if (mName) mName.textContent = cName;
+            if (mCode) mCode.textContent = cCode;
+        }
+        window.updateCenterUI = updateCenterUI;
 
         function activateCenterData(targetCenterId) {
             // Nếu người dùng là tài khoản thường chưa có trung tâm -> Dữ liệu trống
@@ -3353,6 +3630,7 @@
                 tuitionRecords = [];
             }
             cData.tuitionRecords = tuitionRecords;
+            if (typeof updateCenterUI === "function") updateCenterUI();
 
             return true;
         }
@@ -3360,13 +3638,14 @@
         // === GIAI ĐOẠN 7: BẢO MẬT & CÔ LẬP ĐA TRUNG TÂM (TENANT ISOLATION) ===
         function canUserAccessCenter(user, centerId) {
             if (!user || !centerId) return false;
-            if (user.role === 'superadmin') return true;
+            // Superadmin hoặc chủ hệ thống (theo email admin) luôn có quyền truy cập tất cả trung tâm
+            if (user.role === 'superadmin' || (user.email && user.email.toLowerCase() === 'minhpham1562004@gmail.com')) return true;
 
             const target = centers.find(c => c.id === centerId);
             if (!target) return false;
 
-            // 1. Là chủ sở hữu trung tâm
-            if (target.ownerId && target.ownerId === user.id) return true;
+            // 1. Là chủ sở hữu trung tâm (theo ownerId hoặc nếu ownerId là U1/admin mặc định hoặc theo số điện thoại)
+            if (target.ownerId && (target.ownerId === user.id || (user.role === 'center_owner' && (target.ownerId === 'U1' || (target.phone && user.phone && target.phone === user.phone))))) return true;
 
             // 2. Là trung tâm chính thức được gán cho user
             if (user.centerId === centerId) return true;
@@ -3397,8 +3676,24 @@
             }
 
             activateCenterData(targetCenterId);
+
+            // CẬP NHẬT TÀI KHOẢN NGƯỜI DÙNG ĐỂ ĐỒNG BỘ CENTER ID LÊN ĐÁM MÂY VÀ GIỮ TRẠNG THÁI
+            if (currentAuthUser) {
+                currentAuthUser.centerId = targetCenterId;
+                try { localStorage.setItem('mv_auth_session', JSON.stringify(currentAuthUser)); } catch(e){}
+                if (Array.isArray(users)) {
+                    const myUser = users.find(u => u && (u.id === currentAuthUser.id || (u.email && currentAuthUser.email && u.email.toLowerCase() === currentAuthUser.email.toLowerCase())));
+                    if (myUser) {
+                        myUser.centerId = targetCenterId;
+                        try { localStorage.setItem('mv_users_data', JSON.stringify(users)); } catch(e){}
+                    }
+                }
+            }
+
+            if (typeof updateCenterUI === 'function') updateCenterUI();
             if (typeof refreshUI === 'function') refreshUI();
             if (typeof updateAllTabKpis === 'function') updateAllTabKpis();
+            if (typeof saveData === 'function') saveData(); // Lưu và đồng bộ trạng thái trung tâm vừa chọn lên Đám Mây
             if (typeof showToast === 'function') {
                 showToast(`Đã chuyển sang trung tâm: ${currentCenter ? currentCenter.name : targetCenterId}`, 'success');
             }
@@ -3440,14 +3735,41 @@
 
             function applyData(data) {
                 if (!data || typeof data !== 'object') return;
+                var mergeResult = null;
                 if (typeof normalizeMultiTenantData === 'function') {
-                    normalizeMultiTenantData(data);
+                    mergeResult = normalizeMultiTenantData(data);
                 }
-                const targetCenterId = (currentAuthUser && currentAuthUser.centerId) ? currentAuthUser.centerId : currentCenterId;
+                // Đồng bộ cập nhật thông tin tài khoản hiện tại từ máy chủ (tránh lệch centerId)
+                if (currentAuthUser && Array.isArray(users)) {
+                    const freshUser = users.find(u => u && (u.id === currentAuthUser.id || (u.email && currentAuthUser.email && u.email.toLowerCase() === currentAuthUser.email.toLowerCase())));
+                    if (freshUser) {
+                        currentAuthUser = Object.assign({}, currentAuthUser, freshUser);
+                        try { localStorage.setItem('mv_auth_session', JSON.stringify(currentAuthUser)); } catch(e){}
+                    }
+                }
+                // Nếu user chưa có centerId hoặc centerId không tồn tại, tự động kết nối trung tâm hợp lệ
+                if (currentAuthUser && (!currentAuthUser.centerId || !centers.some(c => c.id === currentAuthUser.centerId))) {
+                    const realCenter = centers.find(c => c.id !== DEFAULT_CENTER_ID && c.name && c.name.trim()) || centers[0];
+                    if (realCenter) {
+                        currentAuthUser.centerId = realCenter.id;
+                        try { localStorage.setItem('mv_auth_session', JSON.stringify(currentAuthUser)); } catch(e){}
+                    }
+                }
+                const targetCenterId = (currentAuthUser && currentAuthUser.centerId) ? currentAuthUser.centerId : (currentCenterId || (centers[0] ? centers[0].id : DEFAULT_CENTER_ID));
                 if (typeof activateCenterData === 'function') {
                     activateCenterData(targetCenterId);
                 }
+                if (typeof updateCenterUI === 'function') {
+                    updateCenterUI();
+                }
+
+                // Nếu sau khi hợp nhất phát hiện máy cục bộ có dữ liệu mà đám mây chưa có -> Tự động kích hoạt lưu hợp nhất hai chiều
+                if (mergeResult && mergeResult.hasLocalUnpublishedData && typeof saveData === 'function') {
+                    console.log('🔄 Phát hiện dữ liệu mới cục bộ chưa có trên Đám Mây, tự động kích hoạt lưu hợp nhất hai chiều...');
+                    saveData();
+                }
             }
+            window.applyData = applyData;
 
             function refreshUI() {
                 if (!monthlyData[currentMonth]) monthlyData[currentMonth] = { schedule: [], attendanceData: {} };
@@ -3457,10 +3779,10 @@
                 initApp();
                 if (typeof updateUndoRedoUI === 'function') updateUndoRedoUI();
                 if (typeof checkAuthStatus === 'function') checkAuthStatus();
-            if (typeof checkAppUpdateOnStartup === 'function') setTimeout(checkAppUpdateOnStartup, 1000);
-                if (syncDot) syncDot.className = 'w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]';
-                if (syncText) syncText.textContent = 'Đã lưu';
+                if (typeof checkAppUpdateOnStartup === 'function') setTimeout(checkAppUpdateOnStartup, 1000);
+                if (typeof updateSyncUI === 'function') updateSyncUI('synced');
             }
+            window.refreshUI = refreshUI;
 
             // 1. TẢI NGAY LẬP TỨC DỮ LIỆU TỪ LOCAL STORAGE (0ms Load - Không bao giờ mất dữ liệu khi reload)
             var cachedRaw = null;
@@ -3490,41 +3812,9 @@
             if (syncText) syncText.textContent = 'Đang đồng bộ...';
 
             // 2. ĐỒNG BỘ DỮ LIỆU MỚI NHẤT TỪ GOOGLE APPS SCRIPT TRONG NỀN
-            fetch(API_URL + '?t=' + Date.now())
-                .then(function(resp) { return resp.json(); })
-                .then(function(serverData) {
-                    if (serverData && typeof serverData === 'object' && !serverData.error) {
-                        var localLastSaved = Number(localStorage.getItem('mv_last_saved')) || 0;
-                        var serverModified = Number(serverData._lastModified) || 0;
-
-                        // Hợp nhất bảo toàn: Giữ lại học viên/giáo viên tạo ở local nếu server chưa có
-                        if (serverData.students && Array.isArray(serverData.students)) {
-                            var sIds = new Set(serverData.students.map(s => s.id));
-                            students.forEach(locS => {
-                                if (!sIds.has(locS.id)) serverData.students.push(locS);
-                            });
-                        }
-                        if (serverData.teachers && Array.isArray(serverData.teachers)) {
-                            var tIds = new Set(serverData.teachers.map(t => t.id));
-                            teachers.forEach(locT => {
-                                if (!tIds.has(locT.id)) serverData.teachers.push(locT);
-                            });
-                        }
-
-                        applyData(serverData);
-                        refreshUI();
-
-                        // Nếu local mới hơn, kích hoạt lưu ngược lên server
-                        if (localLastSaved > serverModified) {
-                            saveData();
-                        }
-                    }
-                })
-                .catch(function(err) {
-                    console.warn('Đang chạy ở chế độ offline, dữ liệu được bảo toàn trong Local Cache:', err);
-                    if (syncDot) syncDot.className = 'w-2 h-2 rounded-full bg-emerald-500';
-                    if (syncText) syncText.textContent = 'Đã lưu (Offline)';
-                });
+            if (typeof pullLatestDataFromCloud === 'function') {
+                pullLatestDataFromCloud(true, false);
+            }
 
             // Neu sau 3s van chua co data -> GAS dang khoi dong cham -> bao nguoi dung
             if (!cachedRaw) {
@@ -4563,6 +4853,8 @@ function updateTopKpiBar() {
 let _realtimeTimer = null;
 let _isPulling = false;
 let _lastSyncTimestamp = Date.now();
+let _activeSavePromise = null;
+let _activePullPromise = null;
 
 function updateSyncUI(state, customText) {
     const ind = document.getElementById('sync-indicator');
@@ -4570,155 +4862,200 @@ function updateSyncUI(state, customText) {
     const txt = document.getElementById('sync-text');
     if (!ind || !dot || !txt) return;
 
-    ind.className = 'flex items-center gap-2 px-3 py-1.5 sm:py-2 border rounded-xl text-xs font-bold shadow-xs transition-all cursor-pointer hover:shadow-md active:scale-95 select-none';
+    ind.className = 'flex items-center gap-1.5 px-2.5 py-1.5 sm:py-2 border rounded-xl text-xs font-bold shadow-xs transition-all cursor-pointer hover:shadow-md active:scale-95 select-none';
 
     if (state === 'synced') {
         ind.classList.add('bg-emerald-50', 'border-emerald-300', 'text-emerald-700');
-        dot.className = 'w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.8)] animate-pulse';
-        txt.textContent = customText || 'Đã đồng bộ Google Sheets';
+        dot.className = 'w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]';
+        txt.textContent = customText || 'Đã lưu & Đồng bộ';
         _lastSyncTimestamp = Date.now();
-        ind.title = `Đã lưu trên máy và đồng bộ lên Google Sheets lúc ${new Date().toLocaleTimeString('vi-VN')}. Nhấp để đồng bộ thủ công.`;
+        ind.title = `Đã đồng bộ với máy chủ Đám Mây lúc ${new Date().toLocaleTimeString('vi-VN')}. Nhấp để đồng bộ ngay.`;
     } else if (state === 'waiting') {
         ind.classList.add('bg-amber-50', 'border-amber-300', 'text-amber-700');
-        dot.className = 'w-2 h-2 rounded-full bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.8)] animate-pulse';
+        dot.className = 'w-2 h-2 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.8)] animate-pulse';
         txt.textContent = customText || 'Chờ lưu...';
-        ind.title = 'Đã lưu cục bộ 0ms, đang chuẩn bị đẩy lên Google Sheets.';
+        ind.title = 'Đã lưu trên máy tính, đang chuẩn bị gửi lên máy chủ Đám Mây.';
     } else if (state === 'syncing') {
         ind.classList.add('bg-sky-50', 'border-sky-300', 'text-sky-700');
-        dot.className = 'w-2 h-2 rounded-full bg-sky-500 shadow-[0_0_10px_rgba(14,165,233,0.8)] animate-bounce';
-        txt.textContent = customText || 'Đang đẩy lên Sheets...';
-        ind.title = 'Đang truyền dữ liệu lên Google Sheets trong nền...';
+        dot.className = 'w-2 h-2 rounded-full bg-sky-500 shadow-[0_0_8px_rgba(14,165,233,0.8)] animate-bounce';
+        txt.textContent = customText || 'Đang đẩy lên mây...';
+        ind.title = 'Đang truyền dữ liệu lên máy chủ Đám Mây trong nền...';
     } else if (state === 'pulling') {
         ind.classList.add('bg-indigo-50', 'border-indigo-300', 'text-indigo-700');
-        dot.className = 'w-2 h-2 rounded-full bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.8)] animate-ping';
-        txt.textContent = customText || 'Đang tải từ Sheets...';
-        ind.title = 'Đang kiểm tra cập nhật mới từ Google Sheets...';
+        dot.className = 'w-2 h-2 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.8)] animate-ping';
+        txt.textContent = customText || 'Đang tải từ mây...';
+        ind.title = 'Đang nhận dữ liệu mới nhất từ máy chủ Đám Mây...';
     } else if (state === 'offline') {
         ind.classList.add('bg-amber-50', 'border-amber-300', 'text-amber-800');
         dot.className = 'w-2 h-2 rounded-full bg-amber-500';
-        txt.textContent = customText || 'Đã lưu máy (Ngoại tuyến)';
-        ind.title = 'Mất mạng! Dữ liệu đã lưu an toàn trên máy, sẽ tự động đẩy lên khi có mạng.';
+        txt.textContent = customText || 'Đã lưu máy (Offline)';
+        ind.title = 'Mất mạng! Dữ liệu đã lưu an toàn trên máy tính, sẽ tự động đẩy lên khi có mạng.';
     } else if (state === 'error') {
         ind.classList.add('bg-rose-50', 'border-rose-300', 'text-rose-700');
         dot.className = 'w-2 h-2 rounded-full bg-rose-500 animate-pulse';
-        txt.textContent = customText || 'Chờ kết nối lại...';
-        ind.title = 'Chưa thể kết nối Google Sheets. Dữ liệu vẫn được bảo vệ an toàn trong máy tính.';
+        txt.textContent = customText || 'Lỗi kết nối';
+        ind.title = 'Chưa thể kết nối máy chủ Google Sheets. Dữ liệu vẫn được bảo vệ an toàn trong máy tính.';
     }
 }
 window.updateSyncUI = updateSyncUI;
 
-// 1. Kéo dữ liệu tự động từ Google Sheets (Background Auto-Pull)
-function pullLatestDataFromCloud(isSilent = true) {
-    if (_saveLock || isSyncing || _saveQueue || _isPulling) {
-        return;
+// 1. Kéo dữ liệu tự động từ Đám Mây (Background Auto-Pull & Manual Force-Pull)
+function pullLatestDataFromCloud(isSilent = true, isForce = false) {
+    if (_isPulling) {
+        return _activePullPromise || Promise.resolve(false);
     }
+    // Nếu đang lưu dở và không phải ép buộc -> Bỏ qua đợi chu kỳ sau
+    if ((_saveLock || isSyncing || _saveQueue) && !isForce) {
+        return Promise.resolve(false);
+    }
+
     _isPulling = true;
-    if (!isSilent) updateSyncUI('pulling');
+    if (!isSilent) updateSyncUI('pulling', 'Đang tải từ mây...');
 
-    const controller = (typeof AbortController !== 'undefined') ? new AbortController() : null;
-    const timeoutId = controller ? setTimeout(() => controller.abort(), 15000) : null;
+    _activePullPromise = new Promise((resolve) => {
+        const controller = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+        const timeoutId = controller ? setTimeout(() => controller.abort(), 18000) : null;
 
-    fetch(API_URL + '?t=' + Date.now(), {
-        method: 'GET',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        signal: controller ? controller.signal : undefined
-    })
-    .then(resp => resp.json())
-    .then(serverData => {
-        if (timeoutId) clearTimeout(timeoutId);
-        _isPulling = false;
-        if (serverData && typeof serverData === 'object' && !serverData.error) {
-            const localLastSaved = Number(localStorage.getItem('mv_last_saved')) || 0;
-            const serverModified = Number(serverData._lastModified) || 0;
+        fetch(API_URL + '?t=' + Date.now(), {
+            method: 'GET',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            signal: controller ? controller.signal : undefined
+        })
+        .then(resp => resp.json())
+        .then(serverData => {
+            if (timeoutId) clearTimeout(timeoutId);
+            _isPulling = false;
+            _activePullPromise = null;
 
-            if (serverModified > localLastSaved || !tenantsData[currentCenterId]) {
-                if (typeof applyData === 'function') applyData(serverData);
-                if (typeof refreshUI === 'function') refreshUI();
-                if (typeof updateAllTabKpis === 'function') updateAllTabKpis();
-                try {
-                    localStorage.setItem('mv_offline_data', JSON.stringify(serverData));
-                    if (currentCenterId && tenantsData[currentCenterId]) {
-                        localStorage.setItem('mv_offline_data_' + currentCenterId, JSON.stringify(tenantsData[currentCenterId]));
+            if (serverData && typeof serverData === 'object' && !serverData.error) {
+                const localLastSaved = Number(localStorage.getItem('mv_last_saved')) || 0;
+                const serverModified = Number(serverData._lastModified) || 0;
+                const lastApplied = Number(localStorage.getItem('mv_last_applied_server_ts')) || 0;
+
+                // Nếu có cờ isForce, hoặc serverModified khác với bản đã áp dụng, hoặc server mới hơn local, hoặc chưa có partition
+                const shouldApply = isForce || (serverModified > localLastSaved) || (serverModified !== lastApplied) || (!tenantsData[currentCenterId]);
+
+                if (shouldApply) {
+                    if (typeof applyData === 'function') applyData(serverData);
+                    else if (typeof window.applyData === 'function') window.applyData(serverData);
+
+                    if (typeof refreshUI === 'function') refreshUI();
+                    else if (typeof window.refreshUI === 'function') window.refreshUI();
+
+                    if (typeof updateAllTabKpis === 'function') updateAllTabKpis();
+                    
+                    try {
+                        const mergedOfflinePayload = {
+                            centers: centers,
+                            joinRequests: joinRequests,
+                            users: users,
+                            tenantsData: tenantsData,
+                            _lastModified: Math.max(Date.now(), serverModified)
+                        };
+                        localStorage.setItem('mv_offline_data', JSON.stringify(mergedOfflinePayload));
+                        if (currentCenterId && tenantsData[currentCenterId]) {
+                            localStorage.setItem('mv_offline_data_' + currentCenterId, JSON.stringify(tenantsData[currentCenterId]));
+                        }
+                        localStorage.setItem('mv_last_saved', String(Math.max(Date.now(), serverModified)));
+                        localStorage.setItem('mv_last_applied_server_ts', String(serverModified));
+                    } catch(e) {}
+
+                    if (window.electronAPI && typeof window.electronAPI.saveLocalFile === 'function') {
+                        window.electronAPI.saveLocalFile({
+                            centerId: currentCenterId,
+                            data: tenantsData[currentCenterId] || serverData,
+                            allCenters: centers,
+                            joinRequests: joinRequests,
+                            users: users,
+                            _lastModified: serverModified
+                        });
                     }
-                    localStorage.setItem('mv_last_saved', String(serverModified));
-                } catch(e) {}
-                if (window.electronAPI && typeof window.electronAPI.saveLocalFile === 'function') {
-                    window.electronAPI.saveLocalFile({
-                        centerId: currentCenterId,
-                        data: tenantsData[currentCenterId] || serverData,
-                        allCenters: centers,
-                        joinRequests: joinRequests,
-                        users: users,
-                        _lastModified: serverModified
-                    });
+
+                    updateSyncUI('synced', 'Đã nhận dữ liệu mới');
+                    if (!isSilent && typeof showToast === 'function') {
+                        showToast("Đã đồng bộ 2 chiều thành công với Đám Mây!", "success");
+                    }
+                    resolve(true);
+                } else {
+                    updateSyncUI('synced', 'Dữ liệu mới nhất');
+                    if (!isSilent && typeof showToast === 'function') {
+                        showToast("Dữ liệu trên máy và Đám Mây đã hoàn toàn đồng nhất!", "info");
+                    }
+                    resolve(true);
                 }
-                updateSyncUI('synced', 'Đã nhận dữ liệu mới');
-                if (!isSilent && typeof showToast === 'function') showToast("Đã đồng bộ dữ liệu mới nhất từ Google Sheets!", "success");
             } else {
                 updateSyncUI('synced');
-                if (!isSilent && typeof showToast === 'function') showToast("Dữ liệu trên máy tính đã là mới nhất!", "info");
+                resolve(false);
             }
-        } else {
-            updateSyncUI('synced');
-        }
-    })
-    .catch(err => {
-        if (timeoutId) clearTimeout(timeoutId);
-        _isPulling = false;
-        if (!navigator.onLine) {
-            updateSyncUI('offline');
-        } else {
-            updateSyncUI('synced');
-        }
-        if (!isSilent && typeof showToast === 'function') {
-            showToast("Không thể kết nối Google Sheets, dữ liệu được bảo toàn trên máy!", "warning");
-        }
+        })
+        .catch(err => {
+            if (timeoutId) clearTimeout(timeoutId);
+            _isPulling = false;
+            _activePullPromise = null;
+            if (!navigator.onLine) {
+                updateSyncUI('offline', 'Đã lưu máy (Offline)');
+            } else {
+                updateSyncUI('error', 'Lỗi kết nối');
+            }
+            if (!isSilent && typeof showToast === 'function') {
+                showToast("Không thể kết nối máy chủ Google Sheets. Dữ liệu được bảo toàn trên máy!", "warning");
+            }
+            resolve(false);
+        });
     });
+
+    return _activePullPromise;
 }
 window.pullLatestDataFromCloud = pullLatestDataFromCloud;
 
-// 2. Khởi động Timer đồng bộ nền chu kỳ 35 giây
+// 2. Khởi động Timer đồng bộ nền chu kỳ 25 giây
 function startRealtimeSync() {
     if (_realtimeTimer) clearInterval(_realtimeTimer);
     _realtimeTimer = setInterval(() => {
-        if (navigator.onLine && !_saveLock && !_saveQueue) {
-            pullLatestDataFromCloud(true);
+        if (navigator.onLine && !_saveLock && !_saveQueue && !_isPulling) {
+            pullLatestDataFromCloud(true, false);
         }
-    }, 35000);
+    }, 25000);
 }
 window.startRealtimeSync = startRealtimeSync;
 
-// 3. Đồng bộ thủ công 1-chạm khi người dùng nhấp vào thanh trạng thái
-function triggerManualSync() {
-    if (typeof showToast === 'function') showToast("Đang kích hoạt đồng bộ 2 chiều với Google Sheets...", "info");
-    if (_saveQueue) {
-        if (typeof flushSave === 'function') flushSave();
+// 3. Đồng bộ thủ công 2 chiều: Đẩy dữ liệu đang chờ -> Kéo dữ liệu mới nhất về
+async function triggerManualSync() {
+    if (typeof showToast === 'function') showToast("Đang kích hoạt đồng bộ 2 chiều với Đám Mây...", "info");
+    updateSyncUI('pulling', 'Đang đồng bộ...');
+
+    try {
+        // Bước 1: Nếu có thay đổi ở máy chưa đẩy lên -> Đẩy lên Đám Mây trước
+        if (hasPendingSave || _saveQueue || saveTimeout) {
+            if (saveTimeout) { clearTimeout(saveTimeout); saveTimeout = null; }
+            await flushSave();
+        }
+
+        // Bước 2: Kéo dữ liệu mới nhất từ Đám Mây về và cập nhật vào giao diện
+        await pullLatestDataFromCloud(false, true);
+    } catch (err) {
+        console.error("Lỗi đồng bộ thủ công:", err);
+        updateSyncUI('error', 'Lỗi kết nối');
+        if (typeof showToast === 'function') showToast("Không thể kết nối máy chủ Google Sheets!", "error");
     }
-    setTimeout(() => {
-        pullLatestDataFromCloud(false);
-    }, 400);
 }
 window.triggerManualSync = triggerManualSync;
 
 // 4. Lắng nghe sự kiện Online / Offline & Window Focus của hệ điều hành
 window.addEventListener('online', () => {
     updateSyncUI('waiting', 'Đã có mạng trở lại!');
-    if (typeof showToast === 'function') showToast("Đã kết nối internet! Đang tự động đồng bộ lên Google Sheets...", "success");
-    if (_saveQueue) {
-        if (typeof flushSave === 'function') flushSave();
-    } else {
-        pullLatestDataFromCloud(false);
-    }
+    if (typeof showToast === 'function') showToast("Đã có mạng trở lại! Đang tự động đồng bộ...", "success");
+    triggerManualSync();
 });
 
 window.addEventListener('offline', () => {
-    updateSyncUI('offline');
+    updateSyncUI('offline', 'Đã lưu máy (Offline)');
     if (typeof showToast === 'function') showToast("Máy đang ngoại tuyến. Dữ liệu được lưu an toàn 100% trong máy tính!", "warning");
 });
 
 window.addEventListener('focus', () => {
-    if (Date.now() - _lastSyncTimestamp > 30000 && navigator.onLine && !_saveLock) {
-        pullLatestDataFromCloud(true);
+    if (Date.now() - _lastSyncTimestamp > 20000 && navigator.onLine && !_saveLock && !_isPulling) {
+        pullLatestDataFromCloud(true, false);
     }
 });
 
@@ -4795,55 +5132,72 @@ window.addEventListener('focus', () => {
         }
 
         function flushSave() {
-            if (_saveLock || !_saveQueue) return;
+            if (!_saveQueue && !_activeSavePromise) {
+                return Promise.resolve(true);
+            }
+            if (_activeSavePromise) {
+                return _activeSavePromise.then(() => {
+                    if (_saveQueue) return flushSave();
+                    return true;
+                });
+            }
+
             var body = _saveQueue;
             _saveQueue = null;
             _saveLock = true;
             _saveRetry = 0;
             hasPendingSave = false;
             isSyncing = true;
-            updateSyncUI('syncing');
+            updateSyncUI('syncing', 'Đang đẩy lên mây...');
 
-            function doPost(attempt) {
-                // Dung fetch don gian khong co custom header de tranh CORS preflight
-                // GAS nhan text/plain qua Content-Type mac dinh
-                var ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
-                var tid = ctrl ? setTimeout(function() { ctrl.abort(); }, 20000) : null;
-                var opts = {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: body
-                };
-                if (ctrl) opts.signal = ctrl.signal;
+            _activeSavePromise = new Promise((resolve) => {
+                function doPost(attempt) {
+                    var ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+                    var tid = ctrl ? setTimeout(function() { ctrl.abort(); }, 20000) : null;
+                    var opts = {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: body
+                    };
+                    if (ctrl) opts.signal = ctrl.signal;
 
-                fetch(API_URL, opts)
-                    .then(function() {
-                        if (tid) clearTimeout(tid);
-                        _saveLock = false;
-                        isSyncing = false;
-                        updateSyncUI('synced');
-                        // Neu co save moi trong khi dang luu -> flush tiep
-                        if (_saveQueue) { setTimeout(function() { flushSave(); }, 300); }
-                    })
-                    .catch(function(err) {
-                        if (tid) clearTimeout(tid);
-                        if (attempt < 3) {
-                            // Thu lai toi da 3 lan
-                            setTimeout(function() { doPost(attempt + 1); }, 2000 * attempt);
-                        } else {
+                    fetch(API_URL, opts)
+                        .then(function() {
+                            if (tid) clearTimeout(tid);
                             _saveLock = false;
                             isSyncing = false;
-                            updateSyncUI('error');
-                            console.error('Luu that bai sau 3 lan thu:', err);
-                        }
-                    });
-            }
-            doPost(1);
+                            _activeSavePromise = null;
+                            updateSyncUI('synced', 'Đã lưu & Đồng bộ');
+                            if (_saveQueue) {
+                                setTimeout(function() { flushSave(); }, 200);
+                            }
+                            resolve(true);
+                        })
+                        .catch(function(err) {
+                            if (tid) clearTimeout(tid);
+                            if (attempt < 3) {
+                                setTimeout(function() { doPost(attempt + 1); }, 1500 * attempt);
+                            } else {
+                                _saveLock = false;
+                                isSyncing = false;
+                                _activeSavePromise = null;
+                                updateSyncUI('error', 'Lỗi đẩy lên mây');
+                                console.error('Lưu dữ liệu lên Đám Mây thất bại sau 3 lần:', err);
+                                resolve(false);
+                            }
+                        });
+                }
+                doPost(1);
+            });
+
+            return _activeSavePromise;
         }
+        window.flushSave = flushSave;
 
         // Alias cu de khong lam hong code khac goi flushPendingSave
-        function flushPendingSave() { flushSave(); }
+        function flushPendingSave() { return flushSave(); }
+        window.flushPendingSave = flushPendingSave;
 
 
         
@@ -10069,6 +10423,40 @@ function closeUserProfileMenu() {
     if (menu) menu.classList.add('hidden');
 }
 window.closeUserProfileMenu = closeUserProfileMenu;
+
+async function handleForcePullFromCloud() {
+    if (typeof closeUserProfileMenu === 'function') closeUserProfileMenu();
+    if (typeof showToast === 'function') showToast('⬇ Đang tải và hợp nhất toàn bộ dữ liệu từ Đám Mây...', 'info');
+    try {
+        if (typeof pullLatestDataFromCloud === 'function') {
+            await pullLatestDataFromCloud(false, true);
+        }
+        if (typeof updateAllTabKpis === 'function') updateAllTabKpis();
+        if (typeof updateCenterUI === 'function') updateCenterUI();
+        if (typeof showToast === 'function') showToast('✅ Đã tải và hợp nhất dữ liệu mới nhất từ Đám Mây thành công!', 'success');
+    } catch(err) {
+        console.error('Lỗi Force Pull:', err);
+        if (typeof showToast === 'function') showToast('❌ Không thể tải từ Đám Mây: ' + err.message, 'error');
+    }
+}
+window.handleForcePullFromCloud = handleForcePullFromCloud;
+
+async function handleForcePushToCloud() {
+    if (typeof closeUserProfileMenu === 'function') closeUserProfileMenu();
+    if (typeof showToast === 'function') showToast('⬆ Đang chuẩn bị và đẩy toàn bộ dữ liệu máy lên Đám Mây...', 'info');
+    try {
+        if (typeof saveData === 'function') saveData();
+        if (typeof flushSave === 'function') {
+            await flushSave();
+        }
+        if (typeof showToast === 'function') showToast('✅ Đã lưu và đẩy toàn bộ dữ liệu máy lên Đám Mây thành công!', 'success');
+    } catch(err) {
+        console.error('Lỗi Force Push:', err);
+        if (typeof showToast === 'function') showToast('❌ Không thể đẩy lên Đám Mây: ' + err.message, 'error');
+    }
+}
+window.handleForcePushToCloud = handleForcePushToCloud;
+
 
 document.addEventListener('click', function(e) {
     const container = document.getElementById('header-user-menu-container') || document.getElementById('auth-profile-badge');
